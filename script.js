@@ -917,7 +917,7 @@ function showConfirmationModal(applicant) {
     });
 }
 
-// ===== SISTEMA DE ADMINISTRACIÓN =====
+// ===== SISTEMA DE ADMINISTRACIÓN - VERSIÓN CORREGIDA =====
 function initAdminSystem() {
     const adminAccessBtn = document.getElementById('adminAccessBtn');
     const loginModal = document.getElementById('loginModal');
@@ -926,84 +926,156 @@ function initAdminSystem() {
     const cancelLogin = document.getElementById('cancelLogin');
     const closeAdmin = document.getElementById('closeAdmin');
     
-    if (!adminAccessBtn || !loginModal || !adminModal) return;
+    console.log("🔧 Inicializando sistema admin...");
     
-    adminAccessBtn.addEventListener('click', function() {
+    if (!adminAccessBtn || !loginModal || !adminModal) {
+        console.error("❌ Elementos críticos no encontrados");
+        return;
+    }
+    
+    // === 1. BOTÓN DE ACCESO ADMIN ===
+    adminAccessBtn.onclick = function() {
         if (isAdminAuthenticated) {
             showAdminPanel();
         } else {
             loginModal.style.display = 'flex';
         }
-    });
+    };
     
+    // === 2. FORMULARIO DE LOGIN ===
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.onsubmit = function(e) {
             e.preventDefault();
+            e.stopPropagation();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const adminCode = document.getElementById('adminCode').value;
             
-            const isValid = authenticateAdmin(username, password, adminCode);
+            console.log("🔐 Intentando login:", { username, password, adminCode });
             
-            if (isValid) {
+            // Verificar código primero
+            if (adminCode !== adminPassword) {
+                showNotification('❌ Código secreto incorrecto', 'error');
+                return false;
+            }
+            
+            // Buscar usuario en la lista
+            const user = adminUsers.find(u => 
+                u.username === username && u.password === password
+            );
+            
+            if (user) {
                 isAdminAuthenticated = true;
                 loginModal.style.display = 'none';
                 showAdminPanel();
-                showNotification('¡Acceso al Cuartel General concedido!', 'success');
-                
+                showNotification('✅ ¡Acceso concedido!', 'success');
                 loginForm.reset();
+                console.log("✅ Usuario autenticado:", username);
             } else {
-                showNotification('Credenciales incorrectas. ¡Intenta de nuevo!', 'error');
+                showNotification('❌ Usuario o contraseña incorrectos', 'error');
+                console.log("❌ Login fallido para:", username);
             }
-        });
+            
+            return false;
+        };
     }
     
+    // === 3. BOTÓN CANCELAR LOGIN (X DEL MODAL DE LOGIN) ===
     if (cancelLogin) {
-        cancelLogin.addEventListener('click', function() {
+        console.log("✅ Botón cancelLogin encontrado");
+        
+        // AGREGAR EVENTO DIRECTO
+        cancelLogin.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("❌ Cerrando modal de login");
             loginModal.style.display = 'none';
             if (loginForm) loginForm.reset();
-        });
+            return false;
+        };
+        
+        // TAMBIÉN AGREGAR EVENT LISTENER
+        cancelLogin.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            loginModal.style.display = 'none';
+            if (loginForm) loginForm.reset();
+        }, { once: false });
     }
     
-    loginModal.addEventListener('click', function(e) {
+    // === 4. BOTÓN CERRAR PANEL ADMIN (X DEL PANEL) ===
+    if (closeAdmin) {
+        console.log("✅ Botón closeAdmin encontrado");
+        
+        // AGREGAR EVENTO DIRECTO
+        closeAdmin.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("❌ Cerrando panel admin");
+            adminModal.style.display = 'none';
+            return false;
+        };
+        
+        // TAMBIÉN AGREGAR EVENT LISTENER
+        closeAdmin.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            adminModal.style.display = 'none';
+        }, { once: false });
+    }
+    
+    // === 5. CERRAR MODALES AL HACER CLIC FUERA ===
+    loginModal.onclick = function(e) {
         if (e.target === loginModal) {
             loginModal.style.display = 'none';
             if (loginForm) loginForm.reset();
         }
-    });
+    };
     
-    if (closeAdmin) {
-        closeAdmin.addEventListener('click', function() {
-            adminModal.style.display = 'none';
-        });
-    }
-    
-    adminModal.addEventListener('click', function(e) {
+    adminModal.onclick = function(e) {
         if (e.target === adminModal) {
             adminModal.style.display = 'none';
         }
-    });
+    };
+    
+    // === 6. PREVENIR QUE EL CLIC DENTRO DEL MODAL LO CIERRE ===
+    const loginContent = loginModal.querySelector('.modal-content');
+    const adminContent = adminModal.querySelector('.modal-content');
+    
+    if (loginContent) {
+        loginContent.onclick = function(e) {
+            e.stopPropagation();
+        };
+    }
+    
+    if (adminContent) {
+        adminContent.onclick = function(e) {
+            e.stopPropagation();
+        };
+    }
     
     initAdminButtons();
 }
 
 function authenticateAdmin(username, password, code) {
+    // Verificar código
     if (code !== adminPassword) {
-        console.log('Código incorrecto');
+        console.log('❌ Código incorrecto');
         return false;
     }
     
+    // Verificar usuario y contraseña
     const user = adminUsers.find(u => 
         u.username === username && u.password === password
     );
     
     if (user) {
-        console.log(`Usuario autenticado: ${username}`);
+        console.log(`✅ Usuario autenticado: ${username}`);
         return true;
     }
     
-    console.log('Usuario o contraseña incorrectos');
+    console.log('❌ Usuario o contraseña incorrectos');
     return false;
 }
 
@@ -1628,258 +1700,39 @@ function generateSummaryReport() {
 
 console.log("✅ Script de Campamento Misionero IAM cargado correctamente");
 
-// ===== INTEGRACIÓN CON BACKEND =====
-
-// Agregar esta función al inicio del DOMContentLoaded
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("🚀 ¡La Aventura Misionera IAM 2026 está cargada!");
+// ===== PARCHE DE SEGURIDAD PARA BOTONES DE CERRAR =====
+setTimeout(function() {
+    console.log("🛠️ Aplicando parche de seguridad para botones de cerrar");
     
-    // Inicializar backend (si está disponible)
-    if (window.backendManager) {
-        window.backendManager.initialize().then(result => {
-            console.log(`✅ Backend inicializado en modo: ${result.mode}`);
-            
-            // Si está en modo Firebase, cargar datos desde allí
-            if (result.mode === 'firebase') {
-                loadApplicantsFromBackend();
-            } else {
-                // Usar localStorage como respaldo
-                loadApplicantsFromStorage();
-            }
-        }).catch(error => {
-            console.warn("⚠️ Usando modo localstorage:", error);
-            loadApplicantsFromStorage();
-        });
-    } else {
-        // Si no hay backend manager, usar localStorage
-        loadApplicantsFromStorage();
-    }
-    
-    // ... el resto de tu código existente ...
-});
-
-// Nueva función para cargar desde backend
-async function loadApplicantsFromBackend() {
-    if (!window.backendManager) return;
-    
-    try {
-        const result = await window.backendManager.getAllApplicants();
-        if (result.success) {
-            applicants = result.data;
-            applicantCount = applicants.length;
-            console.log(`📊 Cargados ${applicantCount} aventureros desde ${result.source}`);
-            
-            updateApplicantCounter();
-            updateAvailableSpots();
-            
-            if (isAdminAuthenticated) {
-                updateAdminStats();
-                updateRecentApplicants();
-            }
-        }
-    } catch (error) {
-        console.error('Error cargando desde backend:', error);
-        loadApplicantsFromStorage(); // Respaldo
-    }
-}
-
-// Modificar la función handleFormSubmit para usar backend
-async function handleFormSubmit(e) {
-    e.preventDefault();
-    
-    const form = e.target;
-    const requiredFields = form.querySelectorAll('input[required], textarea[required]');
-    let isValid = true;
-    
-    requiredFields.forEach(field => {
-        if (!validateField({ target: field })) {
-            isValid = false;
-        }
-    });
-    
-    if (!isValid) {
-        showNotification('¡Oh no! Revisa los campos marcados en rojo', 'error');
-        return;
-    }
-    
-    if (applicantCount >= MAX_SPOTS) {
-        showNotification('¡Misión llena! Lo sentimos, no hay más plazas disponibles', 'error');
-        return;
-    }
-    
-    const formData = new FormData(form);
-    const applicant = {};
-    
-    for (let [key, value] of formData.entries()) {
-        if (key === 'health' || key === 'diet') {
-            if (!applicant[key]) applicant[key] = [];
-            applicant[key].push(value);
-        } else {
-            applicant[key] = value;
-        }
-    }
-    
-    // Eliminar duplicados
-    if (applicant.health) {
-        applicant.health = [...new Set(applicant.health)];
-    }
-    if (applicant.diet) {
-        applicant.diet = [...new Set(applicant.diet)];
-    }
-    
-    // AGREGAR METADATOS
-    applicant.id = Date.now();
-    applicant.registrationDate = new Date().toLocaleString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    applicant.status = 'Pendiente';
-    applicant.registrationNumber = `AVENT-${String(applicant.id).slice(-6)}`;
-    
-    // GUARDAR EN BACKEND (si está disponible)
-    if (window.backendManager) {
-        try {
-            const result = await window.backendManager.saveApplicant(applicant);
-            if (result.success) {
-                // Actualizar datos locales con lo que devuelve el backend
-                applicant.id = result.id;
-                applicant.registrationNumber = result.registrationNumber;
-                
-                // Solo agregar a lista local si el backend fue exitoso
-                applicants.push(applicant);
-                applicantCount++;
-                
-                showNotification('¡Misión aceptada! Datos guardados en la nube', 'success');
-            } else {
-                // Si el backend falla, guardar solo en localStorage
-                applicants.push(applicant);
-                applicantCount++;
-                saveApplicantsToStorage();
-                showNotification('¡Misión aceptada! (Datos guardados localmente)', 'warning');
-            }
-        } catch (error) {
-            // Respaldo: guardar solo en localStorage
-            applicants.push(applicant);
-            applicantCount++;
-            saveApplicantsToStorage();
-            showNotification('¡Misión aceptada! (Modo local activado)', 'warning');
-        }
-    } else {
-        // Sin backend, usar localStorage como siempre
-        applicants.push(applicant);
-        applicantCount++;
-        saveApplicantsToStorage();
-    }
-    
-    updateApplicantCounter();
-    updateAvailableSpots();
-    
-    showConfirmationModal(applicant);
-    
-    form.reset();
-    
-    if (isAdminAuthenticated) {
-        updateAdminStats();
-        updateRecentApplicants();
-    }
-}
-
-// Modificar la función initAdminSystem para usar backend
-function initAdminSystem() {
-    const adminAccessBtn = document.getElementById('adminAccessBtn');
-    const loginModal = document.getElementById('loginModal');
-    const adminModal = document.getElementById('adminModal');
-    const loginForm = document.getElementById('loginForm');
+    // Parche para botón cancelLogin (X del modal de login)
     const cancelLogin = document.getElementById('cancelLogin');
-    const closeAdmin = document.getElementById('closeAdmin');
+    const loginModal = document.getElementById('loginModal');
+    const loginForm = document.getElementById('loginForm');
     
-    if (!adminAccessBtn || !loginModal || !adminModal) return;
-    
-    adminAccessBtn.addEventListener('click', function() {
-        if (window.backendManager && window.backendManager.isAdminAuthenticated()) {
-            showAdminPanel();
-        } else {
-            loginModal.style.display = 'flex';
-        }
-    });
-    
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function(e) {
+    if (cancelLogin && loginModal) {
+        // Agregar evento extra seguro
+        cancelLogin.addEventListener('click', function(e) {
             e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            const adminCode = document.getElementById('adminCode').value;
-            
-            // Verificar código secreto primero
-            if (adminCode !== adminPassword) {
-                showNotification('Código secreto incorrecto', 'error');
-                return;
-            }
-            
-            // Usar backend si está disponible
-            if (window.backendManager) {
-                // Convertir username a email (puedes ajustar esto)
-                const email = `${username}@iam.com`;
-                
-                const result = await window.backendManager.loginAdmin(email, password);
-                
-                if (result.success) {
-                    isAdminAuthenticated = true;
-                    loginModal.style.display = 'none';
-                    showAdminPanel();
-                    showNotification('¡Acceso al Cuartel General concedido!', 'success');
-                    loginForm.reset();
-                } else {
-                    showNotification(result.error, 'error');
-                }
-            } else {
-                // Modo local: verificar contra usuarios locales
-                const isValid = authenticateAdmin(username, password, adminCode);
-                
-                if (isValid) {
-                    isAdminAuthenticated = true;
-                    loginModal.style.display = 'none';
-                    showAdminPanel();
-                    showNotification('¡Acceso al Cuartel General concedido!', 'success');
-                    loginForm.reset();
-                } else {
-                    showNotification('Credenciales incorrectas. ¡Intenta de nuevo!', 'error');
-                }
-            }
-        });
+            e.stopPropagation();
+            console.log("🛡️ Parche cancelLogin activado");
+            loginModal.style.display = 'none';
+            if (loginForm) loginForm.reset();
+        }, true);
     }
     
-    // ... el resto de tu código existente ...
-}
-
-// Modificar función clearAllData para usar backend
-async function clearAllData() {
-    if (!confirm('⚠️ ¿Reiniciar toda la misión? Esto eliminará TODOS los datos de aventureros. ¡Esta acción no se puede deshacer!')) {
-        return;
+    // Parche para botón closeAdmin (X del panel admin)
+    const closeAdmin = document.getElementById('closeAdmin');
+    const adminModal = document.getElementById('adminModal');
+    
+    if (closeAdmin && adminModal) {
+        // Agregar evento extra seguro
+        closeAdmin.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("🛡️ Parche closeAdmin activado");
+            adminModal.style.display = 'none';
+        }, true);
     }
     
-    // Usar backend si está disponible
-    if (window.backendManager) {
-        const result = await window.backendManager.clearAllData();
-        if (result.success) {
-            showNotification('¡Misión reiniciada! Todos los datos eliminados', 'warning');
-        } else {
-            showNotification('Error al eliminar datos del backend', 'error');
-        }
-    }
-    
-    // Limpiar datos locales también
-    applicants = [];
-    applicantCount = 0;
-    
-    localStorage.removeItem('iamApplicants');
-    
-    updateApplicantCounter();
-    updateAvailableSpots();
-    updateAdminStats();
-    updateRecentApplicants();
-}
+    console.log("✅ Parche de seguridad aplicado");
+}, 500);
