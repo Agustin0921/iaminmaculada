@@ -4137,3 +4137,97 @@ html, body {
         font-size: 0.95rem;
     }
 }
+
+/* ===== CORRECCIÓN PARA HOVER DE CARDS CON BOTONES ===== */
+.feature-card .btn {
+    transition: all 0.3s ease !important;
+    animation: none !important;
+    transition-delay: 0s !important;
+}
+
+.feature-card:hover .btn {
+    transform: translateY(-3px) !important;
+    box-shadow: var(--shadow-hover) !important;
+    transition-delay: 0s !important;
+}
+
+/* Remover cualquier delay de las cards normales */
+.feature-card,
+.feature-card * {
+    animation-delay: 0s !important;
+    transition-delay: 0s !important;
+}
+
+/* Específicamente para los botones dentro de las cards */
+.feature-card .btn.btn-animate {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+}
+
+/* Asegurar que el hover funcione correctamente */
+.feature-card:hover {
+    transition: var(--transition) !important;
+    transition-delay: 0s !important;
+}
+
+.feature-card:hover .feature-icon {
+    transform: scale(1.1) !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* ===== REDUCIR DELAYS GENERALES DE ANIMACIÓN ===== */
+@media (prefers-reduced-motion: no-preference) {
+    .scroll-animate {
+        transition-duration: 0.5s !important; /* Reducido de 0.8s */
+    }
+    
+    .hero-animate {
+        animation-duration: 0.6s !important; /* Reducido de 1s */
+    }
+    
+    .card-animate {
+        transition-duration: 0.4s !important;
+    }
+    
+    /* Eliminar delays automáticos en elementos */
+    [class*="delay-"] {
+        transition-delay: calc(var(--delay-index, 1) * 0.1s) !important;
+    }
+    
+    /* Reducir delays específicos */
+    .delay-1 { --delay-index: 1; }
+    .delay-2 { --delay-index: 2; }
+    .delay-3 { --delay-index: 3; }
+    .delay-4 { --delay-index: 4; }
+    .delay-5 { --delay-index: 5; }
+    .delay-6 { --delay-index: 6; }
+    .delay-7 { --delay-index: 7; }
+    .delay-8 { --delay-index: 8; }
+    
+    .hero-delay-0 { animation-delay: 0s !important; }
+    .hero-delay-1 { animation-delay: 0.1s !important; }
+    .hero-delay-2 { animation-delay: 0.2s !important; }
+    .hero-delay-3 { animation-delay: 0.3s !important; }
+    .hero-delay-4 { animation-delay: 0.4s !important; }
+    .hero-delay-5 { animation-delay: 0.5s !important; }
+    .hero-delay-6 { animation-delay: 0.6s !important; }
+    .hero-delay-7 { animation-delay: 0.7s !important; }
+}
+
+/* Corregir animaciones específicas problemáticas */
+.btn-animate {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: var(--transition) !important;
+}
+
+/* Para las cards de recursos (animadores) */
+.feature-card.scroll-animate {
+    transition-delay: 0s !important;
+}
+
+.feature-card.scroll-animate.show {
+    transition-delay: 0s !important;
+}

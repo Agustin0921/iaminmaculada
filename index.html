@@ -761,7 +761,7 @@
                         );
                         
                         if (delayClass) {
-                            const delay = parseInt(delayClass.split('-')[1]) * 200; // Convertir a milisegundos
+                            const delay = parseInt(delayClass.split('-')[1]) * 100; // Convertir a milisegundos
                             setTimeout(() => {
                                 entry.target.classList.add('show');
                             }, delay);
@@ -931,7 +931,7 @@
                 document.body.style.overflowX = 'hidden';
                 document.documentElement.style.overflowX = 'hidden';
             }
-            
+
             // Detectar y corregir elementos que causan overflow
             function fixOverflowElements() {
                 const viewportWidth = window.innerWidth;
@@ -943,7 +943,7 @@
                     }
                 });
             }
-            
+
             setTimeout(fixOverflowElements, 100);
             window.addEventListener('resize', fixOverflowElements);
         });
