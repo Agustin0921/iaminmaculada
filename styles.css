@@ -3145,124 +3145,331 @@ footer {
     }
 }
 
-/* ============================================= */
-/* MEDIA QUERIES PARA INDEX.HTML - RESPONSIVE */
-/* ============================================= */
-
-/* TABLETS Y LAPTOPS PEQUEÑOS (992px) */
-@media (max-width: 992px) {
-    .iam-card-content {
-        grid-template-columns: 1fr;
-        gap: 30px;
+/* ===== CORRECCIONES RESPONSIVE PARA MOVIL ===== */
+@media (max-width: 768px) {
+    /* Prevenir overflow horizontal global */
+    body, html {
+        overflow-x: hidden;
+        width: 100%;
+        position: relative;
     }
     
-    .iam-reverse .iam-card-image {
-        order: -1;
+    /* Asegurar que todos los contenedores se ajusten */
+    .container {
+        padding: 0 15px;
+        width: 100%;
     }
     
-    .hero-title {
-        font-size: 2.5rem;
+    /* Corregir el menú móvil */
+    .nav-menu {
+        width: 100vw !important;
+        left: 0 !important;
+        right: 0 !important;
+        max-width: 100% !important;
     }
     
-    .section-title {
-        font-size: 2rem;
+    /* Ajustar el hero */
+    .hero-content {
+        max-width: 100%;
     }
     
+    /* Ajustar timeline */
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .timeline-date {
+        margin-bottom: 10px;
+    }
+    
+    /* Ajustar las cards de características */
     .features-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+        gap: 20px;
     }
     
+    /* Corregir el countdown */
+    .countdown-display {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 10px 0;
+        justify-content: flex-start;
+    }
+    
+    .countdown-unit {
+        min-width: 80px;
+        flex-shrink: 0;
+    }
+    
+    /* Ajustar el formulario */
+    .form-card {
+        padding: 20px;
+        margin: 0 -15px;
+        width: calc(100% + 30px);
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Corregir galería */
     .gallery-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
     }
     
+    /* Ajustar modales */
+    .modal-content {
+        margin: 10px;
+        width: calc(100% - 20px);
+    }
+    
+    /* Corregir footer */
     .footer-content {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
+    }
+    
+    /* Ajustar los elementos del juego */
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-card.featured {
+        grid-column: span 1;
+    }
+    
+    /* Story game */
+    .story-game {
+        grid-template-columns: 1fr;
+    }
+    
+    .character-panel {
+        position: static !important;
+        margin-bottom: 20px;
+    }
+    
+    .choices-container {
+        width: 100%;
+    }
+    
+    .choice-btn {
+        width: 100%;
+        white-space: normal;
     }
 }
 
-/* TABLETS (768px) */
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 1.8rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+    }
+    
+    .info-item {
+        min-width: 100%;
+        width: 100%;
+    }
+    
+    .hero-info {
+        flex-direction: column;
+    }
+    
+    /* Botones */
+    .btn {
+        white-space: normal;
+        word-wrap: break-word;
+        padding: 12px 15px;
+    }
+    
+    /* Ajustar las cards IAM */
+    .iam-card-content {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .iam-card-image {
+        height: auto !important;
+    }
+    
+    .iam-card-image img {
+        height: 200px !important;
+    }
+    
+    /* Timeline de IAM */
+    .iam-timeline-event {
+        flex-direction: column !important;
+    }
+    
+    .iam-event-spacer {
+        display: none;
+    }
+    
+    .iam-timeline-line {
+        left: 25px !important;
+    }
+    
+    /* Juego */
+    .menu-title {
+        font-size: 2rem;
+    }
+    
+    .game-container {
+        padding: 10px;
+    }
+    
+    .scene-image {
+        height: 180px !important;
+    }
+    
+    /* Prevenir scroll horizontal en modales */
+    .modal {
+        padding: 5px;
+    }
+    
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Corrección específica para el juego */
 @media (max-width: 768px) {
+    .games-menu {
+        padding: 15px;
+        margin-top: 70px;
+    }
+    
+    .menu-header {
+        margin-bottom: 30px;
+    }
+    
+    .story-content {
+        padding: 20px;
+    }
+    
+    /* Botones de elección */
+    .choice-btn {
+        padding: 15px;
+        font-size: 0.9rem;
+    }
+    
+    .choice-number {
+        width: 25px;
+        height: 25px;
+        font-size: 0.8rem;
+    }
+    
+    /* Controles del juego */
+    .game-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .game-controls .btn {
+        width: 100%;
+    }
+}
+
+/* Corrección para el countdown */
+@media (max-width: 768px) {
+    .countdown-display {
+        padding-bottom: 10px;
+    }
+    
+    .countdown-unit {
+        margin: 0 5px;
+    }
+    
+    .countdown-separator {
+        display: none;
+    }
+}
+
+/* Corregir el header en móvil */
+@media (max-width: 768px) {
+    header {
+        padding: 10px 0;
+    }
+    
+    .navbar {
+        flex-wrap: wrap;
+    }
+    
+    .nav-brand {
+        width: 70%;
+    }
+    
+    .admin-access-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
+
+/* ===== CORRECCIONES RESPONSIVE COMPLETAS PARA INDEX.HTML ===== */
+@media (max-width: 1200px) {
+    .container {
+        max-width: 95%;
+    }
+    
+    .hero-title {
+        font-size: 2.8rem;
+    }
+    
+    .iam-card-content {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 992px) {
+    /* HEADER */
+    .navbar {
+        flex-wrap: wrap;
+    }
+    
+    .nav-brand {
+        order: 1;
+        width: 70%;
+    }
+    
     .mobile-menu-btn {
-        display: flex !important;
+        order: 2;
+        margin-left: auto;
+    }
+    
+    .admin-access-btn {
+        order: 3;
+        margin-left: 10px;
     }
     
     .nav-menu {
-        position: fixed;
-        top: 80px;
-        left: 0;
+        order: 4;
         width: 100%;
-        height: calc(100vh - 80px);
-        background: linear-gradient(135deg, 
-            rgba(42, 110, 187, 0.98), 
-            rgba(26, 77, 140, 0.98));
-        backdrop-filter: blur(20px);
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        padding: 40px 20px 20px;
-        transform: translateY(-100%);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 998;
-        overflow-y: auto;
-        border-radius: 0 0 20px 20px;
+        margin-top: 15px;
     }
     
-    .nav-menu.active {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-    
-    .nav-links {
-        flex-direction: column;
-        gap: 12px;
-        width: 100%;
-        max-width: 400px;
-    }
-    
-    .nav-link {
-        padding: 18px 25px;
-        width: 100%;
-        text-align: left;
-        font-size: 1.2rem;
-        color: white;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        border: 2px solid rgba(255, 255, 255, 0.15);
-    }
-    
-    .nav-link:hover, 
-    .nav-link.active {
-        background: rgba(255, 255, 255, 0.2);
-        color: var(--secondary);
-        transform: translateX(8px);
-        border-color: rgba(255, 179, 71, 0.4);
-    }
-    
-    .nav-link i {
-        font-size: 1.3rem;
-        width: 30px;
-        text-align: center;
-        color: var(--secondary);
-    }
-    
+    /* HERO - BOTONES CORREGIDOS */
     .hero {
         padding: 120px 0 80px;
         margin-top: 70px;
     }
     
     .hero-title {
-        font-size: 2rem;
+        font-size: 2.5rem;
     }
     
     .hero-subtitle {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        max-width: 100%;
     }
     
     .hero-info {
@@ -3271,39 +3478,53 @@ footer {
     }
     
     .info-item {
-        min-width: 100%;
+        width: 100%;
+        min-width: auto;
+        max-width: 100%;
+        flex-direction: row;
+        justify-content: flex-start;
     }
     
-    .section {
-        padding: 70px 0;
+    /* CORRECCIÓN CRÍTICA: Botones del Hero */
+    .adventure-decoration {
+        flex-direction: column;
+        gap: 15px;
+        width: 100%;
     }
     
-    .features-grid {
+    .adventure-decoration .btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+        margin: 5px 0;
+    }
+    
+    /* SECCIONES */
+    .section-title {
+        font-size: 2rem;
+    }
+    
+    .section-subtitle {
+        font-size: 1.1rem;
+        padding: 0 15px;
+    }
+    
+    /* CARDS IAM */
+    .iam-card-content {
         grid-template-columns: 1fr;
-        gap: 20px;
-    }
-    
-    .gallery-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .gallery-portada {
-        height: 250px;
-    }
-    
-    .iam-card {
-        padding: 20px;
-        margin-bottom: 30px;
     }
     
     .iam-card-image img {
         height: 250px;
+        width: 100%;
     }
     
-    .iam-timeline-track {
-        max-width: 100%;
+    .iam-graphic-card,
+    .iam-motto-card {
+        padding: 25px 20px;
     }
     
+    /* TIMELINE IAM */
     .iam-timeline-event {
         flex-direction: column;
         gap: 15px;
@@ -3313,71 +3534,113 @@ footer {
         display: none;
     }
     
-    .iam-event-content {
-        width: 100%;
-        text-align: center !important;
-        border-left: 4px solid var(--primary) !important;
-        border-right: none !important;
+    .iam-timeline-line {
+        left: 30px;
     }
     
-    .iam-timeline-line {
-        left: 25px;
+    .iam-event-content {
+        width: 100%;
+        margin-left: 40px;
     }
     
     .iam-event-dot {
         position: absolute;
-        left: 20px;
+        left: 25px;
     }
     
+    /* RECURSOS PARA ANIMADORES */
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    /* JUEGO MISIONERO - CORRECCIÓN BOTÓN */
+    #juego .container > div > div {
+        grid-template-columns: 1fr !important;
+        gap: 30px !important;
+    }
+    
+    #juego .btn-primary {
+        width: 100% !important;
+        margin-top: 15px;
+    }
+    
+    /* FOOTER */
     .footer-content {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
         gap: 30px;
     }
     
-    .countdown-display {
-        gap: 10px;
-    }
-    
-    .countdown-unit {
-        min-width: 70px;
-        padding: 15px 10px;
-    }
-    
-    .unit-value {
-        font-size: 2.2rem;
-    }
-    
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .form-stats {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .stat-badge {
-        width: 100%;
-        justify-content: center;
+    .footer-section:first-child {
+        grid-column: span 2;
     }
 }
 
-/* MÓVILES GRANDES (576px) */
-@media (max-width: 576px) {
+@media (max-width: 768px) {
+    /* HERO - MEJORAS MÓVIL */
+    .hero {
+        padding: 100px 0 60px;
+        background-position: center center !important;
+    }
+    
     .hero-title {
-        font-size: 1.8rem;
+        font-size: 2rem;
+        line-height: 1.2;
     }
     
     .hero-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+    
+    .hero-badge {
+        padding: 8px 15px;
+        margin-bottom: 20px;
+    }
+    
+    .hero-badge span {
+        font-size: 0.9rem;
+    }
+    
+    /* BOTONES HERO - DEFINITIVO */
+    .adventure-decoration {
+        gap: 12px;
+        margin-top: 30px;
+    }
+    
+    .adventure-decoration .btn {
+        padding: 14px 20px;
         font-size: 1rem;
+        min-height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .adventure-decoration .btn-lg {
+        padding: 16px 20px;
+        font-size: 1.05rem;
+    }
+    
+    /* SECCIONES GENERALES */
+    .section {
+        padding: 60px 0;
+    }
+    
+    .section-header {
+        margin-bottom: 40px;
+        padding: 0 10px;
     }
     
     .section-title {
-        font-size: 1.6rem;
+        font-size: 1.8rem;
+        padding: 0 10px;
     }
     
-    .section-subtitle {
-        font-size: 0.95rem;
+    /* CARDS IAM */
+    .iam-card {
+        padding: 20px;
+        margin-bottom: 30px;
     }
     
     .iam-card-header {
@@ -3386,158 +3649,89 @@ footer {
         gap: 10px;
     }
     
+    .iam-card-header i {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+    
     .iam-card-header h3 {
-        font-size: 1.3rem;
+        font-size: 1.4rem;
     }
     
-    .iam-card-image img {
-        height: 200px;
+    /* STATS IAM */
+    .iam-stats-grid {
+        grid-template-columns: 1fr;
     }
     
-    .iam-graphic-card,
-    .iam-motto-card {
-        padding: 15px;
+    .iam-features-grid {
+        flex-direction: column;
+        gap: 15px;
     }
     
-    .iam-graphic-card h3,
-    .iam-motto-card h2 {
-        font-size: 1.2rem;
+    .iam-feature {
+        width: 100%;
     }
     
-    .iam-motto-text p {
-        font-size: 0.9rem;
+    /* TIMELINE GENERAL */
+    .timeline {
+        padding: 0 10px;
     }
     
     .timeline-item {
         flex-direction: column;
-        gap: 15px;
-        text-align: center;
+        margin-bottom: 30px;
     }
     
     .timeline-date {
-        min-width: 100%;
+        margin-bottom: 10px;
+        padding-top: 0;
+        width: 100%;
         text-align: center;
-        padding: 10px;
-        background: var(--bg-light);
-        border-radius: var(--radius);
     }
     
-    .timeline-content {
-        border-left: none;
-        border-top: 5px solid var(--secondary);
-        text-align: left;
-    }
-    
-    .countdown-display {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .countdown-unit {
-        min-width: 60px;
-        padding: 10px 5px;
-    }
-    
-    .unit-value {
-        font-size: 1.8rem;
-    }
-    
-    .unit-label {
-        font-size: 0.8rem;
-    }
-    
-    .countdown-separator {
-        display: none;
-    }
-    
-    .form-card {
-        padding: 20px;
-    }
-    
-    .modal-content {
-        padding: 20px 15px;
-    }
-    
-    .gallery-modal-content {
-        padding: 0;
-    }
-    
-    .gallery-header {
-        padding: 20px;
-    }
-    
-    .gallery-header h3 {
-        font-size: 1.2rem;
-    }
-    
-    .gallery-caption {
-        padding: 15px;
-    }
-    
-    .gallery-caption h4 {
-        font-size: 1.1rem;
-    }
-    
-    .gallery-caption p {
-        font-size: 0.9rem;
-    }
-    
-    .gallery-btn {
-        width: 40px;
-        height: 40px;
-        font-size: 1rem;
-    }
-    
-    .gallery-thumbnail {
-        flex: 0 0 70px;
-        height: 60px;
-    }
-}
-
-/* MÓVILES PEQUEÑOS (480px) */
-@media (max-width: 480px) {
-    .hero {
-        padding: 100px 0 60px;
-        margin-top: 65px;
-    }
-    
-    .hero-title {
-        font-size: 1.6rem;
-    }
-    
-    .hero-badge {
-        padding: 8px 15px;
-        font-size: 0.9rem;
-    }
-    
-    .adventure-decoration {
-        flex-direction: column;
-        gap: 15px;
-    }
-    
-    .btn, .btn-lg {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .iam-card {
-        padding: 15px;
-    }
-    
-    .iam-numbers,
-    .iam-motto-icons {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .iam-number,
-    .iam-motto-icon {
-        width: 100%;
-    }
-    
-    .iam-stats-grid,
-    .iam-features-grid {
+    /* RECURSOS ANIMADORES */
+    .features-grid {
         grid-template-columns: 1fr;
+    }
+    
+    .feature-card {
+        padding: 25px 20px;
+    }
+    
+    /* JUEGO MISIONERO - BOTÓN CORREGIDO */
+    #juego .container > div {
+        padding: 25px !important;
+    }
+    
+    #juego h3 {
+        font-size: 1.5rem !important;
+        text-align: center !important;
+    }
+    
+    #juego .btn-primary {
+        font-size: 1.1rem !important;
+        padding: 16px 25px !important;
+    }
+    
+    #juego ul {
+        padding-left: 20px !important;
+    }
+    
+    #juego ul li {
+        margin-bottom: 8px !important;
+        font-size: 0.95rem !important;
+    }
+    
+    /* FOOTER */
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .footer-section:first-child {
+        grid-column: span 1;
+        text-align: center;
     }
     
     .footer-logo {
@@ -3549,257 +3743,397 @@ footer {
     .social-links {
         justify-content: center;
     }
-    
-    .gallery-portada {
-        height: 200px;
-    }
-    
-    .portada-overlay {
-        padding: 15px;
-    }
-    
-    .portada-content h4 {
-        font-size: 1.2rem;
-    }
-    
-    .portada-content p {
-        font-size: 0.9rem;
-    }
-    
-    .nav-menu {
-        top: 65px;
-        height: calc(100vh - 65px);
-    }
-    
-    .nav-link {
-        padding: 15px 20px;
-        font-size: 1rem;
-        gap: 15px;
-    }
-    
-    .nav-link i {
-        font-size: 1.1rem;
-    }
 }
 
-/* MÓVILES MUY PEQUEÑOS (360px) */
-@media (max-width: 360px) {
+@media (max-width: 576px) {
+    /* HERO - VERSIÓN MÓVIL PEQUEÑA */
+    .hero {
+        padding: 80px 0 40px;
+    }
+    
     .hero-title {
-        font-size: 1.4rem;
+        font-size: 1.7rem;
+        text-align: center;
     }
     
     .hero-subtitle {
-        font-size: 0.9rem;
+        font-size: 1rem;
+        text-align: center;
     }
     
-    .section-title {
-        font-size: 1.4rem;
+    .hero-content {
+        text-align: center;
     }
     
+    .info-item {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+    
+    .info-item i {
+        margin-bottom: 10px;
+    }
+    
+    /* BOTONES HERO - VERSIÓN MÓVIL PEQUEÑA */
+    .adventure-decoration {
+        width: 100%;
+        max-width: 100%;
+    }
+    
+    .adventure-decoration .btn {
+        width: 100% !important;
+        max-width: 100% !important;
+        white-space: normal;
+        word-wrap: break-word;
+        line-height: 1.3;
+    }
+    
+    .adventure-decoration .btn i {
+        margin-right: 8px;
+    }
+    
+    /* LOGO HEADER */
     .logo-text h1 {
-        font-size: 1.3rem;
-    }
-    
-    .logo-text span {
-        font-size: 0.7rem;
-    }
-    
-    .countdown-unit {
-        min-width: 50px;
-    }
-    
-    .unit-value {
         font-size: 1.5rem;
     }
     
-    .iam-card-image img {
-        height: 180px;
+    .logo-text span {
+        font-size: 0.75rem;
     }
     
-    .iam-graphic-card i,
-    .iam-motto-card i {
+    /* CARDS IAM */
+    .iam-card {
+        padding: 15px;
+    }
+    
+    .iam-card-image img {
+        height: 200px;
+    }
+    
+    .iam-graphic-card h3,
+    .iam-motto-card h2 {
+        font-size: 1.3rem;
+    }
+    
+    .iam-numbers {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    /* BOTÓN JUEGO MISIONERO - CORRECCIÓN FINAL */
+    #juego .btn-primary {
+        font-size: 1rem !important;
+        padding: 14px 20px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        min-height: 50px !important;
+    }
+    
+    #juego .btn-primary i {
+        margin-right: 10px;
+    }
+    
+    /* FOOTER */
+    .contact-list li,
+    .footer-links li {
+        font-size: 0.9rem;
+    }
+    
+    .footer-bottom {
+        font-size: 0.8rem;
+        padding: 0 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* HERO - AJUSTES EXTREMOS */
+    .hero-title {
+        font-size: 1.5rem;
+        line-height: 1.3;
+    }
+    
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    /* BOTONES - VERSIÓN MUY PEQUEÑA */
+    .adventure-decoration .btn {
+        font-size: 0.95rem;
+        padding: 12px 15px;
+        min-height: 45px;
+    }
+    
+    .adventure-decoration .btn i {
+        font-size: 1rem;
+    }
+    
+    /* CARDS IAM */
+    .iam-point {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .iam-point-number {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+    
+    /* CONTADORES */
+    .countdown-display {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .countdown-unit {
+        min-width: 70px;
+        margin: 5px;
+    }
+    
+    .unit-value {
         font-size: 2rem;
     }
 }
 
-/* ORIENTACIÓN HORIZONTAL EN MÓVILES */
-@media (max-height: 500px) and (orientation: landscape) {
-    .hero {
-        padding: 80px 0 40px;
-        margin-top: 60px;
-    }
-    
-    .hero-info {
-        flex-direction: row;
-        flex-wrap: wrap;
-    }
-    
-    .info-item {
-        min-width: calc(50% - 15px);
-    }
-    
-    .nav-menu {
+/* ===== CORRECCIÓN ESPECÍFICA PARA BOTONES QUE SE SALEN ===== */
+.adventure-decoration,
+.hero-info,
+.features-grid,
+.games-grid {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Fuerza a los botones a ajustarse */
+.btn, .btn-primary, .btn-lg {
+    max-width: 100%;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    box-sizing: border-box;
+}
+
+/* Asegura que los textos largos se dividan */
+.hero-subtitle,
+.section-subtitle,
+.feature-card p,
+.game-card p {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+}
+
+/* Prevenir scroll horizontal global */
+html, body {
+    max-width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.container, section, .section, .hero {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* Corrección para el botón específico del juego */
+#juego .container > div > div > div:first-child {
+    width: 100%;
+    padding-right: 0;
+}
+
+#juego .container > div > div > div:first-child .btn-primary {
+    width: 100% !important;
+    display: block !important;
+    margin: 20px auto 0 auto !important;
+    text-align: center !important;
+}
+
+/* ===== CORRECCIÓN COMPLETA PARA LÍNEA DE TIEMPO IAM EN MÓVIL ===== */
+@media (max-width: 768px) {
+    /* Línea de tiempo IAM */
+    .iam-timeline {
+        margin-top: 40px;
         padding-top: 20px;
+        width: 100%;
+        overflow: hidden;
     }
     
-    .nav-links {
-        max-height: 60vh;
-        overflow-y: auto;
+    .iam-timeline h3 {
+        font-size: 1.4rem;
+        margin-bottom: 30px;
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+        padding: 0 15px;
     }
     
-    .section {
-        padding: 40px 0;
+    .iam-timeline h3 i {
+        font-size: 1.6rem;
     }
     
-    .iam-card {
-        margin-bottom: 20px;
+    .iam-timeline-track {
+        max-width: 100%;
+        padding: 0 15px;
     }
     
-    .iam-card-image img {
-        height: 180px;
+    /* Corregir la línea central */
+    .iam-timeline-line {
+        left: 30px !important;
+        transform: none !important;
+        height: calc(100% - 20px);
+        top: 10px;
+    }
+    
+    /* Reestructurar eventos */
+    .iam-timeline-events {
+        gap: 30px;
+        margin-left: 0;
+    }
+    
+    .iam-timeline-event {
+        flex-direction: row !important;
+        align-items: flex-start;
+        gap: 15px;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    /* Posicionar el punto */
+    .iam-event-dot {
+        position: relative;
+        left: 0;
+        top: 10px;
+        width: 16px;
+        height: 16px;
+        margin-right: 15px;
+        flex-shrink: 0;
+        order: 1;
+    }
+    
+    /* Eliminar espaciadores */
+    .iam-event-spacer {
+        display: none;
+    }
+    
+    /* Ajustar contenido */
+    .iam-event-content {
+        order: 2;
+        flex: 1;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        text-align: left !important;
+        border-left: 4px solid var(--primary) !important;
+        border-right: none !important;
+        padding: 15px;
+        width: calc(100% - 40px);
+    }
+    
+    /* Colores específicos para cada evento */
+    .iam-timeline-event:nth-child(1) .iam-event-content {
+        border-left-color: var(--primary) !important;
+    }
+    
+    .iam-timeline-event:nth-child(2) .iam-event-content {
+        border-left-color: var(--secondary) !important;
+    }
+    
+    .iam-timeline-event:nth-child(3) .iam-event-content {
+        border-left-color: var(--accent) !important;
+    }
+    
+    .iam-timeline-event:nth-child(4) .iam-event-content {
+        border-left-color: var(--success) !important;
+    }
+    
+    .iam-event-content h4 {
+        font-size: 1.1rem;
+        margin-bottom: 8px;
+    }
+    
+    .iam-event-content p {
+        font-size: 0.9rem;
+        line-height: 1.5;
     }
 }
 
-/* PANTALLAS MUY GRANDES (4K) */
-@media (min-width: 2000px) {
-    .container {
-        max-width: 1600px;
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .iam-timeline h3 {
+        font-size: 1.2rem;
+        margin-bottom: 25px;
     }
     
-    .hero-title {
-        font-size: 4rem;
+    .iam-timeline-line {
+        left: 25px !important;
     }
     
-    .section-title {
-        font-size: 3rem;
+    .iam-event-dot {
+        width: 14px;
+        height: 14px;
+        top: 12px;
     }
     
-    .features-grid {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 40px;
+    .iam-event-content {
+        padding: 12px;
+        width: calc(100% - 35px);
     }
     
-    .feature-card {
-        padding: 40px;
+    .iam-event-content h4 {
+        font-size: 1rem;
     }
     
-    .iam-card {
-        padding: 50px;
+    .iam-event-content p {
+        font-size: 0.85rem;
+    }
+    
+    .iam-timeline-events {
+        gap: 25px;
     }
 }
 
-/* DARK MODE SUPPORT */
-@media (prefers-color-scheme: dark) {
-    body {
-        background-color: #1A202C;
-        color: #E2E8F0;
+/* También corrige la línea de tiempo normal (no IAM) */
+@media (max-width: 768px) {
+    /* Línea de tiempo normal (pilares) */
+    .timeline {
+        padding-left: 0;
+        padding-right: 0;
+        max-width: 100%;
     }
     
-    .bg-light {
-        background-color: #2D3748 !important;
+    .timeline-item {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        padding: 0 15px;
     }
     
-    .feature-card,
-    .iam-card,
-    .form-card,
-    .timeline-content,
-    .modal-content {
-        background-color: #2D3748;
-        color: #E2E8F0;
-        border-color: #4A5568;
+    .timeline-date {
+        width: 100%;
+        text-align: left;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
     
-    .feature-card h3,
-    .iam-card-header h3,
-    .section-title {
-        color: #CBD5E0;
+    .timeline-content {
+        width: 100%;
+        border-left: 4px solid var(--secondary);
+        border-right: none;
+        padding: 15px;
+        margin-left: 0;
     }
     
-    .feature-card p,
-    .section-subtitle,
-    .iam-card p {
-        color: #A0AEC0;
+    .timeline-content h3 {
+        font-size: 1.2rem;
     }
     
-    .hero {
-        background-blend-mode: multiply;
-    }
-    
-    .gallery-portada {
-        border-color: #4A5568;
-    }
-    
-    .gallery-nota {
-        background-color: rgba(255, 179, 71, 0.15);
-    }
-}
-
-/* TOUCH DEVICE OPTIMIZATIONS */
-@media (hover: none) and (pointer: coarse) {
-    .btn:hover,
-    .feature-card:hover,
-    .game-card:hover {
-        transform: none;
-    }
-    
-    .btn:active,
-    .feature-card:active,
-    .game-card:active {
-        transform: scale(0.98);
-    }
-    
-    /* Elementos más grandes para dedos */
-    .nav-link,
-    .choice-btn,
-    .option-btn {
-        min-height: 44px;
-    }
-    
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-        font-size: 16px; /* Previene zoom en iOS */
-    }
-}
-
-/* PRINT STYLES */
-@media print {
-    header,
-    footer,
-    .btn,
-    .mobile-menu-btn,
-    .admin-access-btn,
-    .modal,
-    .gallery-item {
-        display: none !important;
-    }
-    
-    body {
-        background: white !important;
-        color: black !important;
-    }
-    
-    .hero,
-    .section {
-        padding: 20px 0 !important;
-        margin-top: 0 !important;
-    }
-    
-    .feature-card,
-    .iam-card,
-    .form-card {
-        box-shadow: none !important;
-        border: 1px solid #000 !important;
-        page-break-inside: avoid;
-    }
-    
-    a {
-        color: black !important;
-        text-decoration: underline !important;
-    }
-    
-    .container {
-        max-width: 100% !important;
-        padding: 0 !important;
+    .timeline-content p {
+        font-size: 0.95rem;
     }
 }

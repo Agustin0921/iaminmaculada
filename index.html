@@ -924,6 +924,29 @@
         window.backendManager.initialize().then(result => {
             console.log("Backend inicializado en modo:", result.mode);
         });
+        // Agrega esto al final del script de index.html
+        window.addEventListener('load', function() {
+            // Prevenir scroll horizontal
+            if (window.innerWidth <= 768) {
+                document.body.style.overflowX = 'hidden';
+                document.documentElement.style.overflowX = 'hidden';
+            }
+            
+            // Detectar y corregir elementos que causan overflow
+            function fixOverflowElements() {
+                const viewportWidth = window.innerWidth;
+                document.querySelectorAll('*').forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.right > viewportWidth) {
+                        el.style.maxWidth = '100%';
+                        el.style.overflowX = 'hidden';
+                    }
+                });
+            }
+            
+            setTimeout(fixOverflowElements, 100);
+            window.addEventListener('resize', fixOverflowElements);
+        });
     </script>
 
 </body>
