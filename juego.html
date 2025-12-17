@@ -1,0 +1,1447 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IAM - Juegos Misioneros</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* ESTILOS ESPECÍFICOS PARA EL JUEGO INTERACTIVO */
+        :root {
+            --jesus-gold: #FFD700;
+            --disciple-blue: #4A90E2;
+            --temple-stone: #C19A6B;
+            --galilee-blue: #87CEEB;
+            --jerusalem-gold: #D4AF37;
+            --temptation-red: #E74C3C;
+            --virtue-green: #2ECC71;
+            --prayer-purple: #9B59B6;
+            --sacrifice-orange: #E67E22;
+            --decision-blue: #3498DB;
+            --neutral-gray: #95A5A6;
+        }
+
+        /* MENÚ PRINCIPAL */
+        .games-menu {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            margin-top: 80px;
+        }
+
+        .menu-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .menu-title {
+            font-size: 3rem;
+            color: var(--iam-blue);
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .menu-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* GRID DE JUEGOS */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 4px solid transparent;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card:hover {
+            transform: translateY(-15px) scale(1.03);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .game-card.featured {
+            border-color: var(--jesus-gold);
+            grid-column: span 2;
+            background: linear-gradient(135deg, #FFF9E6, white);
+        }
+
+        .game-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .game-card:hover .game-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .game-card h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .game-card p {
+            color: var(--text-light);
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+
+        .game-badge {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .game-difficulty {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #E2E8F0;
+        }
+
+        .difficulty-dot.active {
+            background: var(--success);
+        }
+
+        /* ESTILOS COMUNES PARA TODOS LOS JUEGOS */
+        .game-container {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 0.5s ease;
+            margin-top: 80px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text x="50" y="50" font-size="8" fill="rgba(255,255,255,0.05)" text-anchor="middle" dominant-baseline="middle">✝</text></svg>');
+        }
+
+        .back-to-menu {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+
+        .back-to-menu:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* ESTILOS ESPECÍFICOS PARA CADA JUEGO */
+        /* 1. JUEGO DE HISTORIA */
+        .story-game {
+            display: grid;
+            grid-template-columns: 280px 1fr 280px;
+            gap: 25px;
+        }
+
+        .character-panel {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .story-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            min-height: 500px;
+        }
+
+        .scene-image {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, var(--galilee-blue), var(--temple-stone));
+            border-radius: var(--radius);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .choices-container {
+            display: grid;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .choice-btn {
+            background: white;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--text-dark);
+        }
+
+        .choice-btn:hover {
+            transform: translateX(10px);
+            border-color: var(--decision-blue);
+            box-shadow: var(--shadow);
+            background: #F8FAFC;
+        }
+
+        .choice-btn.selected {
+            border-color: var(--decision-blue);
+            background: #EBF5FB;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.15);
+        }
+
+        .choice-btn.selected::before {
+            content: "✓";
+            color: var(--decision-blue);
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        .choice-number {
+            background: var(--neutral-gray);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+
+        .choice-btn:hover .choice-number {
+            background: var(--decision-blue);
+        }
+
+        .choice-btn.selected .choice-number {
+            background: var(--decision-blue);
+        }
+
+        /* 2. JUEGO DE PREGUNTAS */
+        .quiz-game {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .question-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .option-btn {
+            padding: 20px;
+            border: 2px solid #E2E8F0;
+            border-radius: var(--radius);
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+        }
+
+        /* PUNTUACIÓN Y PROGRESO */
+        .score-panel {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #E2E8F0;
+            border-radius: 5px;
+            flex-grow: 1;
+            margin: 0 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--success));
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        /* MODAL DE RESPUESTA */
+        .response-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .response-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            animation: zoomIn 0.3s ease;
+        }
+
+        .response-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .response-icon.correct {
+            background: #D4EDDA;
+            color: #155724;
+        }
+
+        .response-icon.incorrect {
+            background: #F8D7DA;
+            color: #721C24;
+        }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.5); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .story-game {
+                grid-template-columns: 1fr;
+            }
+            
+            .character-panel {
+                position: static;
+                margin-bottom: 20px;
+            }
+            
+            .game-card.featured {
+                grid-column: span 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .scene-image {
+                height: 180px;
+                font-size: 3rem;
+            }
+            
+            .choice-btn {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ===== HEADER CON NAVBAR ===== -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="nav-brand">
+                    <div class="logo">
+                        <img class="logo-img" src="img/logo-iam.png" alt="">
+                        <div class="logo-text">
+                            <h1>IAM</h1>
+                            <span>Juegos Misioneros</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav-menu">
+                    <ul class="nav-links">
+                        <li><a href="index.html" class="nav-link"><i class="fas fa-home"></i> Inicio</a></li>
+                        <li><a href="#gamesMenu" class="nav-link active"><i class="fas fa-gamepad"></i> Jugar</a></li>
+                        <li><a href="inscripcion.html" class="nav-link"><i class="fas fa-campground"></i> Campamento</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- ===== MENÚ PRINCIPAL ===== -->
+    <div class="games-menu" id="gamesMenu">
+        <div class="menu-header">
+            <h1 class="menu-title">🎮 Juegos Misioneros IAM</h1>
+            <p class="menu-subtitle">Aprende sobre Jesús y la misión de forma divertida. ¡Elige tu aventura!</p>
+        </div>
+
+        <div class="games-grid">
+            <!-- JUEGO PRINCIPAL (Destacado) -->
+            <div class="game-card featured" onclick="startGame('story')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--jesus-gold), #FFA500);">
+                    <i class="fas fa-book-bible"></i>
+                </div>
+                <h3>Discípulos de Jesús</h3>
+                <p>Conviértete en discípulo de Jesús en esta aventura interactiva con 10 capítulos. Toma decisiones que afectarán tu camino de fe.</p>
+                <div class="game-badge">⭐ Juego Principal</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                </div>
+                <div class="btn btn-primary">¡Comenzar Aventura!</div>
+            </div>
+
+            <!-- JUEGO DE PREGUNTAS -->
+            <div class="game-card" onclick="startGame('quiz')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--primary), var(--primary-light));">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <h3>Quiz Misionero</h3>
+                <p>Pon a prueba tus conocimientos bíblicos con 50 preguntas sobre Jesús, la Biblia y la misión.</p>
+                <div class="game-badge">📚 Aprendizaje</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                </div>
+                <div class="btn" style="background: var(--primary-light); color: white;">Jugar Ahora</div>
+            </div>
+
+            <!-- ROMPECABEZAS -->
+            <div class="game-card" onclick="startGame('puzzle')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--virtue-green), #4FD1C5);">
+                    <i class="fas fa-puzzle-piece"></i>
+                </div>
+                <h3>Virtudes en Orden</h3>
+                <p>Ordena las virtudes cristianas y aprende sobre cada una de ellas. Un juego de lógica y valores.</p>
+                <div class="game-badge">🧩 Lógica</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                </div>
+                <div class="btn" style="background: var(--success); color: white;">Armar Rompecabezas</div>
+            </div>
+
+            <!-- JUEGO DE MEMORIA -->
+            <div class="game-card" onclick="startGame('memory')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--prayer-purple), #BA68C8);">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3>Memoria de Parábolas</h3>
+                <p>Encuentra las parejas de parábolas de Jesús. Mejora tu memoria mientras aprendes sus enseñanzas.</p>
+                <div class="game-badge">🧠 Memoria</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+            </div>
+                <div class="btn" style="background: var(--prayer-purple); color: white;">Encontrar Parejas</div>
+            </div>
+
+            <!-- DECISIONES RÁPIDAS -->
+            <div class="game-card" onclick="startGame('quick')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--sacrifice-orange), #FFB347);">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3>Decisión en Segundos</h3>
+                <p>¿Qué harías en situaciones difíciles? Toma decisiones rápidas con enseñanzas de Jesús.</p>
+                <div class="game-badge">⚡ Rápido</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                </div>
+                <div class="btn" style="background: var(--sacrifice-orange); color: white;">¡Desafío!</div>
+            </div>
+
+            <!-- MISIÓN ESPECIAL -->
+            <div class="game-card" onclick="startGame('mission')">
+                <div class="game-icon" style="background: linear-gradient(135deg, var(--jerusalem-gold), #D4A017);">
+                    <i class="fas fa-hands-praying"></i>
+                </div>
+                <h3>Misión IAM</h3>
+                <p>Aprende los 4 pilares de la IAM: Oración, Sacrificio, Cooperación y Formación Misionera.</p>
+                <div class="game-badge">✝️ IAM</div>
+                <div class="game-difficulty">
+                    <div class="difficulty-dot active"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                    <div class="difficulty-dot"></div>
+                </div>
+                <div class="btn" style="background: var(--jerusalem-gold); color: white;">Conocer la IAM</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px;">
+            <h3 style="color: var(--primary); margin-bottom: 20px;">
+                <i class="fas fa-trophy"></i> Tabla de Puntuaciones
+            </h3>
+            <div style="background: white; border-radius: var(--radius); padding: 20px; max-width: 500px; margin: 0 auto; box-shadow: var(--shadow);">
+                <div id="scoreboard">
+                    <!-- Se llenará con JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- 1. JUEGO DE HISTORIA - DISCÍPULOS DE JESÚS -->
+    <!-- ============================================= -->
+    <div class="game-container" id="storyGame">
+        <div class="game-header">
+            <button class="back-to-menu" onclick="backToMenu()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 style="color: white; margin-bottom: 10px;">Discípulos de Jesús</h1>
+            <p style="opacity: 0.9; font-size: 1.2rem;">Una aventura interactiva de 10 capítulos</p>
+        </div>
+
+        <div class="story-game">
+            <!-- PANEL DE JESÚS -->
+            <div class="character-panel">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="width: 100px; height: 100px; background: linear-gradient(135deg, var(--jesus-gold), #FFA500); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2.5rem; color: white; border: 5px solid white; box-shadow: 0 0 20px rgba(255,215,0,0.5);">
+                        <i class="fas fa-hands-praying"></i>
+                    </div>
+                    <h3 style="color: var(--primary);">Jesús, tu Guía</h3>
+                </div>
+                
+                <div style="background: #FFF9E6; padding: 15px; border-radius: var(--radius); border-left: 4px solid var(--jesus-gold); margin-bottom: 20px;">
+                    <p id="jesusMessage" style="font-style: italic; margin: 0;">"Ven y sígueme, y te haré pescador de hombres"</p>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-lightbulb"></i> Reflexión del Día
+                    </h4>
+                    <p id="dailyTeaching" style="font-size: 0.9rem; margin: 0;">
+                        Cada decisión que tomas forma tu camino. ¿Qué te pide Jesús hoy?
+                    </p>
+                </div>
+            </div>
+
+            <!-- HISTORIA PRINCIPAL -->
+            <div class="story-content">
+                <div class="scene-image" id="sceneImage">
+                    <i class="fas fa-water"></i>
+                </div>
+                
+                <h2 id="sceneTitle" style="color: var(--primary); margin-bottom: 15px;">El Llamado</h2>
+                <p id="sceneDescription" style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 30px;">
+                    Eres un niño que vive cerca del Mar de Galilea. Hoy, mientras ayudas a tu padre con las redes de pesca, ves a un hombre que habla a una multitud. La gente dice que se llama Jesús. Sus palabras te llaman la atención...
+                </p>
+
+                <!-- DECISIONES -->
+                <div class="choices-container" id="storyChoices">
+                    <button class="choice-btn" onclick="selectChoice(0)">
+                        <div class="choice-number">1</div>
+                        <div>
+                            <strong>Acercarte a escuchar</strong>
+                            <p style="margin-top: 5px; font-size: 0.9rem; color: var(--text-light);">
+                                Decides dejar las redes y acercarte a escuchar lo que dice Jesús
+                            </p>
+                        </div>
+                    </button>
+                    
+                    <button class="choice-btn" onclick="selectChoice(1)">
+                        <div class="choice-number">2</div>
+                        <div>
+                            <strong>Seguir trabajando</strong>
+                            <p style="margin-top: 5px; font-size: 0.9rem; color: var(--text-light);">
+                                Piensas que debes terminar tu trabajo primero
+                            </p>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- BOTONES DE ACCIÓN -->
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                    <button class="btn" onclick="showReflection()" id="reflectionBtn">
+                        <i class="fas fa-lightbulb"></i> Reflexionar
+                    </button>
+                    <button class="btn" onclick="saveStoryProgress()">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                    <button class="btn btn-primary" onclick="confirmChoice()" id="confirmBtn" style="display: none;">
+                        <i class="fas fa-check-circle"></i> Confirmar Decisión
+                    </button>
+                </div>
+            </div>
+
+            <!-- PANEL DE PROGRESO -->
+            <div class="character-panel">
+                <div style="text-align: center; margin-bottom: 25px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--disciple-blue), #6AB0DE); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 2rem; color: white; border: 3px solid white; box-shadow: var(--shadow);">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h3 style="color: var(--primary);">Tu Discípulo</h3>
+                    <p style="color: var(--text-light); font-size: 0.9rem;" id="playerName">Aventurero</p>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-chart-line"></i> Progreso
+                    </h4>
+                    <div style="background: var(--bg-light); padding: 15px; border-radius: var(--radius);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                            <span>Capítulo <span id="currentChapter">1</span>/10</span>
+                            <span id="progressPercent">10%</span>
+                        </div>
+                        <div style="height: 10px; background: #E2E8F0; border-radius: 5px; overflow: hidden;">
+                            <div id="storyProgressBar" style="height: 100%; background: linear-gradient(90deg, var(--primary), var(--success)); width: 10%; border-radius: 5px;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 25px;">
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-star"></i> Tu Camino
+                    </h4>
+                    <div style="background: var(--bg-light); padding: 15px; border-radius: var(--radius);">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Convicción:</span>
+                            <strong id="storyConviction">50%</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span>Sabiduría:</span>
+                            <strong id="storyWisdom">30%</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Discernimiento:</span>
+                            <strong id="storyDiscernment">40%</strong>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 style="color: var(--primary); margin-bottom: 15px; font-size: 1rem;">
+                        <i class="fas fa-award"></i> Cualidades
+                    </h4>
+                    <div id="qualitiesList" style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        <span style="background: var(--neutral-gray); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">Observador</span>
+                        <span style="background: var(--neutral-gray); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">Trabajador</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PUNTUACIÓN -->
+        <div class="score-panel">
+            <div>
+                <strong style="color: var(--primary);">Decisones Tomadas:</strong>
+                <span id="decisionsMade" style="font-size: 1.5rem; font-weight: 700; margin-left: 10px;">0</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="storyOverallProgress" style="width: 10%"></div>
+            </div>
+            <div>
+                <button class="btn" onclick="resetStoryGame()">
+                    <i class="fas fa-redo"></i> Reiniciar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================= -->
+    <!-- MODAL DE RESPUESTA -->
+    <!-- ============================================= -->
+    <div class="response-modal" id="responseModal">
+        <div class="response-content">
+            <div class="response-icon" id="responseIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            
+            <h3 id="responseTitle" style="text-align: center; margin-bottom: 15px; color: var(--primary);">
+                Tu Decisión
+            </h3>
+            
+            <p id="responseMessage" style="text-align: center; margin-bottom: 25px; line-height: 1.6;">
+                Has elegido seguir tu camino. Jesús respeta tu decisión.
+            </p>
+            
+            <div id="responseReflection" style="background: var(--bg-light); padding: 15px; border-radius: var(--radius); margin-bottom: 25px;">
+                <h4 style="color: var(--primary); margin-bottom: 10px; font-size: 0.9rem;">
+                    <i class="fas fa-brain"></i> Reflexión
+                </h4>
+                <p id="reflectionText" style="font-size: 0.9rem; margin: 0;">
+                    Cada decisión nos acerca o nos aleja de Jesús. Él siempre respeta nuestra libertad.
+                </p>
+            </div>
+            
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="closeResponseModal()" style="width: 100%;">
+                    <i class="fas fa-arrow-right"></i> Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== SCRIPT PRINCIPAL ===== -->
+    <script>
+        // ===== VARIABLES GLOBALES =====
+        let currentGame = null;
+        let gameScores = JSON.parse(localStorage.getItem('iamGameScores')) || {};
+        let startTime = null;
+        let selectedChoiceIndex = null;
+
+        // ===== DATOS DE LA HISTORIA (SIN INDICACIONES DE CORRECTO/INCORRECTO) =====
+        const storyData = {
+            chapters: [
+                {
+                    title: "El Llamado",
+                    scenes: [
+                        {
+                            id: 1,
+                            title: "Encuentro en Galilea",
+                            description: "Eres un niño que vive cerca del Mar de Galilea. Mientras ayudas a tu padre con las redes de pesca, ves a Jesús hablando a la multitud. Sus palabras te llaman la atención...",
+                            imageIcon: "fa-water",
+                            choices: [
+                                {
+                                    text: "Acercarte a escuchar",
+                                    description: "Decides dejar las redes y acercarte a escuchar lo que dice Jesús",
+                                    response: {
+                                        message: "Te acercas tímidamente. Jesús te mira y sonríe. Sus palabras sobre el amor de Dios resuenan en tu corazón.",
+                                        reflection: "La curiosidad por conocer a Dios es el primer paso en el camino de la fe. Jesús siempre recibe con amor a quienes se acercan a Él.",
+                                        impact: { conviction: 20, wisdom: 10, discernment: 15 },
+                                        quality: "Curiosidad espiritual"
+                                    }
+                                },
+                                {
+                                    text: "Seguir trabajando",
+                                    description: "Piensas que debes terminar tu trabajo primero",
+                                    response: {
+                                        message: "Decides terminar tu tarea. Mientras trabajas, sigues escuchando las palabras de Jesús desde la distancia.",
+                                        reflection: "La responsabilidad es importante, pero a veces Dios nos llama en medio de nuestras ocupaciones diarias.",
+                                        impact: { conviction: 5, wisdom: 15, discernment: 10 },
+                                        quality: "Responsabilidad"
+                                    }
+                                }
+                            ],
+                            jesusMessage: "'Ven y sígueme, y te haré pescador de hombres'",
+                            teaching: "Jesús llama a cada persona de manera única. ¿Cómo responderás tú?"
+                        },
+                        {
+                            id: 2,
+                            title: "La Decisión",
+                            description: "Jesús termina de hablar y se acerca a la orilla. Mira directamente hacia ti y extiende su mano...",
+                            imageIcon: "fa-hand-point-right",
+                            choices: [
+                                {
+                                    text: "Dejar todo y seguirlo",
+                                    description: "Sientes un impulso en tu corazón y decides seguirlo",
+                                    response: {
+                                        message: "Dejas las redes y tomas su mano. Jesús te dice: 'No temas, de hoy en adelante serás pescador de hombres'.",
+                                        reflection: "Seguir a Jesús requiere valentía y confianza. Él transforma nuestra vida cuando le damos el primer lugar.",
+                                        impact: { conviction: 30, wisdom: 20, discernment: 25 },
+                                        quality: "Valentía"
+                                    }
+                                },
+                                {
+                                    text: "Pedir permiso a tu padre",
+                                    description: "Sientes que debes consultar primero con tu familia",
+                                    response: {
+                                        message: "Corres hacia tu padre y le explicas. Él te mira con cariño y dice: 'Ve, hijo. Es un honor que el Maestro te llame'.",
+                                        reflection: "Honrar a la familia es importante. Jesús valora nuestras relaciones y responsabilidades.",
+                                        impact: { conviction: 15, wisdom: 25, discernment: 20 },
+                                        quality: "Respeto familiar"
+                                    }
+                                },
+                                {
+                                    text: "Quedarte reflexionando",
+                                    description: "Necesitas tiempo para pensar en esta decisión importante",
+                                    response: {
+                                        message: "Jesús respeta tu necesidad de reflexionar. Te dice: 'Piensa en tu corazón. Te esperaré mañana aquí'.",
+                                        reflection: "La prudencia en las decisiones importantes es sabiduría. Jesús respeta nuestro proceso personal.",
+                                        impact: { conviction: 10, wisdom: 30, discernment: 20 },
+                                        quality: "Prudencia"
+                                    }
+                                }
+                            ],
+                            jesusMessage: "'El que quiera seguirme, que tome su cruz cada día y me siga'",
+                            teaching: "Cada decisión nos acerca o nos aleja del amor de Dios."
+                        }
+                    ]
+                },
+                {
+                    title: "Las Tentaciones",
+                    scenes: [
+                        {
+                            id: 3,
+                            title: "El Desierto Interior",
+                            description: "Mientras caminas con Jesús, sientes hambre y cansancio. Aparece una voz que te tienta a abandonar el camino...",
+                            imageIcon: "fa-apple-alt",
+                            choices: [
+                                {
+                                    text: "Pedirle a Jesús un milagro",
+                                    description: "Le pides que convierta piedras en pan para calmar tu hambre",
+                                    response: {
+                                        message: "Jesús te mira con compasión: 'No solo de pan vive el hombre, sino de toda palabra que sale de la boca de Dios'.",
+                                        reflection: "A veces pedimos soluciones fáciles, pero Dios quiere darnos algo más profundo: su Palabra que alimenta el alma.",
+                                        impact: { conviction: 15, wisdom: 20, discernment: 10 },
+                                        quality: "Necesidad humana"
+                                    }
+                                },
+                                {
+                                    text: "Ofrecer tu hambre como sacrificio",
+                                    description: "Decides ofrecer tu incomodidad como un acto de amor",
+                                    response: {
+                                        message: "Jesús sonríe: 'Bienaventurados los que tienen hambre y sed de justicia, porque ellos serán saciados'.",
+                                        reflection: "Ofrecer nuestras dificultades a Dios las transforma en oportunidades de crecimiento espiritual.",
+                                        impact: { conviction: 25, wisdom: 15, discernment: 25 },
+                                        quality: "Sacrificio amoroso"
+                                    }
+                                },
+                                {
+                                    text: "Buscar comida por tu cuenta",
+                                    description: "Decides separarte del grupo para buscar alimento",
+                                    response: {
+                                        message: "Te alejas buscando comida. Cuando regresas, Jesús te espera con un pedazo de pan: 'Ven, come. Yo soy el pan de vida'.",
+                                        reflection: "A veces queremos solucionar todo por nosotros mismos, pero Jesús nos invita a confiar en su providencia.",
+                                        impact: { conviction: 10, wisdom: 10, discernment: 15 },
+                                        quality: "Independencia"
+                                    }
+                                }
+                            ],
+                            jesusMessage: "'No solo de pan vive el hombre, sino de toda palabra que sale de la boca de Dios'",
+                            teaching: "Las tentaciones nos enseñan a depender más de Dios que de nuestras propias fuerzas."
+                        }
+                    ]
+                },
+                {
+                    title: "Los Milagros",
+                    scenes: [
+                        {
+                            id: 4,
+                            title: "La Pesca Milagrosa",
+                            description: "Jesús te invita a pescar con él. Toda la noche trabajan sin éxito...",
+                            imageIcon: "fa-fish",
+                            choices: [
+                                {
+                                    text: "Confiar y echar la red donde Él dice",
+                                    description: "Confías en sus palabras a pesar de que no parece lógico",
+                                    response: {
+                                        message: "¡La red se llena de peces hasta casi romperse! Jesús dice: 'De ahora en adelante serás pescador de hombres'.",
+                                        reflection: "La fe en Jesús produce milagros. Cuando confiamos en Él contra toda lógica humana, su poder se manifiesta.",
+                                        impact: { conviction: 35, wisdom: 20, discernment: 30 },
+                                        quality: "Fe confiada"
+                                    }
+                                },
+                                {
+                                    text: "Intentar en otro lugar primero",
+                                    description: "Quieres probar tu propia estrategia antes",
+                                    response: {
+                                        message: "Pasas horas intentando sin éxito. Finalmente, regresas y echas la red donde Jesús indicó. ¡Milagro!",
+                                        reflection: "A veces queremos hacer las cosas a nuestra manera, pero la verdadera sabiduría está en escuchar a Jesús.",
+                                        impact: { conviction: 20, wisdom: 25, discernment: 20 },
+                                        quality: "Aprendizaje por experiencia"
+                                    }
+                                }
+                            ],
+                            jesusMessage: "'Echa la red a la derecha de la barca y encontrarás'",
+                            teaching: "Confiar en Jesús produce resultados que superan nuestras expectativas."
+                        }
+                    ]
+                }
+                // Capítulos 5-10 continuarían aquí...
+            ],
+            qualities: ["Observador", "Trabajador", "Curiosidad espiritual", "Responsabilidad", "Valentía", 
+                       "Respeto familiar", "Prudencia", "Necesidad humana", "Sacrificio amoroso", 
+                       "Independencia", "Fe confiada", "Aprendizaje por experiencia"],
+            maxChapters: 10
+        };
+
+        // ===== ESTADO DEL JUEGO DE HISTORIA =====
+        let storyState = {
+            currentChapter: 1,
+            currentScene: 1,
+            decisionsMade: 0,
+            conviction: 50,   // Fuerza en las convicciones
+            wisdom: 30,       // Capacidad de discernir
+            discernment: 40,  // Entendimiento espiritual
+            qualities: ["Observador", "Trabajador"],
+            playerName: "Aventurero",
+            storyPath: []     // Rastro de decisiones tomadas
+        };
+
+        // ===== FUNCIONES DEL MENÚ =====
+        function startGame(gameType) {
+            currentGame = gameType;
+            document.getElementById('gamesMenu').style.display = 'none';
+            document.getElementById(gameType + 'Game').style.display = 'block';
+            startTime = new Date();
+            
+            if (gameType === 'story') {
+                initStoryGame();
+            }
+            
+            updateScoreboard();
+        }
+
+        function backToMenu() {
+            document.querySelectorAll('.game-container').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.getElementById('gamesMenu').style.display = 'block';
+            currentGame = null;
+            updateScoreboard();
+        }
+
+        function updateScoreboard() {
+            const scoreboard = document.getElementById('scoreboard');
+            let html = '<div style="text-align: left;">';
+            
+            const games = [
+                { name: 'Discípulos de Jesús', key: 'story', icon: 'fas fa-book-bible' },
+                { name: 'Quiz Misionero', key: 'quiz', icon: 'fas fa-question-circle' },
+                { name: 'Virtudes en Orden', key: 'puzzle', icon: 'fas fa-puzzle-piece' },
+                { name: 'Memoria de Parábolas', key: 'memory', icon: 'fas fa-brain' },
+                { name: 'Decisión en Segundos', key: 'quick', icon: 'fas fa-bolt' }
+            ];
+            
+            games.forEach(game => {
+                const score = gameScores[game.key] || 0;
+                html += `
+                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #E2E8F0;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="${game.icon}" style="color: var(--primary);"></i>
+                            <span>${game.name}</span>
+                        </div>
+                        <strong>${score}</strong>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            scoreboard.innerHTML = html;
+        }
+
+        // ===== FUNCIONES DEL JUEGO DE HISTORIA =====
+        function initStoryGame() {
+            const saved = localStorage.getItem('iamStoryGame');
+            if (saved) {
+                Object.assign(storyState, JSON.parse(saved));
+            }
+            
+            updateStoryDisplay();
+            loadStoryScene();
+        }
+
+        function loadStoryScene() {
+            const chapterIndex = storyState.currentChapter - 1;
+            const sceneIndex = storyState.currentScene - 1;
+            
+            if (chapterIndex >= storyData.chapters.length) {
+                showFinalRevelation();
+                return;
+            }
+            
+            const chapter = storyData.chapters[chapterIndex];
+            const scene = chapter.scenes[sceneIndex];
+            
+            document.getElementById('sceneTitle').textContent = scene.title;
+            document.getElementById('sceneDescription').textContent = scene.description;
+            document.getElementById('sceneImage').innerHTML = `<i class="fas ${scene.imageIcon}"></i>`;
+            document.getElementById('jesusMessage').textContent = scene.jesusMessage;
+            document.getElementById('dailyTeaching').textContent = scene.teaching;
+            document.getElementById('currentChapter').textContent = storyState.currentChapter;
+            
+            // Calcular progreso
+            const progress = ((storyState.currentChapter - 1) / storyData.maxChapters * 100) + 
+                           ((storyState.currentScene - 1) / chapter.scenes.length * (100 / storyData.maxChapters));
+            document.getElementById('storyProgressBar').style.width = `${progress}%`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            
+            // Limpiar selección anterior
+            selectedChoiceIndex = null;
+            document.getElementById('confirmBtn').style.display = 'none';
+            
+            // Crear opciones
+            const choicesContainer = document.getElementById('storyChoices');
+            choicesContainer.innerHTML = '';
+            
+            scene.choices.forEach((choice, index) => {
+                const choiceBtn = document.createElement('button');
+                choiceBtn.className = 'choice-btn';
+                choiceBtn.onclick = () => selectChoice(index);
+                
+                choiceBtn.innerHTML = `
+                    <div class="choice-number">${index + 1}</div>
+                    <div>
+                        <strong>${choice.text}</strong>
+                        <p style="margin-top: 5px; font-size: 0.9rem; color: var(--text-light);">
+                            ${choice.description}
+                        </p>
+                    </div>
+                `;
+                
+                choicesContainer.appendChild(choiceBtn);
+            });
+            
+            updateStoryDisplay();
+        }
+
+        function selectChoice(index) {
+            // Deseleccionar todas las opciones
+            document.querySelectorAll('#storyChoices .choice-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            
+            // Seleccionar la nueva opción
+            const selectedBtn = document.querySelectorAll('#storyChoices .choice-btn')[index];
+            selectedBtn.classList.add('selected');
+            
+            selectedChoiceIndex = index;
+            document.getElementById('confirmBtn').style.display = 'inline-flex';
+        }
+
+        function confirmChoice() {
+            if (selectedChoiceIndex === null) {
+                showNotification('Por favor, selecciona una opción primero', 'warning');
+                return;
+            }
+            
+            const chapter = storyData.chapters[storyState.currentChapter - 1];
+            const scene = chapter.scenes[storyState.currentScene - 1];
+            const choice = scene.choices[selectedChoiceIndex];
+            
+            // Registrar la decisión
+            storyState.decisionsMade++;
+            storyState.storyPath.push({
+                chapter: storyState.currentChapter,
+                scene: storyState.currentScene,
+                choice: choice.text,
+                impact: choice.response.impact
+            });
+            
+            // Aplicar impacto
+            storyState.conviction += choice.response.impact.conviction;
+            storyState.wisdom += choice.response.impact.wisdom;
+            storyState.discernment += choice.response.impact.discernment;
+            
+            // Limitar valores entre 0 y 100
+            storyState.conviction = Math.min(100, Math.max(0, storyState.conviction));
+            storyState.wisdom = Math.min(100, Math.max(0, storyState.wisdom));
+            storyState.discernment = Math.min(100, Math.max(0, storyState.discernment));
+            
+            // Agregar cualidad si no existe
+            if (choice.response.quality && !storyState.qualities.includes(choice.response.quality)) {
+                storyState.qualities.push(choice.response.quality);
+            }
+            
+            // Mostrar respuesta
+            showResponseModal(choice.response);
+            
+            // Guardar progreso
+            saveStoryProgress();
+        }
+
+        function showResponseModal(response) {
+            document.getElementById('responseTitle').textContent = 'Tu Decisión';
+            document.getElementById('responseMessage').textContent = response.message;
+            document.getElementById('reflectionText').textContent = response.reflection;
+            
+            // No mostrar si fue "correcto" o "incorrecto"
+            document.getElementById('responseIcon').className = 'response-icon';
+            document.getElementById('responseIcon').innerHTML = '<i class="fas fa-comment-alt"></i>';
+            
+            document.getElementById('responseModal').style.display = 'flex';
+        }
+
+        function closeResponseModal() {
+            document.getElementById('responseModal').style.display = 'none';
+            
+            // Avanzar a la siguiente escena
+            const chapter = storyData.chapters[storyState.currentChapter - 1];
+            
+            if (storyState.currentScene < chapter.scenes.length) {
+                storyState.currentScene++;
+            } else {
+                storyState.currentChapter++;
+                storyState.currentScene = 1;
+            }
+            
+            loadStoryScene();
+        }
+
+        function showReflection() {
+            const reflections = [
+                "¿Qué haría Jesús en esta situación?",
+                "¿Qué opción refleja mejor el amor de Dios?",
+                "¿Qué decisión me hará crecer como persona?",
+                "¿Qué me pide Jesús en este momento?",
+                "La oración puede iluminar nuestra decisiones"
+            ];
+            
+            document.getElementById('jesusMessage').textContent = 
+                `💭 Reflexiona: ${reflections[Math.floor(Math.random() * reflections.length)]}`;
+        }
+
+        function updateStoryDisplay() {
+            document.getElementById('decisionsMade').textContent = storyState.decisionsMade;
+            document.getElementById('storyConviction').textContent = `${Math.round(storyState.conviction)}%`;
+            document.getElementById('storyWisdom').textContent = `${Math.round(storyState.wisdom)}%`;
+            document.getElementById('storyDiscernment').textContent = `${Math.round(storyState.discernment)}%`;
+            
+            // Actualizar cualidades
+            const qualitiesList = document.getElementById('qualitiesList');
+            qualitiesList.innerHTML = storyState.qualities.map(q => 
+                `<span style="background: var(--decision-blue); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">${q}</span>`
+            ).join(' ');
+            
+            // Actualizar progreso general
+            const totalProgress = (storyState.currentChapter - 1) / storyData.maxChapters * 100;
+            document.getElementById('storyOverallProgress').style.width = `${totalProgress}%`;
+        }
+
+        function saveStoryProgress() {
+            localStorage.setItem('iamStoryGame', JSON.stringify(storyState));
+            
+            // Calcular puntuación basada en cualidades y decisiones
+            const score = storyState.decisionsMade * 10 + 
+                         storyState.qualities.length * 20 +
+                         Math.round((storyState.conviction + storyState.wisdom + storyState.discernment) / 3);
+            
+            if (!gameScores.story || score > gameScores.story) {
+                gameScores.story = score;
+                localStorage.setItem('iamGameScores', JSON.stringify(gameScores));
+            }
+            
+            showNotification('Progreso guardado', 'success');
+        }
+
+        function resetStoryGame() {
+            if (confirm('¿Estás seguro de querer reiniciar la aventura? Perderás todo tu progreso.')) {
+                storyState = {
+                    currentChapter: 1,
+                    currentScene: 1,
+                    decisionsMade: 0,
+                    conviction: 50,
+                    wisdom: 30,
+                    discernment: 40,
+                    qualities: ["Observador", "Trabajador"],
+                    playerName: "Aventurero",
+                    storyPath: []
+                };
+                
+                localStorage.removeItem('iamStoryGame');
+                loadStoryScene();
+                updateStoryDisplay();
+                
+                showNotification('¡Nueva aventura comenzada!', 'success');
+            }
+        }
+
+        function showFinalRevelation() {
+            const finalScore = storyState.decisionsMade * 10 + 
+                             storyState.qualities.length * 20 +
+                             Math.round((storyState.conviction + storyState.wisdom + storyState.discernment) / 3);
+            
+            // Crear mensaje personalizado basado en el camino
+            let message = "Has completado tu camino como discípulo. ";
+            
+            if (storyState.conviction > 70) {
+                message += "Tu convicción en Jesús ha sido firme. ";
+            }
+            if (storyState.wisdom > 70) {
+                message += "Has crecido en sabiduría espiritual. ";
+            }
+            if (storyState.discernment > 70) {
+                message += "Tu capacidad de discernir la voluntad de Dios es notable. ";
+            }
+            
+            message += "¿Sabes quién fue tu guía en todo este camino? ¡Jesús mismo caminó contigo en cada decisión!";
+            
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.9);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: var(--radius-lg); padding: 50px; max-width: 600px; width: 100%; text-align: center; animation: zoomIn 0.5s ease;">
+                    <div style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--jesus-gold), #FFA500); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; font-size: 3.5rem; color: white; border: 5px solid white; box-shadow: 0 0 30px rgba(255,215,0,0.7);">
+                        <i class="fas fa-hands-praying"></i>
+                    </div>
+                    
+                    <h2 style="color: var(--jesus-gold); margin-bottom: 20px; font-size: 2.5rem;">
+                        ¡Revelación Final!
+                    </h2>
+                    
+                    <p style="font-size: 1.2rem; margin-bottom: 30px; line-height: 1.6;">
+                        ${message}
+                    </p>
+                    
+                    <div style="background: var(--bg-light); padding: 25px; border-radius: var(--radius); margin-bottom: 30px;">
+                        <h4 style="color: var(--primary); margin-bottom: 15px;">
+                            <i class="fas fa-chart-bar"></i> Tu Camino de Discípulo
+                        </h4>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                            <div>
+                                <strong>Decisiones:</strong>
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${storyState.decisionsMade}</div>
+                            </div>
+                            <div>
+                                <strong>Cualidades:</strong>
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${storyState.qualities.length}</div>
+                            </div>
+                            <div>
+                                <strong>Convicción:</strong>
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${Math.round(storyState.conviction)}%</div>
+                            </div>
+                            <div>
+                                <strong>Sabiduría:</strong>
+                                <div style="font-size: 1.2rem; font-weight: 700; color: var(--primary);">${Math.round(storyState.wisdom)}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 15px; justify-content: center;">
+                        <button class="btn btn-primary" onclick="backToMenu()" style="flex: 1;">
+                            <i class="fas fa-home"></i> Volver al Menú
+                        </button>
+                        <button class="btn" onclick="playAgainStory()" style="flex: 1;">
+                            <i class="fas fa-redo"></i> Jugar Otra Vez
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+
+        function playAgainStory() {
+            document.querySelector('.response-modal').style.display = 'none';
+            document.querySelectorAll('[style*="position: fixed"][style*="background: rgba"]').forEach(el => el.remove());
+            resetStoryGame();
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                background: ${type === 'success' ? 'var(--success)' : 'var(--warning)'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: var(--radius);
+                box-shadow: var(--shadow);
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Agregar estilos para animaciones
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            @keyframes zoomIn {
+                from { transform: scale(0.5); opacity: 0; }
+                to { transform: scale(1); opacity: 1; }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Inicializar cuando cargue la página
+        document.addEventListener('DOMContentLoaded', function() {
+            updateScoreboard();
+            
+            // Agregar efectos a las cards
+            document.querySelectorAll('.game-card').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-10px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Smooth scroll para enlaces
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

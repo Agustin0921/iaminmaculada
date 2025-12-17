@@ -1736,3 +1736,27 @@ setTimeout(function() {
     
     console.log("✅ Parche de seguridad aplicado");
 }, 500);
+
+// ===== DEBUG DE CARGA DE IMÁGENES =====
+console.log("🔍 Verificando carga de recursos...");
+
+// Verificar si las imágenes cargan
+window.addEventListener('load', function() {
+    console.log("✅ Página completamente cargada");
+    
+    // Verificar imágenes específicas
+    const images = document.querySelectorAll('img');
+    images.forEach((img, i) => {
+        if (!img.complete) {
+            console.warn(`⚠️ Imagen ${i} no cargada: ${img.src}`);
+        }
+    });
+});
+
+// Forzar recarga si hay problemas
+setTimeout(() => {
+    if (document.readyState !== 'complete') {
+        console.log("🔄 Forzando recarga de recursos...");
+        window.location.reload();
+    }
+}, 3000);

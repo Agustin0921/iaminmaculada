@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IAM | Campamento IAM</title>
+    <title>IAM - Infancia y Adolescencia Misionera</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -133,12 +133,12 @@
                         <img class="logo-img" src="img/logo-iam.png" alt="">
                         <div class="logo-text">
                             <h1>IAM</h1>
-                            <span>Campamento Misionero 2026</span>
+                            <span>Infancia y Adolescencia Misionera</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Botón Hamburguesa (solo visible en móvil) -->
+                <!-- Botón Hamburguesa -->
                 <button class="mobile-menu-btn" id="mobileMenuBtn">
                     <i class="fas fa-bars"></i>
                 </button>
@@ -146,16 +146,16 @@
                 <!-- Navegación Principal -->
                 <div class="nav-menu" id="mainNav">
                     <ul class="nav-links">
-                        <li><a href="#home" class="nav-link active">Inicio</a></li>
-                        <li><a href="#about" class="nav-link">La Aventura</a></li>
-                        <li><a href="#dates" class="nav-link">Itinerario</a></li>
-                        <li><a href="#countdown" class="nav-link">¡Falta poco!</a></li>
-                        <li><a href="#form" class="nav-link">¡Me Apunto!</a></li>
-                        <li><a href="#gallery" class="nav-link">Recuerdos</a></li>
+                        <li><a href="#inicio" class="nav-link active">Inicio</a></li>
+                        <li><a href="#sobre-iam" class="nav-link">¿Qué es IAM?</a></li>
+                        <li><a href="#pilares" class="nav-link">Nuestros Pilares</a></li>
+                        <li><a href="#animadores" class="nav-link">Ayuda a Animadores</a></li>
+                        <li><a href="#juego" class="nav-link">Juego Misionero</a></li>
+                        <li><a href="inscripcion.html" class="nav-link">Campamento 2026</a></li>
                     </ul>
                 </div>
 
-                <button class="admin-access-btn" id="adminAccessBtn" title="Acceso de Líder">
+                <button class="admin-access-btn" id="adminAccessBtn" title="Acceso Animadores">
                     <i class="fas fa-user-shield"></i>
                 </button>
             </nav>
@@ -163,413 +163,507 @@
     </header>
 
     <!-- Hero Section -->
-    <section class="hero" id="home">
+    <section class="hero hero-iam" id="inicio">
         <div class="container">
             <div class="hero-content">
-                <div class="hero-badge">
-                    <span><i class="fas fa-cross"></i> 8 al 17 de Enero 2026</span>
+                <div class="hero-badge hero-animate hero-delay-0">
+                    <span><i class="fas fa-globe-americas"></i> Obra Pontificia de la Iglesia</span>
                 </div>
-                <h1 class="hero-title">Campamento Misionero IAM 2026</h1>
-                <p class="hero-subtitle">¡10 días para crecer en la fe, hacer nuevos amigos y vivir como auténticos misioneros!</p>
+                <h1 class="hero-title hero-animate hero-delay-1">Infancia y Adolescencia Misionera</h1>
+                <p class="hero-subtitle hero-animate hero-delay-2">Formamos niños y adolescentes con corazón misionero para llevar a Jesús a todo el mundo</p>
 
                 <div class="hero-info">
-                    <div class="info-item">
-                        <i class="fas fa-cross"></i>
+                    <div class="info-item hero-animate hero-delay-3">
+                        <i class="fas fa-hands-praying"></i>
                         <div>
-                            <h4>Formación en la Fe</h4>
-                            <p>Misa diaria, Rosario, Adoración</p>
+                            <h4>Oración</h4>
+                            <p>Rezamos por las misiones del mundo</p>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-users"></i>
+                    <div class="info-item hero-animate hero-delay-4">
+                        <i class="fas fa-hand-holding-heart"></i>
                         <div>
-                            <h4>Comunidad Cristiana</h4>
-                            <p>Amistad y convivencia fraterna</p>
+                            <h4>Sacrificio</h4>
+                            <p>Ofrecemos pequeños sacrificios</p>
                         </div>
                     </div>
-                    <div class="info-item">
-                        <i class="fas fa-hands-helping"></i>
+                    <div class="info-item hero-animate hero-delay-5">
+                        <i class="fas fa-donate"></i>
                         <div>
-                            <h4>8-17 Años</h4>
-                            <p>Para niños y adolescentes misioneros</p>
+                            <h4>Cooperación</h4>
+                            <p>Ayudamos económicamente a las misiones</p>
                         </div>
                     </div>
                 </div>
 
-                <a href="#form" class="btn btn-primary btn-lg">
-                    <i class="fas fa-user-plus"></i> ¡Inscríbete Ahora!
+                <div class="adventure-decoration">
+                    <a href="inscripcion.html" class="btn btn-primary btn-lg hero-animate hero-delay-6">
+                        <i class="fas fa-campground"></i> ¡Inscríbete al Campamento!
+                    </a>
+                    <a href="#juego" class="btn hero-animate hero-delay-7" style="background: var(--accent); color: white;">
+                        <i class="fas fa-gamepad"></i> Jugar Ahora
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ¿Qué es IAM? -->
+    <section class="section" id="sobre-iam">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title scroll-animate animate-slide-left">¿Qué es la Infancia y Adolescencia Misionera?</h2>
+                <p class="section-subtitle scroll-animate animate-slide-right delay-1">Una obra pontificia que educa a niños y adolescentes en el espíritu misionero</p>
+            </div>
+
+            <!-- CARD 1: Historia y Fundador -->
+            <div class="iam-card iam-history scroll-animate card-animate delay-1">
+                <div class="iam-card-content">
+                    <div class="iam-card-image scroll-animate animate-scale delay-2">
+                        <img src="img/fundador-iam.PNG" 
+                             alt="Mons. Carlos de Forbin-Janson">
+                        <div class="iam-image-caption scroll-animate animate-fade delay-3">
+                            Mons. Carlos de Forbin-Janson<br>
+                            <small>Fundador de la IAM (1843)</small>
+                        </div>
+                    </div>
+                    <div class="iam-card-text">
+                        <div class="iam-card-header">
+                            <i class="fas fa-history icon-animate"></i>
+                            <h3 class="scroll-animate animate-slide-left delay-1">Nuestra Historia</h3>
+                        </div>
+                        
+                        <div class="iam-card-section">
+                            <h4 class="scroll-animate animate-slide-left delay-2">El Fundador</h4>
+                            <p class="scroll-animate animate-slide-left delay-3"><strong>Monseñor Carlos de Forbin-Janson</strong> (1785-1844) fue un obispo francés que, tras conocer la difícil situación de los niños en China, tuvo una inspiración divina: "¡Los niños de Francia salvarán a los niños de China!".</p>
+                        </div>
+                        
+                        <div class="iam-card-section">
+                            <h4 class="scroll-animate animate-slide-left delay-3">El Origen</h4>
+                            <p class="scroll-animate animate-slide-left delay-4">En 1843 fundó la <strong>Obra de la Santa Infancia</strong> (hoy IAM) con un propósito claro: que los niños cristianos ayudaran a los niños no cristianos mediante la oración, el sacrificio y la cooperación económica.</p>
+                        </div>
+                        
+                        <div class="iam-stats-grid">
+                            <div class="iam-stat-box scroll-animate animate-bounce delay-2">
+                                <i class="fas fa-globe-europe"></i>
+                                <h5>Expansión</h5>
+                                <p>Hoy presente en <strong>130 países</strong> alrededor del mundo</p>
+                            </div>
+                            <div class="iam-stat-box scroll-animate animate-bounce delay-3">
+                                <i class="fas fa-hand-holding-heart"></i>
+                                <h5>Reconocimiento</h5>
+                                <p><strong>Obra Pontificia</strong> aprobada por la Santa Sede</p>
+                            </div>
+                        </div>
+                        
+                        <div class="iam-quote scroll-animate animate-fade delay-4">
+                            <i class="fas fa-quote-left"></i>
+                            <p>"No se trata de hacer de los niños unos bienhechores, sino de hacerles comprender que son misioneros"</p>
+                            <span>- Mons. Forbin-Janson</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 2: Misión y Visión -->
+            <div class="iam-card iam-mission scroll-animate card-animate delay-2">
+                <div class="iam-card-content iam-reverse">
+                    <div class="iam-card-text">
+                        <div class="iam-card-header">
+                            <i class="fas fa-bullseye icon-animate"></i>
+                            <h3 class="scroll-animate animate-slide-right delay-1">Nuestra Misión y Visión</h3>
+                        </div>
+                        
+                        <div class="iam-card-section">
+                            <h4 class="scroll-animate animate-slide-right delay-2"><i class="fas fa-cross"></i> Nuestra Misión</h4>
+                            <p class="scroll-animate animate-slide-right delay-3">Despertar y alimentar el espíritu misionero universal en los niños y adolescentes, educándolos en la fe y formándolos para que sean:</p>
+                            <ul class="iam-feature-list">
+                                <li class="scroll-animate animate-slide-right delay-3"><i class="fas fa-check-circle"></i> <strong>Testigos de Jesús</strong> en su vida diaria</li>
+                                <li class="scroll-animate animate-slide-right delay-4"><i class="fas fa-check-circle"></i> <strong>Solidarios</strong> con los niños de todo el mundo</li>
+                                <li class="scroll-animate animate-slide-right delay-5"><i class="fas fa-check-circle"></i> <strong>Evangelizadores</strong> de otros niños</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="iam-card-section">
+                            <h4 class="scroll-animate animate-slide-right delay-4"><i class="fas fa-eye"></i> Nuestra Visión</h4>
+                            <p class="scroll-animate animate-slide-right delay-5">Ser una red mundial de niños y adolescentes misioneros que, unidos en oración y acción, construyan un mundo más justo y evangelizado, donde todos conozcan el amor de Jesús.</p>
+                        </div>
+                        
+                        <div class="iam-features-grid">
+                            <div class="iam-feature scroll-animate animate-bounce delay-4">
+                                <i class="fas fa-heart"></i>
+                                <h5>Carácter</h5>
+                                <p><strong>Educativo-pastoral</strong>: Formamos en la fe y la misión</p>
+                            </div>
+                            <div class="iam-feature scroll-animate animate-bounce delay-5">
+                                <i class="fas fa-users"></i>
+                                <h5>Enfoque</h5>
+                                <p><strong>Universal</strong>: Para todos los niños del mundo</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="iam-card-image scroll-animate animate-scale delay-3">
+                        <div class="iam-graphic-card">
+                            <i class="fas fa-globe-americas icon-animate"></i>
+                            <h3 class="scroll-animate animate-fade delay-1">Misión Universal</h3>
+                            <p class="scroll-animate animate-fade delay-2">"Vayan por todo el mundo y prediquen el Evangelio a toda criatura" (Mc 16,15)</p>
+                            
+                            <div class="iam-numbers">
+                                <div class="iam-number scroll-animate animate-zoom delay-3">
+                                    <span class="counter-animate">130</span>
+                                    <small>Países</small>
+                                </div>
+                                <div class="iam-number scroll-animate animate-zoom delay-4">
+                                    <span class="counter-animate">5</span>
+                                    <small>Millones+</small>
+                                </div>
+                                <div class="iam-number scroll-animate animate-zoom delay-5">
+                                    <span class="counter-animate">180</span>
+                                    <small>Años</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CARD 3: Nuestro Lema -->
+            <div class="iam-card iam-motto scroll-animate card-animate delay-3">
+                <div class="iam-card-content">
+                    <div class="iam-card-image scroll-animate animate-scale delay-4">
+                        <div class="iam-motto-card">
+                            <i class="fas fa-quote-left icon-animate"></i>
+                            <h2 class="scroll-animate animate-fade delay-1">Nuestro Lema</h2>
+                            
+                            <div class="iam-motto-text scroll-animate animate-fade delay-2">
+                                <p>
+                                    "Los niños<br>
+                                    <span>evangelizan</span> a los niños,<br>
+                                    los niños <span>rezan</span> por los niños,<br>
+                                    los niños <span>ayudan</span> a los niños<br>
+                                    de todo el mundo"
+                                </p>
+                            </div>
+                            
+                            <div class="iam-motto-icons">
+                                <div class="iam-motto-icon scroll-animate animate-zoom delay-3">
+                                    <i class="fas fa-microphone-alt"></i>
+                                    <span>Evangelizar</span>
+                                </div>
+                                <div class="iam-motto-icon scroll-animate animate-zoom delay-4">
+                                    <i class="fas fa-pray"></i>
+                                    <span>Rezar</span>
+                                </div>
+                                <div class="iam-motto-icon scroll-animate animate-zoom delay-5">
+                                    <i class="fas fa-hand-holding-heart"></i>
+                                    <span>Ayudar</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="iam-card-text">
+                        <div class="iam-card-header">
+                            <i class="fas fa-handshake icon-animate"></i>
+                            <h3 class="scroll-animate animate-slide-left delay-1">El Espíritu del Lema</h3>
+                        </div>
+                        
+                        <div class="iam-card-section">
+                            <h4 class="scroll-animate animate-slide-left delay-2"><i class="fas fa-child"></i> ¿Qué significa?</h4>
+                            <p class="scroll-animate animate-slide-left delay-3">Este lema resume perfectamente la esencia de la IAM. No somos espectadores, sino <strong>protagonistas activos</strong> de la misión:</p>
+                        </div>
+                        
+                        <div class="iam-explanation">
+                            <div class="iam-point scroll-animate animate-slide-left delay-3">
+                                <div class="iam-point-number">1</div>
+                                <div class="iam-point-content">
+                                    <h5>Evangelizar entre iguales</h5>
+                                    <p>Los niños hablan de Jesús a otros niños con su lenguaje, su espontaneidad y su testimonio de vida.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="iam-point scroll-animate animate-slide-left delay-4">
+                                <div class="iam-point-number">2</div>
+                                <div class="iam-point-content">
+                                    <h5>Oración misionera</h5>
+                                    <p>Rezamos especialmente por los niños que no conocen a Jesús y por los misioneros que les anuncian el Evangelio.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="iam-point scroll-animate animate-slide-left delay-5">
+                                <div class="iam-point-number">3</div>
+                                <div class="iam-point-content">
+                                    <h5>Ayuda concreta</h5>
+                                    <p>Con nuestra huchita misionera apoyamos proyectos concretos para niños necesitados en todo el mundo.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="iam-highlight scroll-animate animate-bounce delay-4">
+                            <i class="fas fa-lightbulb"></i>
+                            <div>
+                                <h5>¡La revolución de los pequeños!</h5>
+                                <p>La IAM cree en el poder transformador de los niños. Cuando un niño descubre que puede hacer el bien, se convierte en un agente de cambio en su familia, escuela y comunidad.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Línea de tiempo histórica -->
+            <div class="iam-timeline scroll-animate animate-fade delay-4">
+                <h3 class="scroll-animate animate-slide-left"><i class="fas fa-timeline"></i> Línea de Tiempo de la IAM</h3>
+                
+                <div class="iam-timeline-track">
+                    <div class="iam-timeline-line"></div>
+                    
+                    <div class="iam-timeline-events">
+                        <div class="iam-timeline-event">
+                            <div class="iam-event-content iam-event-left scroll-animate animate-slide-right delay-1">
+                                <h4>1843</h4>
+                                <p>Fundación por Mons. Carlos de Forbin-Janson en Francia. Nace como "Obra de la Santa Infancia".</p>
+                            </div>
+                            <div class="iam-event-dot timeline-dot-animate"></div>
+                            <div class="iam-event-spacer"></div>
+                        </div>
+                        
+                        <div class="iam-timeline-event">
+                            <div class="iam-event-spacer"></div>
+                            <div class="iam-event-dot timeline-dot-animate"></div>
+                            <div class="iam-event-content iam-event-right scroll-animate animate-slide-left delay-2">
+                                <h4>1922</h4>
+                                <p>El Papa Pío XI la declara "Obra Pontificia", reconociendo su importancia universal.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="iam-timeline-event">
+                            <div class="iam-event-content iam-event-left scroll-animate animate-slide-right delay-3">
+                                <h4>1950</h4>
+                                <p>Se expande a América Latina, especialmente a Argentina y otros países.</p>
+                            </div>
+                            <div class="iam-event-dot timeline-dot-animate"></div>
+                            <div class="iam-event-spacer"></div>
+                        </div>
+                        
+                        <div class="iam-timeline-event">
+                            <div class="iam-event-spacer"></div>
+                            <div class="iam-event-dot timeline-dot-animate"></div>
+                            <div class="iam-event-content iam-event-right scroll-animate animate-slide-left delay-4">
+                                <h4>2023</h4>
+                                <p>180 años de fundación. Presente en 130 países con millones de niños misioneros.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pilares de la IAM -->
+    <section class="section bg-light" id="pilares">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title scroll-animate animate-slide-left">Los 4 Pilares de la IAM</h2>
+                <p class="section-subtitle scroll-animate animate-slide-right delay-1">Nuestra espiritualidad se basa en estos fundamentos</p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item scroll-animate animate-slide-left delay-1">
+                    <div class="timeline-date">
+                        <i class="fas fa-pray icon-animate" style="font-size: 2rem; color: var(--primary);"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3 class="scroll-animate animate-fade delay-2">1. La Oración Misionera</h3>
+                        <p class="scroll-animate animate-fade delay-3">Aprendemos a rezar no solo por nuestras necesidades, sino especialmente por las misiones y los misioneros de todo el mundo.</p>
+                        <p class="scroll-animate animate-slide-left delay-4"><i class="fas fa-cross"></i> Rezamos el Rosario Misionero</p>
+                        <p class="scroll-animate animate-slide-left delay-5"><i class="fas fa-hands-praying"></i> Ofrecemos nuestras oraciones diarias</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item scroll-animate animate-slide-right delay-2">
+                    <div class="timeline-date">
+                        <i class="fas fa-heart icon-animate" style="font-size: 2rem; color: var(--accent);"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3 class="scroll-animate animate-fade delay-3">2. El Sacrificio Misionero</h3>
+                        <p class="scroll-animate animate-fade delay-4">Ofrecemos pequeños sacrificios con amor por la salvación de todos los niños del mundo.</p>
+                        <p class="scroll-animate animate-slide-right delay-4"><i class="fas fa-cookie"></i> Renunciamos a un dulce</p>
+                        <p class="scroll-animate animate-slide-right delay-5"><i class="fas fa-tv"></i> Dedicamos menos tiempo a pantallas</p>
+                        <p class="scroll-animate animate-slide-right delay-6"><i class="fas fa-hand-holding-heart"></i> Ayudamos en casa con alegría</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item scroll-animate animate-slide-left delay-3">
+                    <div class="timeline-date">
+                        <i class="fas fa-donate icon-animate" style="font-size: 2rem; color: var(--success);"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3 class="scroll-animate animate-fade delay-4">3. La Cooperación Misionera</h3>
+                        <p class="scroll-animate animate-fade delay-5">Ahorramos y donamos nuestro dinero para apoyar proyectos misioneros en países necesitados.</p>
+                        <p class="scroll-animate animate-slide-left delay-5"><i class="fas fa-piggy-bank"></i> Nuestra huchita misionera</p>
+                        <p class="scroll-animate animate-slide-left delay-6"><i class="fas fa-graduation-cap"></i> Proyectos educativos</p>
+                        <p class="scroll-animate animate-slide-left delay-7"><i class="fas fa-hospital"></i> Ayuda a dispensarios médicos</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item scroll-animate animate-slide-right delay-4">
+                    <div class="timeline-date">
+                        <i class="fas fa-microphone-alt icon-animate" style="font-size: 2rem; color: var(--secondary);"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <h3 class="scroll-animate animate-fade delay-5">4. La Formación Misionera</h3>
+                        <p class="scroll-animate animate-fade delay-6">Aprendemos sobre la fe, las misiones y cómo ser testigos de Jesús en nuestro entorno.</p>
+                        <p class="scroll-animate animate-slide-right delay-6"><i class="fas fa-bible"></i> Catequesis misionera</p>
+                        <p class="scroll-animate animate-slide-right delay-7"><i class="fas fa-globe-americas"></i> Conocemos otras culturas</p>
+                        <p class="scroll-animate animate-slide-right delay-8"><i class="fas fa-users"></i> Testimonios de misioneros</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ayuda a Animadores -->
+    <section class="section" id="animadores">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title scroll-animate animate-slide-left">Recursos para Animadores</h2>
+                <p class="section-subtitle scroll-animate animate-slide-right delay-1">Materiales, ideas y apoyo para los que guían a nuestros misioneros</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card scroll-animate animate-scale delay-1">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #FF9800, #FFB74D);">
+                        <i class="fas fa-download icon-animate"></i>
+                    </div>
+                    <h3 class="scroll-animate animate-fade delay-2">Materiales Descargables</h3>
+                    <p class="scroll-animate animate-fade delay-3">Fichas de actividades, manualidades, juegos y dinámicas para tus reuniones.</p>
+                    <a href="#" class="btn btn-animate delay-4" style="margin-top: 15px; width: 100%;">Descargar</a>
+                </div>
+
+                <div class="feature-card scroll-animate animate-scale delay-2">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #2196F3, #64B5F6);">
+                        <i class="fas fa-video icon-animate"></i>
+                    </div>
+                    <h3 class="scroll-animate animate-fade delay-3">Videos Formativos</h3>
+                    <p class="scroll-animate animate-fade delay-4">Tutoriales, testimonios y explicaciones para mejorar tu labor como animador.</p>
+                    <a href="https://www.youtube.com/@iaminmaculada" class="btn btn-animate delay-5" style="margin-top: 15px; width: 100%;">Ver Canal</a>
+                </div>
+
+                <div class="feature-card scroll-animate animate-scale delay-3">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #E91E63, #F48FB1);">
+                        <i class="fas fa-calendar-alt icon-animate"></i>
+                    </div>
+                    <h3 class="scroll-animate animate-fade delay-4">Calendario Misionero</h3>
+                    <p class="scroll-animate animate-fade delay-5">Fechas importantes, celebraciones y actividades programadas para el año.</p>
+                    <a href="#" class="btn btn-animate delay-6" style="margin-top: 15px; width: 100%;">Ver Calendario</a>
+                </div>
+
+                <div class="feature-card scroll-animate animate-scale delay-4">
+                    <div class="feature-icon" style="background: linear-gradient(135deg, #673AB7, #9575CD);">
+                        <i class="fas fa-handshake icon-animate"></i>
+                    </div>
+                    <h3 class="scroll-animate animate-fade delay-5">Formación Continua</h3>
+                    <p class="scroll-animate animate-fade delay-6">Talleres, retiros y encuentros para crecer en tu vocación de animador.</p>
+                    <a href="#" class="btn btn-animate delay-7" style="margin-top: 15px; width: 100%;">Más Información</a>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 40px;">
+                <h3 style="color: var(--primary); margin-bottom: 20px;" class="scroll-animate animate-fade delay-5">
+                    <i class="fas fa-question-circle icon-animate"></i> ¿Quieres ser animador?
+                </h3>
+                <p style="max-width: 800px; margin: 0 auto 30px; font-size: 1.1rem;" class="scroll-animate animate-fade delay-6">
+                    Si tienes vocación para guiar a niños y adolescentes en su camino misionero, 
+                    ¡te estamos esperando! Contacta con nosotros para formar parte de esta gran familia.
+                </p>
+                <a href="mailto:iaminmaculada@gmail.com" class="btn btn-primary btn-lg btn-animate delay-7">
+                    <i class="fas fa-envelope"></i> Contactar para ser Animador
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Información -->
-    <section class="section" id="about">
+    <!-- Juego Misionero -->
+    <section class="section bg-light" id="juego">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">¿En qué consiste el Campamento IAM?</h2>
-                <p class="section-subtitle">Una experiencia de fe, amistad y servicio misionero</p>
+                <h2 class="section-title scroll-animate animate-slide-left">¡Aventura Misionera!</h2>
+                <p class="section-subtitle scroll-animate animate-slide-right delay-1">Un juego interactivo para aprender sobre las misiones</p>
             </div>
 
-            <div class="features-grid">
-                <!-- Primero: Vida Sacramental -->
-                <div class="feature-card">
-                    <div class="feature-icon faith-icon">
-                        <i class="fas fa-church"></i>
-                    </div>
-                    <h3>Vida Sacramental</h3>
-                    <p>Celebramos la Santa Misa diaria, Adoración Eucarística y rezamos el Rosario en comunidad.</p>
-                </div>
-
-                <!-- Segundo: Formación Misionera -->
-                <div class="feature-card">
-                    <div class="feature-icon mission-icon">
-                        <i class="fas fa-hands-praying"></i>
-                    </div>
-                    <h3>Formación Misionera</h3>
-                    <p>Charlas y dinámicas para conocer más a Jesús y aprender a ser misioneros en nuestra vida diaria.</p>
-                </div>
-
-                <!-- Tercero: Convivencia Cristiana -->
-                <div class="feature-card">
-                    <div class="feature-icon community-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Convivencia Cristiana</h3>
-                    <p>Juegos, fogatas y actividades que fortalecen la amistad y el espíritu de comunidad.</p>
-                </div>
-
-                <!-- Cuarto: Talleres y Charlas -->
-                <div class="feature-card">
-                    <div class="feature-icon workshop-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>Talleres y Charlas</h3>
-                    <p>Espacios para crecer en virtudes, descubrir talentos y profundizar en la fe católica.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Programación -->
-    <section class="section bg-light" id="dates">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Itinerario Espiritual y Misionero</h2>
-                <p class="section-subtitle">10 días para crecer en la fe y la amistad con Jesús</p>
-            </div>
-            
-            <div class="timeline">
-                <!-- Día 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 1</div>
-                    <div class="timeline-content">
-                        <h3>Llegada y Envío Misionero</h3>
-                        <p><i class="fas fa-church"></i> <strong>9:00 AM</strong> - Registro y bienvenida</p>
-                        <p><i class="fas fa-cross"></i> <strong>11:00 AM</strong> - Misa de apertura y envío misionero</p>
-                        <p><i class="fas fa-users"></i> <strong>2:00 PM</strong> - Formación de grupos y presentaciones</p>
-                    </div>
-                </div>
-                
-                <!-- Días 2-8 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Días 2-8</div>
-                    <div class="timeline-content">
-                        <h3>Rutina de Crecimiento</h3>
-                        <p><i class="fas fa-pray"></i> <strong>7:00 AM</strong> - Oración matutina y Laudes</p>
-                        <p><i class="fas fa-bible"></i> <strong>9:00 AM</strong> - Charlas formativas y talleres</p>
-                        <p><i class="fas fa-bread-slice"></i> <strong>12:00 PM</strong> - Santa Misa y acción de gracias</p>
-                        <p><i class="fas fa-gamepad"></i> <strong>3:00 PM</strong> - Juegos y actividades recreativas</p>
-                        <p><i class="fas fa-campfire"></i> <strong>7:00 PM</strong> - Rosario comunitario y fogata</p>
-                    </div>
-                </div>
-                
-                <!-- Día 9 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 9</div>
-                    <div class="timeline-content">
-                        <h3>Jornada Misionera</h3>
-                        <p><i class="fas fa-hands-helping"></i> <strong>Todo el día</strong> - Salida misionera a comunidades cercanas</p>
-                        <p><i class="fas fa-heart"></i> <strong>Tarde</strong> - Adoración Eucarística y confesiones</p>
-                        <p><i class="fas fa-music"></i> <strong>Noche</strong> - Velada cultural y testimonios</p>
-                    </div>
-                </div>
-                
-                <!-- Día 10 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 10</div>
-                    <div class="timeline-content">
-                        <h3>Enviados en Misión</h3>
-                        <p><i class="fas fa-award"></i> <strong>9:00 AM</strong> - Misa de clausura y compromiso misionero</p>
-                        <p><i class="fas fa-certificate"></i> <strong>11:00 AM</strong> - Entrega de crucifijos y despedida</p>
-                        <p><i class="fas fa-car-side"></i> <strong>1:00 PM</strong> - ¡Hasta el próximo campamento!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Countdown -->
-    <section class="section countdown-section" id="countdown">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">¡La Cuenta Atrás ha Comenzado!</h2>
-                <p class="section-subtitle">Cada segundo nos acerca a la gran aventura</p>
-            </div>
-            
-            <div class="countdown-container">
-                <div class="countdown-display">
-                    <div class="countdown-unit">
-                        <div class="unit-value" id="countdownDays">000</div>
-                        <div class="unit-label">Días</div>
-                    </div>
-                    
-                    <div class="countdown-separator">:</div>
-                    
-                    <div class="countdown-unit">
-                        <div class="unit-value" id="countdownHours">00</div>
-                        <div class="unit-label">Horas</div>
-                    </div>
-                    
-                    <div class="countdown-separator">:</div>
-                    
-                    <div class="countdown-unit">
-                        <div class="unit-value" id="countdownMinutes">00</div>
-                        <div class="unit-label">Minutos</div>
-                    </div>
-                    
-                    <div class="countdown-separator">:</div>
-                    
-                    <div class="countdown-unit">
-                        <div class="unit-value" id="countdownSeconds">00</div>
-                        <div class="unit-label">Segundos</div>
-                    </div>
-                </div>
-                
-                <div class="countdown-info">
-                    <p><i class="fas fa-calendar-check"></i> La aventura comienza: <strong>8 de Enero, 2026 - 9:00 AM</strong></p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Formulario -->
-    <section class="section" id="form">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">¡Únete a la Misión!</h2>
-                <p class="section-subtitle">Completa tu ficha de aventurero y reserva tu lugar</p>
-            </div>
-            
-            <div class="form-stats">
-                <div class="stat-badge">
-                    <i class="fas fa-user-astronaut"></i>
-                    <span id="applicantCount">0</span> aventureros inscritos
-                </div>
-                <div class="stat-badge visual-spots">
-                    <i class="fas fa-campground"></i>
-                    <div class="spots-progress">
-                        <div class="spots-progress-bar" id="spotsProgressBar"></div>
-                    </div>
-                    <span><strong id="availableSpots">100</strong> lugares en la misión</span>
-                </div>
-            </div>
-            
-            <div class="form-card adventure-form">
-                <form id="campForm">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="fullName">
-                                <i class="fas fa-user-astronaut form-icon"></i> Nombre del Misionero *
-                            </label>
-                            <input type="text" id="fullName" name="fullName" required placeholder="Ej: Ana 'Exploradora' López">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="age">
-                                <i class="fas fa-birthday-cake form-icon"></i> Edad *
-                            </label>
-                            <input type="number" id="age" name="age" min="8" max="17" required placeholder="Entre 8 y 17 años">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="email">
-                                <i class="fas fa-envelope form-icon"></i> Mensajero Electrónico *
-                            </label>
-                            <input type="email" id="email" name="email" required placeholder="aventurero@correo.com">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="phone">
-                                <i class="fas fa-phone form-icon"></i> Teléfono *
-                            </label>
-                            <input type="tel" id="phone" name="phone" required placeholder="+51 999 999 999">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="parish">
-                                <i class="fas fa-church form-icon"></i> Nombre de la Parroquia
-                            </label>
-                            <input type="text" id="parish" name="parish" placeholder="Tu parroquia o comunidad">
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <h4><i class="fas fa-heartbeat form-icon"></i> Notas para el Botiquín</h4>
-                        <p class="form-hint">Marca todo lo que el equipo médico debe conocer para cuidarte mejor.</p>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Ninguna">
-                                <span class="checkbox-custom"></span>
-                                ¡Todo en orden, listo para la aventura!
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Asma">
-                                <span class="checkbox-custom"></span>
-                                Asma
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Alergias">
-                                <span class="checkbox-custom"></span>
-                                Alergias alimentarias
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Diabetes">
-                                <span class="checkbox-custom"></span>
-                                Diabetes
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Otra">
-                                <span class="checkbox-custom"></span>
-                                Otra condición (especificar en comentarios)
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-section">
-                        <h4><i class="fas fa-utensils form-icon"></i> Preferencias del Explorador</h4>
-                        <p class="form-hint">Selecciona si tienes alguna preferencia especial para nuestras comidas de campamento.</p>
-                        <div class="checkbox-group">
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Ninguna">
-                                <span class="checkbox-custom"></span>
-                                ¡Como de todo! Sin restricciones
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Vegetariano">
-                                <span class="checkbox-custom"></span>
-                                Vegetariano
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Celíaco">
-                                <span class="checkbox-custom"></span>
-                                Sin gluten
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Intolerancia láctea">
-                                <span class="checkbox-custom"></span>
-                                Sin lactosa
-                            </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Alergias">
-                                <span class="checkbox-custom"></span>
-                                Otras alergias (especificar abajo)
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="emergencyContact">
-                            <i class="fas fa-phone-alt form-icon"></i> Contacto del Cuartel General *
-                        </label>
-                        <textarea id="emergencyContact" name="emergencyContact" rows="2" required placeholder="Nombre y teléfono de mamá, papá o tutor para emergencias"></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="comments">
-                            <i class="fas fa-comment-dots form-icon"></i> Mensaje Secreto para los Líderes
-                        </label>
-                        <textarea id="comments" name="comments" rows="4" placeholder="Cuéntanos algo importante sobre ti, tus talentos, miedos o lo que más esperas de esta aventura..."></textarea>
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-paper-plane"></i> ¡Enviar Mi Solicitud de Aventura!
-                        </button>
-                        <p class="form-note">
-                            <i class="fas fa-info-circle"></i> Recibirás un rollo de papiro (correo) de confirmación en 24 horas.
+            <div style="background: white; border-radius: var(--radius-lg); padding: 40px; box-shadow: var(--shadow);" class="scroll-animate animate-zoom delay-2">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center;">
+                    <div>
+                        <h3 style="color: var(--primary); margin-bottom: 20px;" class="scroll-animate animate-fade delay-3">
+                            <i class="fas fa-gamepad icon-animate"></i> ¿Listo para la misión?
+                        </h3>
+                        <p style="margin-bottom: 20px; font-size: 1.1rem;" class="scroll-animate animate-fade delay-4">
+                            Ayuda a "Misionerito" a llevar la alegría del Evangelio a los cinco continentes. 
+                            Responde preguntas sobre la fe, supera desafíos y aprende sobre diferentes culturas.
                         </p>
+                        
+                        <div style="margin: 30px 0;" class="scroll-animate animate-fade delay-5">
+                            <h4 style="color: var(--secondary); margin-bottom: 15px;">
+                                <i class="fas fa-trophy icon-animate"></i> ¿Qué puedes lograr?
+                            </h4>
+                            <ul style="list-style: none; padding-left: 0;">
+                                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;" class="scroll-animate animate-slide-left delay-5">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    <span>Conocer países misioneros</span>
+                                </li>
+                                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;" class="scroll-animate animate-slide-left delay-6">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    <span>Aprender sobre santos misioneros</span>
+                                </li>
+                                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;" class="scroll-animate animate-slide-left delay-7">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    <span>Descubrir cómo viven niños de otros países</span>
+                                </li>
+                                <li style="margin-bottom: 10px; display: flex; align-items: center; gap: 10px;" class="scroll-animate animate-slide-left delay-8">
+                                    <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                                    <span>Ganar medallas misioneras</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a href="juego.html" class="btn btn-primary btn-lg btn-animate delay-6" style="width: 100%;">
+                            <i class="fas fa-play-circle"></i> ¡Comenzar Aventura!
+                        </a>
                     </div>
-                </form>
-            </div>
-        </div>
-    </section>
 
-    
-    <!-- Galería -->
-    <section class="section bg-light" id="gallery">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Nuestro Campamento en Imágenes</h2>
-                <p class="section-subtitle">Haz clic en cada categoría para ver más fotos</p>
-            </div>
+                    <div style="text-align: center;">
+                        <div style="background: linear-gradient(135deg, var(--primary-light), var(--primary)); 
+                                    border-radius: var(--radius-lg); padding: 30px; color: white; margin-bottom: 20px;" 
+                             class="scroll-animate animate-zoom delay-4">
+                            <i class="fas fa-globe-americas icon-animate" style="font-size: 4rem; margin-bottom: 20px;"></i>
+                            <h3 style="color: white;" class="scroll-animate animate-fade delay-5">5 Continentes</h3>
+                            <p class="scroll-animate animate-fade delay-6">30 Misiones por completar</p>
+                        </div>
 
-            <div class="gallery-grid">
-                <!-- GALERÍA 1: Juegos y Actividades -->
-                <div class="gallery-item" onclick="openGamesGallery()">
-                    <div class="gallery-portada portada-juegos">
-                        <div class="portada-overlay">
-                            <div class="portada-content">
-                                <h4><i class="fas fa-gamepad"></i> Juegos y Actividades</h4>
-                                <p>¡Diversión y energía en acción!</p>
-                                <span class="portada-badge">6 fotos</span>
+                        <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                            <div style="text-align: center;" class="scroll-animate animate-zoom delay-5">
+                                <div style="background: var(--accent-light); width: 60px; height: 60px; border-radius: 50%; 
+                                            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <i class="fas fa-medal" style="font-size: 1.5rem; color: var(--accent);"></i>
+                                </div>
+                                <span>Medallas</span>
+                            </div>
+                            <div style="text-align: center;" class="scroll-animate animate-zoom delay-6">
+                                <div style="background: var(--secondary-light); width: 60px; height: 60px; border-radius: 50%; 
+                                            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <i class="fas fa-star" style="font-size: 1.5rem; color: var(--secondary);"></i>
+                                </div>
+                                <span>Logros</span>
+                            </div>
+                            <div style="text-align: center;" class="scroll-animate animate-zoom delay-7">
+                                <div style="background: var(--success-light); width: 60px; height: 60px; border-radius: 50%; 
+                                            display: flex; align-items: center; justify-content: center; margin: 0 auto 10px;">
+                                    <i class="fas fa-award" style="font-size: 1.5rem; color: var(--success);"></i>
+                                </div>
+                                <span>Premios</span>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                <!-- GALERÍA 2: Vida Sacramental -->
-                <div class="gallery-item" onclick="openFaithGallery()">
-                    <div class="gallery-portada portada-sacramental">
-                        <div class="portada-overlay">
-                            <div class="portada-content">
-                                <h4><i class="fas fa-church"></i> Vida Sacramental</h4>
-                                <p>Misa, Adoración y Rosario</p>
-                                <span class="portada-badge">6 fotos</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GALERÍA 3: Talleres y Formación -->
-                <div class="gallery-item" onclick="openWorkshopsGallery()">
-                    <div class="gallery-portada portada-talleres">
-                        <div class="portada-overlay">
-                            <div class="portada-content">
-                                <h4><i class="fas fa-comments"></i>Formación</h4>
-                                <p>Charlas y crecimiento en la fe</p>
-                                <span class="portada-badge">6 fotos</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- GALERÍA 4: Convivencia Cristiana -->
-                <div class="gallery-item" onclick="openCommunityGallery()">
-                    <div class="gallery-portada portada-convivencia">
-                        <div class="portada-overlay">
-                            <div class="portada-content">
-                                <h4><i class="fas fa-users"></i> Convivencia Misionera</h4>
-                                <p>Comunidad, fogatas y amistad</p>
-                                <span class="portada-badge">6 fotos</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="gallery-nota">
-                <p><i class="fas fa-info-circle"></i> Cada categoría contiene 6 fotos. ¡Haz clic para verlas todas!</p>
             </div>
         </div>
     </section>
@@ -580,72 +674,55 @@
             <div class="footer-content">
                 <div class="footer-section">
                     <div class="footer-logo">
-                        <img class="logo-footer" src="img/logo-iam.png" alt="">
+                        <img class="logo-footer" src="img/logo-iam.png" alt="Logo IAM">
                         <div>
-                            <h3>CAMPAMENTO IAM</h3>
-                            <p>Infancia y Adolescencia Misionera</p>
+                            <h3>INFANCIA Y ADOLESCENCIA MISIONERA</h3>
+                            <p>Obra Pontificia de la Iglesia Católica</p>
                         </div>
                     </div>
-                    <p class="footer-description">Formando a niños y adolescentes con fe, amistad y valentía para seguir a Jesús y María todos los días.</p>
+                    <p class="footer-description scroll-animate animate-fade delay-1">Formando misioneros desde la niñez para llevar el amor de Jesús a todos los rincones del mundo.</p>
                     <div class="social-links">
-                        <a href="https://www.facebook.com/profile.php?id=100080380153994" class="social-link" title="Síguenos en Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="https://www.instagram.com/iaminmaculada/" class="social-link" title="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-link" title="Escríbenos por WhatsApp"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://www.youtube.com/@iaminmaculada" class="social-link" title="Mira nuestros videos"><i class="fab fa-youtube"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=100080380153994" class="social-link scroll-animate animate-zoom delay-2" title="Síguenos en Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/iaminmaculada/" class="social-link scroll-animate animate-zoom delay-3" title="Síguenos en Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-link scroll-animate animate-zoom delay-4" title="Escríbenos por WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://www.youtube.com/@iaminmaculada" class="social-link scroll-animate animate-zoom delay-5" title="Mira nuestros videos"><i class="fab fa-youtube"></i></a>
                     </div>
                 </div>
                 
                 <div class="footer-section">
-                    <h4>Contacta a los Animadores</h4>
+                    <h4 class="scroll-animate animate-fade delay-2">Contacto</h4>
                     <ul class="contact-list">
-                        <li><i class="fab fa-instagram"></i> iaminmaculada</li>
-                        <li><i class="fas fa-phone"></i> +54 3865-00000</li>
-                        <li><i class="fas fa-map-marker-alt"></i> En Concepcion: Parroquia Nuestra Señora de Fátima</li>
-                        <li><i class="fas fa-map-marker-alt"></i> En Alto Verde: Capilla San José Obrero</li>
+                        <li class="scroll-animate animate-slide-left delay-3"><i class="fab fa-instagram"></i> iaminmaculada</li>
+                        <li class="scroll-animate animate-slide-left delay-4"><i class="fas fa-envelope"></i> iaminmaculada@gmail.com</li>
+                        <li class="scroll-animate animate-slide-left delay-5"><i class="fas fa-map-marker-alt"></i> Parroquia Nuestra Señora de Fátima</li>
+                        <li class="scroll-animate animate-slide-left delay-6"><i class="fas fa-map-marker-alt"></i> Capilla San José Obrero</li>
                     </ul>
                 </div>
                 
                 <div class="footer-section">
-                    <h4>Mapa del Tesoro</h4>
+                    <h4 class="scroll-animate animate-fade delay-3">Enlaces Rápidos</h4>
                     <ul class="footer-links">
-                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Campamento Base</a></li>
-                        <li><a href="#about"><i class="fas fa-chevron-right"></i> La Misión</a></li>
-                        <li><a href="#dates"><i class="fas fa-chevron-right"></i> Mapa de Ruta</a></li>
-                        <li><a href="#form"><i class="fas fa-chevron-right"></i> ¡Únete!</a></li>
+                        <li class="scroll-animate animate-slide-right delay-4"><a href="#inicio"><i class="fas fa-chevron-right"></i> Inicio</a></li>
+                        <li class="scroll-animate animate-slide-right delay-5"><a href="#sobre-iam"><i class="fas fa-chevron-right"></i> ¿Qué es IAM?</a></li>
+                        <li class="scroll-animate animate-slide-right delay-6"><a href="#pilares"><i class="fas fa-chevron-right"></i> Nuestros Pilares</a></li>
+                        <li class="scroll-animate animate-slide-right delay-7"><a href="#juego"><i class="fas fa-chevron-right"></i> Juego Misionero</a></li>
+                        <li class="scroll-animate animate-slide-right delay-8"><a href="inscripcion.html"><i class="fas fa-chevron-right"></i> Campamento 2026</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 IAM - infancia y Adolescencia Misionera. Todos los derechos reservados.</p>
-                <p>Hecho con <i class="fas fa-heart" style="color: #ffffff;"></i> para todos los niños y adolescentes de todo el mundo</p>
+                <p class="scroll-animate animate-fade delay-4">&copy; 2025 IAM - Infancia y Adolescencia Misionera. Todos los derechos reservados.</p>
+                <p class="scroll-animate animate-fade delay-5">Obra Pontificia aprobada por la Santa Sede</p>
             </div>
         </div>
     </footer>
 
-    <!-- Modal de Confirmación -->
-    <div class="modal" id="confirmationModal">
-        <div class="modal-content confirmation-modal">
-            <div class="modal-icon success">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h3>¡Misión Aceptada!</h3>
-            <p id="confirmationMessage">Tu registro ha sido procesado correctamente.</p>
-            <div class="confirmation-details">
-                <p><i class="fas fa-user-astronaut"></i> <strong id="confirmName">-</strong></p>
-                <p><i class="fas fa-id-card"></i> Código de Misionero: <strong id="confirmId">-</strong></p>
-                <p><i class="fas fa-envelope"></i> Pronto recibirás instrucciones secretas en tu mensajero electrónico.</p>
-            </div>
-            <button class="btn btn-primary" id="closeConfirmation">¡Entendido, Capitán!</button>
-        </div>
-    </div>
-
     <!-- Scripts -->
-    <!-- Scripts de Firebase Backend (AGREGAR ESTOS) -->
     <script src="firebase-config.js"></script>
     <script src="backend-manager.js"></script>
 
-    <!-- Script de inicialización (AGREGAR ESTE) -->
+    <!-- Script de inicialización -->
     <script>
         // Inicializar backend cuando la página cargue
         document.addEventListener('DOMContentLoaded', function() {
@@ -662,16 +739,191 @@
         });
     </script>
 
-    <!-- Tus scripts existentes (DEJAR COMO ESTÁN) -->
+    <!-- Tus scripts existentes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="script.js"></script>
+
+    <!-- Script de animaciones al scroll -->
     <script>
-      // Inicializar el backend
-      window.backendManager.initialize().then(result => {
-        console.log("Backend inicializado en modo:", result.mode);
-      });
+        // Sistema simple de animaciones al scroll
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log("🎬 Configurando animaciones al scroll...");
+            
+            // Configurar el Intersection Observer
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Para elementos con delay, esperar según el delay
+                        const delayClass = Array.from(entry.target.classList).find(cls => 
+                            cls.startsWith('delay-') || cls.startsWith('hero-delay-')
+                        );
+                        
+                        if (delayClass) {
+                            const delay = parseInt(delayClass.split('-')[1]) * 200; // Convertir a milisegundos
+                            setTimeout(() => {
+                                entry.target.classList.add('show');
+                            }, delay);
+                        } else {
+                            entry.target.classList.add('show');
+                        }
+                        
+                        // Para contadores, animar números
+                        if (entry.target.classList.contains('counter-animate')) {
+                            animateCounter(entry.target);
+                        }
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            // Observar todos los elementos con clase scroll-animate
+            document.querySelectorAll('.scroll-animate').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Observar elementos específicos
+            document.querySelectorAll('.hero-animate, .countdown-animate, .icon-animate, .btn-animate, .card-animate, .timeline-dot-animate').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Observar feature cards
+            document.querySelectorAll('.feature-card').forEach((card, index) => {
+                card.classList.add('scroll-animate', 'delay-' + (index % 6));
+                observer.observe(card);
+            });
+
+            // Observar timeline items
+            document.querySelectorAll('.timeline-item').forEach((item, index) => {
+                item.classList.add('scroll-animate', 'delay-' + (index % 4));
+                observer.observe(item);
+            });
+
+            // Observar gallery items
+            document.querySelectorAll('.gallery-item').forEach((item, index) => {
+                item.classList.add('scroll-animate', 'delay-' + (index % 4));
+                observer.observe(item);
+            });
+
+            // Observar stats
+            document.querySelectorAll('.stat-badge').forEach((stat, index) => {
+                stat.classList.add('scroll-animate', 'delay-' + index);
+                observer.observe(stat);
+            });
+
+            // Observar forms
+            const formCard = document.querySelector('.form-card');
+            if (formCard) {
+                formCard.classList.add('scroll-animate', 'delay-1');
+                observer.observe(formCard);
+            }
+
+            // Función para animar contadores
+            function animateCounter(element) {
+                const target = parseInt(element.textContent.replace(/\D/g, ''));
+                if (isNaN(target)) return;
+
+                let current = 0;
+                const increment = target / 20;
+                const duration = 1000;
+                const stepTime = duration / 20;
+
+                const counter = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        element.textContent = target;
+                        clearInterval(counter);
+                    } else {
+                        element.textContent = Math.floor(current);
+                    }
+                }, stepTime);
+            }
+
+            // Animar elementos que ya están en el viewport al cargar
+            function checkInitialViewport() {
+                const elements = document.querySelectorAll('.scroll-animate, .hero-animate');
+                elements.forEach(el => {
+                    const rect = el.getBoundingClientRect();
+                    const isInViewport = rect.top <= window.innerHeight && rect.bottom >= 0;
+                    
+                    if (isInViewport && !el.classList.contains('show')) {
+                        const delayClass = Array.from(el.classList).find(cls => 
+                            cls.startsWith('delay-') || cls.startsWith('hero-delay-')
+                        );
+                        
+                        if (delayClass) {
+                            const delay = parseInt(delayClass.split('-')[1]) * 200;
+                            setTimeout(() => el.classList.add('show'), delay);
+                        } else {
+                            el.classList.add('show');
+                        }
+                    }
+                });
+            }
+
+            // Ejecutar al cargar y después de un pequeño delay
+            setTimeout(checkInitialViewport, 100);
+            
+            // También ejecutar cuando se haga resize
+            window.addEventListener('resize', checkInitialViewport);
+
+            // Agregar clase active a enlaces del navbar al hacer scroll
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (scrollY >= (sectionTop - 150)) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+            });
+
+            // Smooth scroll para enlaces internos
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        e.preventDefault();
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 100,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+
+            // Botón admin
+            const adminBtn = document.getElementById('adminAccessBtn');
+            if (adminBtn) {
+                adminBtn.addEventListener('click', function() {
+                    alert('Acceso para animadores y coordinadores. Contacta al administrador para obtener credenciales.');
+                });
+            }
+
+            console.log("✅ Animaciones configuradas correctamente");
+        });
+
+        // Inicializar el backend
+        window.backendManager.initialize().then(result => {
+            console.log("Backend inicializado en modo:", result.mode);
+        });
     </script>
 
 </body>

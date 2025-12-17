@@ -255,6 +255,11 @@ header {
 
 
 /* ===== HERO SECTION ===== */
+.hero-iam{
+    background:  linear-gradient(to bottom, rgba(17, 18, 71, 0.4), rgba(52, 54, 173, 0.7)), url(img/hero-iam.png) no-repeat center center/cover
+                 !important;
+}
+
 .hero {
     background:  linear-gradient(to bottom, rgba(17, 18, 71, 0.4), rgba(52, 54, 173, 0.7)), url(img/1000828586.jpg) no-repeat center center/cover
                 ;
@@ -2104,4 +2109,1038 @@ footer {
 .logo-footer {
     height: 70px;
     border-radius: 10%;
+}
+
+/* ===== ESTILOS ESPECÍFICOS PARA PÁGINA PRINCIPAL IAM ===== */
+/* ¡ESTOS ESTILOS NO AFECTAN LA PÁGINA DE INSCRIPCIÓN! */
+
+/* Cards grandes para sección ¿Qué es IAM? */
+.iam-card {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow);
+    margin-bottom: 50px;
+    border: 2px solid transparent;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.iam-history {
+    border-left: 6px solid var(--faith-color);
+    background: linear-gradient(to right, rgba(156, 39, 176, 0.05), white);
+}
+
+.iam-mission {
+    border-right: 6px solid var(--mission-color);
+    background: linear-gradient(to left, rgba(63, 81, 181, 0.05), white);
+}
+
+.iam-motto {
+    border-left: 6px solid var(--community-color);
+    background: linear-gradient(to right, rgba(76, 175, 80, 0.05), white);
+}
+
+.iam-card-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.iam-reverse {
+    grid-template-columns: 1fr 1fr;
+}
+
+.iam-card-image {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.iam-card-image img {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 4px solid white;
+    box-shadow: var(--shadow);
+}
+
+.iam-image-caption {
+    text-align: center;
+    margin-top: 12px;
+    font-style: italic;
+    color: var(--text-light);
+    font-size: 0.85rem;
+}
+
+.iam-card-text {
+    padding: 15px;
+}
+
+.iam-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 25px;
+}
+
+.iam-card-header i {
+    font-size: 1.8rem;
+    color: var(--primary);
+    background: rgba(42, 110, 187, 0.1);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iam-card-header h3 {
+    color: var(--primary);
+    font-size: 1.6rem;
+    margin: 0;
+}
+
+.iam-card-section {
+    margin-bottom: 20px;
+}
+
+.iam-card-section h4 {
+    color: var(--secondary);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+}
+
+.iam-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.iam-stat-box {
+    background: rgba(42, 110, 187, 0.08);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--primary);
+}
+
+.iam-stat-box i {
+    font-size: 1.5rem;
+    color: var(--primary);
+    margin-bottom: 8px;
+}
+
+.iam-stat-box h5 {
+    color: var(--primary);
+    margin-bottom: 5px;
+    font-size: 0.95rem;
+}
+
+.iam-stat-box p {
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.iam-quote {
+    background: linear-gradient(135deg, rgba(156, 39, 176, 0.08), rgba(186, 104, 200, 0.08));
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed rgba(156, 39, 176, 0.2);
+    margin-top: 25px;
+}
+
+.iam-quote i {
+    color: var(--faith-color);
+    font-size: 1.2rem;
+    margin-right: 8px;
+    float: left;
+}
+
+.iam-quote p {
+    margin: 0 0 8px 0;
+    font-style: italic;
+    color: var(--text-dark);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.iam-quote span {
+    display: block;
+    text-align: right;
+    font-weight: 600;
+    color: var(--faith-color);
+    font-size: 0.9rem;
+}
+
+.iam-feature-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 12px 0;
+}
+
+.iam-feature-list li {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.95rem;
+}
+
+.iam-feature-list i {
+    color: var(--success);
+    margin-top: 3px;
+    font-size: 0.9rem;
+}
+
+.iam-features-grid {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.iam-feature {
+    flex: 1;
+    background: rgba(63, 81, 181, 0.08);
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.iam-feature i {
+    font-size: 1.5rem;
+    color: var(--mission-color);
+    margin-bottom: 8px;
+}
+
+.iam-feature h5 {
+    color: var(--mission-color);
+    margin-bottom: 6px;
+    font-size: 0.95rem;
+}
+
+.iam-feature p {
+    font-size: 0.85rem;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.iam-graphic-card {
+    background: linear-gradient(135deg, var(--mission-color), #7986CB);
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+    color: white;
+    text-align: center;
+}
+
+.iam-graphic-card i {
+    font-size: 3rem;
+    margin-bottom: 15px;
+    opacity: 0.9;
+}
+
+.iam-graphic-card h3 {
+    color: white;
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+}
+
+.iam-graphic-card p {
+    opacity: 0.9;
+    margin-bottom: 20px;
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+.iam-numbers {
+    display: flex;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.iam-number {
+    text-align: center;
+}
+
+.iam-number span {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 3px;
+}
+
+.iam-number small {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.iam-motto-card {
+    background: linear-gradient(135deg, var(--community-color), #81C784);
+    height: 100%;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 25px;
+    color: white;
+    text-align: center;
+}
+
+.iam-motto-card i {
+    font-size: 2.5rem;
+    margin-bottom: 15px;
+    opacity: 0.8;
+}
+
+.iam-motto-card h2 {
+    color: white;
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+}
+
+.iam-motto-text {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.iam-motto-text p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.iam-motto-text span {
+    color: #FFEB3B;
+}
+
+.iam-motto-icons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.iam-motto-icon {
+    text-align: center;
+}
+
+.iam-motto-icon i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.iam-motto-icon span {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.iam-explanation {
+    margin: 20px 0;
+}
+
+.iam-point {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+
+.iam-point-number {
+    background: var(--primary);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.iam-point:nth-child(2) .iam-point-number {
+    background: var(--accent);
+}
+
+.iam-point:nth-child(3) .iam-point-number {
+    background: var(--success);
+}
+
+.iam-point-content h5 {
+    color: var(--primary);
+    margin-bottom: 4px;
+    font-size: 1rem;
+}
+
+.iam-point:nth-child(2) .iam-point-content h5 {
+    color: var(--accent);
+}
+
+.iam-point:nth-child(3) .iam-point-content h5 {
+    color: var(--success);
+}
+
+.iam-point-content p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.iam-highlight {
+    background: rgba(255, 179, 71, 0.08);
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 3px solid var(--secondary);
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-top: 25px;
+}
+
+.iam-highlight i {
+    color: var(--secondary);
+    font-size: 1.3rem;
+    margin-top: 3px;
+}
+
+.iam-highlight h5 {
+    color: var(--secondary);
+    margin-bottom: 6px;
+    font-size: 1rem;
+}
+
+.iam-highlight p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+/* Línea de tiempo */
+.iam-timeline {
+    margin-top: 60px;
+    padding-top: 30px;
+    border-top: 2px solid rgba(42, 110, 187, 0.1);
+}
+
+.iam-timeline h3 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.6rem;
+}
+
+.iam-timeline-track {
+    position: relative;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.iam-timeline-line {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 100%;
+    background: linear-gradient(to bottom, var(--primary), var(--secondary));
+}
+
+.iam-timeline-events {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+}
+
+.iam-timeline-event {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.iam-event-spacer {
+    flex: 1;
+}
+
+.iam-event-dot {
+    width: 18px;
+    height: 18px;
+    background: var(--primary);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 0 2px var(--primary);
+    position: relative;
+    z-index: 2;
+    flex-shrink: 0;
+}
+
+.iam-timeline-event:nth-child(2) .iam-event-dot {
+    background: var(--secondary);
+    box-shadow: 0 0 0 2px var(--secondary);
+}
+
+.iam-timeline-event:nth-child(3) .iam-event-dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent);
+}
+
+.iam-timeline-event:nth-child(4) .iam-event-dot {
+    background: var(--success);
+    box-shadow: 0 0 0 2px var(--success);
+}
+
+.iam-event-content {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    border: 1px solid #E2E8F0;
+}
+
+.iam-event-left {
+    border-right: 4px solid var(--primary);
+    text-align: right;
+}
+
+.iam-event-right {
+    border-left: 4px solid var(--secondary);
+    text-align: left;
+}
+
+.iam-timeline-event:nth-child(3) .iam-event-left {
+    border-right-color: var(--accent);
+}
+
+.iam-timeline-event:nth-child(4) .iam-event-right {
+    border-left-color: var(--success);
+}
+
+.iam-event-content h4 {
+    color: var(--primary);
+    margin-bottom: 8px;
+    font-size: 1.2rem;
+}
+
+.iam-timeline-event:nth-child(2) .iam-event-content h4 {
+    color: var(--secondary);
+}
+
+.iam-timeline-event:nth-child(3) .iam-event-content h4 {
+    color: var(--accent);
+}
+
+.iam-timeline-event:nth-child(4) .iam-event-content h4 {
+    color: var(--success);
+}
+
+.iam-event-content p {
+    margin: 0;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.iam-history {
+    animation-delay: 0.1s;
+}
+
+.iam-mission {
+    animation-delay: 0.2s;
+}
+
+.iam-motto {
+    animation-delay: 0.3s;
+}
+
+.iam-timeline {
+    animation: fadeInUp 0.6s ease-out;
+    animation-delay: 0.4s;
+    animation-fill-mode: both;
+}
+
+/* Responsive para página principal */
+@media (max-width: 1100px) {
+    .iam-card-content {
+        gap: 30px;
+    }
+}
+
+@media (max-width: 992px) {
+    .iam-card-content,
+    .iam-reverse {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .iam-card-image {
+        height: 300px;
+    }
+    
+    .iam-card {
+        padding: 25px;
+    }
+    
+    .iam-stats-grid,
+    .iam-features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .iam-timeline-track {
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .iam-card {
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+    
+    .iam-card-image img {
+        height: 250px;
+    }
+    
+    .iam-graphic-card,
+    .iam-motto-card {
+        padding: 20px;
+    }
+    
+    .iam-numbers {
+        gap: 15px;
+    }
+    
+    .iam-number span {
+        font-size: 1.5rem;
+    }
+    
+    .iam-motto-text p {
+        font-size: 1rem;
+    }
+    
+    .iam-motto-icons {
+        gap: 15px;
+    }
+    
+    .iam-timeline-event {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .iam-event-spacer {
+        display: none;
+    }
+    
+    .iam-event-content {
+        width: 100%;
+        text-align: center !important;
+        border-left: 4px solid var(--primary) !important;
+        border-right: none !important;
+    }
+    
+    .iam-timeline-line {
+        left: 25px;
+    }
+    
+    .iam-event-dot {
+        position: absolute;
+        left: 20px;
+    }
+}
+
+@media (max-width: 576px) {
+    .iam-card {
+        padding: 15px;
+    }
+    
+    .iam-card-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    .iam-card-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .iam-graphic-card h3,
+    .iam-motto-card h2 {
+        font-size: 1.3rem;
+    }
+    
+    .iam-timeline h3 {
+        font-size: 1.3rem;
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+/* ===== ANIMACIONES AL SCROLL PARA TODA LA PÁGINA ===== */
+.scroll-animate {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-animate.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Diferentes tipos de animaciones */
+.animate-slide-left {
+    transform: translateX(-60px);
+}
+
+.animate-slide-right {
+    transform: translateX(60px);
+}
+
+.animate-slide-left.show,
+.animate-slide-right.show {
+    transform: translateX(0);
+}
+
+.animate-scale {
+    transform: scale(0.8);
+}
+
+.animate-scale.show {
+    transform: scale(1);
+}
+
+.animate-rotate {
+    transform: rotate(-10deg) scale(0.9);
+}
+
+.animate-rotate.show {
+    transform: rotate(0) scale(1);
+}
+
+.animate-flip {
+    transform: perspective(1000px) rotateY(90deg);
+    opacity: 0;
+}
+
+.animate-flip.show {
+    transform: perspective(1000px) rotateY(0);
+    opacity: 1;
+}
+
+.animate-bounce {
+    transform: translateY(60px);
+}
+
+.animate-bounce.show {
+    transform: translateY(0);
+    animation: bounceSoft 0.8s ease;
+}
+
+@keyframes bounceSoft {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-15px); }
+}
+
+.animate-fade {
+    opacity: 0;
+}
+
+.animate-fade.show {
+    opacity: 1;
+}
+
+.animate-zoom {
+    transform: scale(0.5);
+    opacity: 0;
+}
+
+.animate-zoom.show {
+    transform: scale(1);
+    opacity: 1;
+}
+
+/* Delays para animaciones en secuencia */
+.delay-1 { transition-delay: 0.1s; }
+.delay-2 { transition-delay: 0.2s; }
+.delay-3 { transition-delay: 0.3s; }
+.delay-4 { transition-delay: 0.4s; }
+.delay-5 { transition-delay: 0.5s; }
+.delay-6 { transition-delay: 0.6s; }
+.delay-7 { transition-delay: 0.7s; }
+.delay-8 { transition-delay: 0.8s; }
+
+/* Animación para números (contadores) */
+.counter-animate {
+    display: inline-block;
+}
+
+/* Animación para íconos */
+.icon-animate {
+    transform: scale(0);
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.icon-animate.show {
+    transform: scale(1);
+}
+
+/* Animación para progress bars */
+.progress-animate {
+    width: 0;
+    transition: width 1.5s ease-out;
+}
+
+.progress-animate.show {
+    width: var(--progress-width);
+}
+
+/* Animación para timeline dots */
+.timeline-dot-animate {
+    transform: scale(0);
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.timeline-dot-animate.show {
+    transform: scale(1);
+}
+
+/* Animación para botones */
+.btn-animate {
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+}
+
+.btn-animate.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Animación para cards con efecto de carta */
+.card-animate {
+    transform: translateY(50px) rotateX(10deg);
+    opacity: 0;
+    transform-style: preserve-3d;
+}
+
+.card-animate.show {
+    transform: translateY(0) rotateX(0);
+    opacity: 1;
+}
+
+/* Animación para títulos con línea decorativa */
+.title-line-animate {
+    position: relative;
+    overflow: hidden;
+}
+
+.title-line-animate::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 3px;
+    background: var(--secondary);
+    transition: width 1s ease-out;
+}
+
+.title-line-animate.show::after {
+    width: 100px;
+}
+
+/* Animación para imágenes con efecto de revelación */
+.image-reveal {
+    position: relative;
+    overflow: hidden;
+}
+
+.image-reveal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--primary);
+    transform: translateX(-100%);
+    z-index: 1;
+    transition: transform 1s ease-out;
+}
+
+.image-reveal.show::before {
+    transform: translateX(100%);
+}
+
+/* Animación para texto con efecto de escritura */
+.text-reveal {
+    position: relative;
+    overflow: hidden;
+}
+
+.text-reveal::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    transform: translateX(-100%);
+    transition: transform 1s ease-out;
+}
+
+.text-reveal.show::after {
+    transform: translateX(100%);
+}
+
+/* Animación especial para el hero */
+.hero-animate {
+    opacity: 0;
+    transform: translateY(60px);
+    animation: heroEntrance 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes heroEntrance {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-delay-1 { animation-delay: 0.2s; }
+.hero-delay-2 { animation-delay: 0.4s; }
+.hero-delay-3 { animation-delay: 0.6s; }
+.hero-delay-4 { animation-delay: 0.8s; }
+
+/* Animación para el countdown */
+.countdown-animate {
+    transform: scale(0.5);
+    opacity: 0;
+    animation: countdownPop 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+@keyframes countdownPop {
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.countdown-delay-1 { animation-delay: 0.1s; }
+.countdown-delay-2 { animation-delay: 0.2s; }
+.countdown-delay-3 { animation-delay: 0.3s; }
+.countdown-delay-4 { animation-delay: 0.4s; }
+
+/* Animación para gallery items */
+.gallery-animate {
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+    transition: all 0.6s ease-out;
+}
+
+.gallery-animate.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+}
+
+/* Efecto de onda para elementos */
+.wave-animate {
+    position: relative;
+    overflow: hidden;
+}
+
+.wave-animate::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 1.5s ease;
+}
+
+.wave-animate.show::before {
+    left: 100%;
+}
+
+/* Animación para stats */
+.stat-animate {
+    transform: translateY(30px) scale(0.8);
+    opacity: 0;
+}
+
+.stat-animate.show {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+}
+
+/* Animación para forms */
+.form-animate {
+    opacity: 0;
+    transform: translateY(40px) perspective(1000px) rotateX(10deg);
+}
+
+.form-animate.show {
+    opacity: 1;
+    transform: translateY(0) perspective(1000px) rotateX(0);
+}
+
+/* Configuración para reducir motion (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+    .scroll-animate,
+    .animate-slide-left,
+    .animate-slide-right,
+    .animate-scale,
+    .animate-rotate,
+    .animate-flip,
+    .animate-bounce,
+    .animate-fade,
+    .animate-zoom,
+    .icon-animate,
+    .progress-animate,
+    .timeline-dot-animate,
+    .btn-animate,
+    .card-animate,
+    .gallery-animate,
+    .stat-animate,
+    .form-animate {
+        transition: none !important;
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
 }
