@@ -349,12 +349,21 @@ class RadioFirebaseManager {
     }
     
     updateGameCards(gameType, isActive) {
+        console.log("🎯 UPDATE para JUGADORES - Juego:", gameType, "Activo?", isActive);
+        
         const gameCards = document.querySelectorAll('.game-card');
+        const isUserAdmin = window.radio.admin.logged; // Verificar si es admin
         
         gameCards.forEach(card => {
-            if (isActive && card.dataset.game === gameType) {
-                // Desbloquear este juego
+            const thisGameType = card.dataset.game;
+            
+            // REGLA PRINCIPAL: Si NO es admin y el juego está activo → DESBLOQUEAR
+            if (!isUserAdmin && isActive && thisGameType === gameType) {
+                console.log("🔓 DESBLOQUEANDO para jugador:", thisGameType);
+                
+                // Quitar bloqueo visual
                 card.classList.remove('locked');
+                
                 const status = card.querySelector('.game-status');
                 if (status) {
                     status.innerHTML = '<i class="fas fa-unlock"></i> ACTIVO';
@@ -366,21 +375,19 @@ class RadioFirebaseManager {
                 if (button) {
                     button.disabled = false;
                     button.style.opacity = '1';
-                    button.innerHTML = '<i class="fas fa-gamepad"></i> ¡Únete al juego!';
-                    // Asegurar que el onclick esté bien configurado
+                    button.innerHTML = '<i class="fas fa-gamepad"></i> ¡Registrarse aquí!';
+                    // Función SIMPLE y directa
                     button.onclick = function() {
-                        if (typeof window.registerForGame === 'function') {
+                        console.log("Jugador quiere registrarse en:", thisGameType);
+                        if (window.registerForGame) {
                             window.registerForGame();
-                        } else {
-                            console.error("❌ window.registerForGame no está disponible");
-                            // Alternativa: mostrar un mensaje o recargar
-                            alert("Por favor, recarga la página para unirte al juego");
                         }
                     };
                 }
                 
-            } else {
-                // Bloquear
+            } 
+            // REGLA PARA ADMINS o juegos NO activos → MANTENER BLOQUEADO
+            else {
                 if (!card.classList.contains('locked')) {
                     card.classList.add('locked');
                     const status = card.querySelector('.game-status');
@@ -394,7 +401,11 @@ class RadioFirebaseManager {
                     if (button) {
                         button.disabled = true;
                         button.style.opacity = '0.5';
-                        button.innerHTML = 'Esperando al animador...';
+                        // Texto DIFERENTE para admin vs jugador
+                        const buttonText = isUserAdmin 
+                            ? 'Solo para selección (usa el panel arriba)' 
+                            : 'Esperando que el animador active un juego';
+                        button.innerHTML = buttonText;
                         button.onclick = null;
                     }
                 }
