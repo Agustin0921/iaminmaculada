@@ -368,9 +368,13 @@ class RadioFirebaseManager {
                     button.style.opacity = '1';
                     button.innerHTML = '<i class="fas fa-gamepad"></i> ¡Únete al juego!';
                     // Asegurar que el onclick esté bien configurado
-                    button.onclick = () => {
+                    button.onclick = function() {
                         if (typeof window.registerForGame === 'function') {
                             window.registerForGame();
+                        } else {
+                            console.error("❌ window.registerForGame no está disponible");
+                            // Alternativa: mostrar un mensaje o recargar
+                            alert("Por favor, recarga la página para unirte al juego");
                         }
                     };
                 }
