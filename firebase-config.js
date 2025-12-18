@@ -5,6 +5,7 @@
 const firebaseConfig = {
     "apiKey": "AIzaSyB5oQcEv5anwzjEM5aTNdavYqOBMsx2byE",
     "authDomain": "iam-campamento-2026.firebaseapp.com",
+    "databaseURL": "https://iam-campamento-2026-default-rtdb.firebaseio.com/",
     "projectId": "iam-campamento-2026",
     "storageBucket": "iam-campamento-2026.firebasestorage.app",
     "messagingSenderId": "600822219804",
