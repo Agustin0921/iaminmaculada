@@ -183,6 +183,10 @@ header {
     gap: 30px;
 }
 
+.nav-links a {
+    font-size: 14px;
+}
+
 .nav-link {
     text-decoration: none;
     color: var(--text-dark);

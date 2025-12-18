@@ -1,4 +1,4 @@
-// firebase-config.js
+// firebase-config.js - VERSIÓN ACTUALIZADA
 // ===== CONFIGURACIÓN DE FIREBASE =====
 
 // Configuración de tu proyecto Firebase
@@ -15,11 +15,16 @@ const firebaseConfig = {
 const COLLECTIONS = {
     APPLICANTS: 'applicants',
     ADMINS: 'admins',
-    SETTINGS: 'settings'
+    SETTINGS: 'settings',
+    // Nuevas colecciones para radio
+    RADIO_GAMES: 'radio_games',
+    RADIO_PLAYERS: 'radio_players',
+    RADIO_RANKING: 'radio_ranking',
+    RADIO_ADMINS: 'radio_admins'
 };
 
 // Variables globales
-let firebaseApp, firebaseDb, firebaseAuth;
+let firebaseApp, firebaseDb, firebaseAuth, firebaseRTDB;
 
 // Función para inicializar Firebase
 async function initializeFirebase() {
@@ -28,14 +33,22 @@ async function initializeFirebase() {
         const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
         const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
         const { getAuth } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+        const { getDatabase } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js");
         
         // Inicializar Firebase
         firebaseApp = initializeApp(firebaseConfig);
         firebaseDb = getFirestore(firebaseApp);
         firebaseAuth = getAuth(firebaseApp);
+        firebaseRTDB = getDatabase(firebaseApp);
         
         console.log("✅ Firebase inicializado correctamente");
-        return { success: true, app: firebaseApp, db: firebaseDb, auth: firebaseAuth };
+        return { 
+            success: true, 
+            app: firebaseApp, 
+            db: firebaseDb, 
+            auth: firebaseAuth,
+            rtdb: firebaseRTDB
+        };
     } catch (error) {
         console.error("❌ Error inicializando Firebase:", error);
         return { success: false, error: error.message };
@@ -49,5 +62,6 @@ window.firebaseConfig = {
     initialize: initializeFirebase,
     getApp: () => firebaseApp,
     getDb: () => firebaseDb,
-    getAuth: () => firebaseAuth
+    getAuth: () => firebaseAuth,
+    getRTDB: () => firebaseRTDB
 };
