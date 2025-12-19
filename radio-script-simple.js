@@ -1,8 +1,15 @@
 // ===== RADIO MORENITA DEL VALLE - SISTEMA COMPLETO CON FIREBASE =====
 // Versión 5.0 - Sistema real con Firebase Backend
+import { startRadioStateListener } from './radio-state-listener.js';
+
 
 document.addEventListener('DOMContentLoaded', async function() {
     console.log("📻 Sistema de Radio con Firebase iniciando...");
+
+    await window.backendManager.initialize();
+    await window.firebaseConfig.initialize();
+
+    startRadioStateListener(); // 🔥 ESTO ES CLAVE
     
 
     // ===== ESTADO BASE (NO JUEGO, SOLO UI) =====
@@ -28,6 +35,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Inicializar Firebase Manager
     await initFirebaseSystem();
+
+    listenRadioGameStatus();
     
     // Inicializar sistemas
     initRadioSystem();
@@ -62,6 +71,42 @@ async function initFirebaseSystem() {
         console.log("✅ Firebase Manager inicializado correctamente");
     }
 }
+
+// ===== LISTENER ÚNICO DE JUEGO (FIREBASE = FUENTE DE VERDAD) =====
+function listenRadioGameStatus() {
+    if (!window.radioFirebase || !window.radioFirebase.db) {
+        console.error("❌ Firebase DB no disponible");
+        return;
+    }
+
+    const { ref, onValue } = window.radioFirebase.rtdb;
+    const db = window.radioFirebase.db;
+
+    const gameStatusRef = ref(db, 'radio/gameStatus');
+
+    onValue(gameStatusRef, (snapshot) => {
+        const data = snapshot.val();
+        console.log("📡 Estado Firebase recibido:", data);
+
+        if (!data || !data.status) {
+            window.radio.games.active = null;
+            window.radio.games.status = 'idle';
+            updateGameCardsForPlayers(null, false);
+            return;
+        }
+
+        // 🔥 Firebase manda
+        window.radio.games.active = data.activeGame || null;
+        window.radio.games.status = data.status;
+
+        if (data.status === 'waiting' && data.activeGame) {
+            updateGameCardsForPlayers(data.activeGame, true);
+        } else {
+            updateGameCardsForPlayers(null, false);
+        }
+    });
+}
+
 
 // ===== SISTEMA DE ADMIN CON FIREBASE =====
 function initAdminSystem() {
@@ -901,6 +946,8 @@ function initRadioSystem() {
     selectStream(lastStream);
 }
 
+
+
 function updateVolumeBars(volume) {
     const audioBars = document.querySelectorAll('.audio-bar');
     audioBars.forEach((bar, index) => {
@@ -1007,44 +1054,7 @@ function showCurrentQuestion() {
     showRadioNotification('Funcionalidad en desarrollo', 'El juego se implementará completamente con Firebase', 'info');
 }
 
-// ===== SINCRONIZAR JUEGO DESDE FIREBASE (ADMIN + OYENTES) =====
-(function listenRadioGameStatus() {
-    if (!window.firebaseRTDB || !window.firebaseFunctions) {
-        console.error("❌ Firebase RTDB no disponible");
-        return;
-    }
 
-    const { ref, onValue } = window.firebaseFunctions;
-    const db = window.firebaseRTDB;
-
-    // 👉 RUTA REAL DE TU BASE
-    const gameStatusRef = ref(db, 'radio/gameStatus');
-
-    onValue(gameStatusRef, (snapshot) => {
-        const data = snapshot.val();
-
-        if (!data) {
-            console.log("ℹ️ No hay juego activo");
-            updateGameCardsForPlayers(null, false);
-            return;
-        }
-
-        console.log("📡 Estado del juego recibido:", data);
-
-        // Reflejar estado global en UI local
-        window.radio.games.status = data.status;
-        window.radio.games.active = data.activeGame;
-
-        // 👉 SOLO PARA OYENTES
-        if (!window.radio.admin.logged) {
-            if (data.status === 'waiting') {
-                updateGameCardsForPlayers(data.activeGame, true);
-            } else {
-                updateGameCardsForPlayers(null, false);
-            }
-        }
-    });
-})();
 
 
 console.log("✅ Radio script cargado con Firebase integration");
