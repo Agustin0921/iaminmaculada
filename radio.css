@@ -2346,3 +2346,50 @@ body {
 .radio-flex { display: flex; }
 .radio-items-center { align-items: center; }
 .radio-justify-center { justify-content: center; }
+
+/* Estilos para chat en vivo */
+.own-message {
+    background-color: rgba(42, 110, 187, 0.1);
+    border-left: 3px solid var(--primary);
+}
+
+.radio-chat-message .radio-chat-time {
+    font-size: 0.75rem;
+    color: var(--text-light);
+    margin-left: auto;
+}
+
+.radio-system-message {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 15px;
+    background-color: var(--light);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+}
+
+.radio-system-message i {
+    color: var(--primary);
+    margin-top: 2px;
+}
+
+.radio-system-message .radio-chat-time {
+    margin-left: auto;
+    font-size: 0.7rem;
+    opacity: 0.7;
+}
+
+/* Temporizador de pregunta */
+#questionTimer {
+    font-weight: bold;
+    color: var(--primary);
+    font-size: 1.2rem;
+}
+
+/* Botones de respuesta deshabilitados */
+.radio-game-answer-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

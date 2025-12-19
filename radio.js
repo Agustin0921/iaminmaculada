@@ -5,12 +5,14 @@ class RadioIAM {
         this.currentGame = null;
         this.currentPlayer = null;
         this.gameTimer = null;
+        this.questionTimer = null;
         this.gameDuration = 600; // 10 minutos en segundos
         this.isAdmin = false;
         this.chatMessages = [];
         this.players = [];
         this.ranking = [];
         this.gameActive = false;
+        this.currentQuestionIndex = 0;
         
         this.init();
     }
@@ -24,6 +26,11 @@ class RadioIAM {
         if (backendResult.success) {
             console.log("✅ Backend de radio inicializado correctamente");
             
+            // Inicializar chat en vivo
+            if (window.radioChat) {
+                await window.radioChat.initialize();
+            }
+            
             // Sincronizar datos locales con Firebase
             await window.radioBackend.syncLocalToFirebase();
         } else {
@@ -32,6 +39,9 @@ class RadioIAM {
         
         // Verificar si es admin
         this.checkAdminStatus();
+        
+        // Cargar jugador desde localStorage
+        this.loadCurrentPlayer();
         
         // Configurar eventos
         this.setupEventListeners();
@@ -55,6 +65,19 @@ class RadioIAM {
             document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
             this.updateGameStatus('admin', 'MODO ANIMADOR');
             console.log("👑 Modo administrador activado");
+        }
+    }
+
+    loadCurrentPlayer() {
+        const savedPlayer = localStorage.getItem('radioPlayer');
+        if (savedPlayer) {
+            this.currentPlayer = JSON.parse(savedPlayer);
+            console.log(`👤 Jugador cargado: ${this.currentPlayer.name}`);
+            
+            // Configurar nombre en el chat si existe
+            if (window.radioChat) {
+                window.radioChat.setUserName(this.currentPlayer.name);
+            }
         }
     }
 
@@ -94,46 +117,46 @@ class RadioIAM {
             this.registerPlayer();
         });
 
-        // Chat
-        document.getElementById('radioChatForm').addEventListener('submit', (e) => {
+        // Chat - Enviar mensaje
+        document.getElementById('radioChatForm')?.addEventListener('submit', (e) => {
             e.preventDefault();
             this.sendChatMessage();
         });
 
         // Botones de chat
-        document.getElementById('radioSendPrayerBtn').addEventListener('click', () => {
+        document.getElementById('radioSendPrayerBtn')?.addEventListener('click', () => {
             this.sendPrayerIntent();
         });
 
-        document.getElementById('radioSendGreetingBtn').addEventListener('click', () => {
+        document.getElementById('radioSendGreetingBtn')?.addEventListener('click', () => {
             this.sendGreeting();
         });
 
-        document.getElementById('radioSendQuestionBtn').addEventListener('click', () => {
+        document.getElementById('radioSendQuestionBtn')?.addEventListener('click', () => {
             this.sendQuestion();
         });
 
         // Player de audio
-        document.getElementById('radioAudioPlayBtn').addEventListener('click', () => {
+        document.getElementById('radioAudioPlayBtn')?.addEventListener('click', () => {
             this.toggleAudio();
         });
 
-        document.getElementById('playRadioBtn').addEventListener('click', () => {
+        document.getElementById('playRadioBtn')?.addEventListener('click', () => {
             this.playRadioStream();
         });
 
         // Volumen
-        document.getElementById('radioVolumeSlider').addEventListener('input', (e) => {
+        document.getElementById('radioVolumeSlider')?.addEventListener('input', (e) => {
             this.setVolume(e.target.value);
         });
 
         // Ver ranking completo
-        document.getElementById('radioViewFullRanking').addEventListener('click', () => {
+        document.getElementById('radioViewFullRanking')?.addEventListener('click', () => {
             this.showFullRanking();
         });
 
         // Mobile menu
-        document.getElementById('radioMobileMenuBtn').addEventListener('click', () => {
+        document.getElementById('radioMobileMenuBtn')?.addEventListener('click', () => {
             document.getElementById('radioMainNav').classList.toggle('active');
         });
 
@@ -179,8 +202,19 @@ class RadioIAM {
         });
 
         // Botón para recargar jugadores
-        document.getElementById('refreshPlayersBtn')?.addEventListener('click', () => {
-            this.loadPlayers();
+        const refreshBtn = document.getElementById('refreshPlayersBtn');
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => {
+                this.loadPlayers();
+            });
+        }
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', (e) => {
+            const modal = document.getElementById('radioAdminModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
         });
     }
 
@@ -188,8 +222,6 @@ class RadioIAM {
     showRadioAdminModal() {
         document.getElementById('radioAdminModal').style.display = 'flex';
     }
-
-    // En tu radio.js, busca la función loginRadioAdmin y CÁMBIALA por:
 
     async loginRadioAdmin() {
         const email = document.getElementById('radioUsername').value.trim();
@@ -265,7 +297,7 @@ class RadioIAM {
             pointsPerQuestion: pointsPerQuestion,
             startTime: new Date().toISOString(),
             status: 'active',
-            questionIndex: 0,
+            currentQuestionIndex: 0,
             totalQuestions: 5,
             participants: [],
             questions: this.generateQuestions(gameType)
@@ -273,6 +305,7 @@ class RadioIAM {
         
         this.gameDuration = duration;
         this.gameActive = true;
+        this.currentQuestionIndex = 0;
         
         this.updateGameStatus('live', 'JUEGO EN VIVO');
         this.showCurrentGame();
@@ -285,7 +318,9 @@ class RadioIAM {
             this.showNotification('¡Juego iniciado! Todos los jugadores pueden participar.', 'success');
             
             // Notificar en el chat
-            this.addSystemMessage('🎮 ¡JUEGO INICIADO! Participa ahora respondiendo las preguntas.');
+            if (window.radioChat) {
+                window.radioChat.sendMessage('🎮 ¡JUEGO INICIADO! Participa ahora respondiendo las preguntas.', 'system');
+            }
         } else {
             this.showNotification('Juego iniciado localmente (Firebase no disponible)', 'warning');
         }
@@ -295,6 +330,7 @@ class RadioIAM {
         if (this.currentGame && this.currentGame.status === 'active') {
             this.currentGame.status = 'paused';
             clearInterval(this.gameTimer);
+            if (this.questionTimer) clearInterval(this.questionTimer);
             this.updateGameStatus('inactive', 'JUEGO PAUSADO');
             this.showNotification('Juego pausado', 'warning');
             
@@ -310,10 +346,11 @@ class RadioIAM {
             this.currentGame.status = 'ended';
             this.gameActive = false;
             clearInterval(this.gameTimer);
+            if (this.questionTimer) clearInterval(this.questionTimer);
             this.updateGameStatus('offline', 'JUEGO FINALIZADO');
             
             // Calcular ganadores
-            this.calculateWinners();
+            const winners = this.calculateWinners();
             
             // Resetear interfaz
             document.getElementById('radioCurrentGameInfo').innerHTML = `
@@ -321,10 +358,12 @@ class RadioIAM {
                     <i class="fas fa-flag-checkered"></i>
                     <p>¡Juego finalizado!</p>
                     <p>Gracias a todos por participar.</p>
-                    ${this.ranking.length > 0 ? `
-                        <p style="margin-top: 10px; font-weight: bold;">
-                            Ganador: ${this.ranking[0]?.name || 'Nadie'}
+                    ${winners.length > 0 ? `
+                        <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
+                            🏆 Ganador: ${winners[0]?.name || 'Nadie'}
                         </p>
+                        ${winners[1] ? `<p>🥈 Segundo: ${winners[1]?.name}</p>` : ''}
+                        ${winners[2] ? `<p>🥉 Tercero: ${winners[2]?.name}</p>` : ''}
                     ` : ''}
                 </div>
             `;
@@ -332,8 +371,13 @@ class RadioIAM {
             this.showNotification('Juego finalizado. Resultados calculados.', 'success');
             
             // Anunciar ganadores en el chat
-            if (this.ranking.length > 0) {
-                this.addSystemMessage(`🏆 ¡GANADORES! 1° ${this.ranking[0]?.name || 'Nadie'}, 2° ${this.ranking[1]?.name || 'Nadie'}, 3° ${this.ranking[2]?.name || 'Nadie'}`);
+            if (window.radioChat && winners.length > 0) {
+                let winnerMessage = '🏆 ¡GANADORES DEL JUEGO! ';
+                if (winners[0]) winnerMessage += `1° ${winners[0].name} `;
+                if (winners[1]) winnerMessage += `2° ${winners[1].name} `;
+                if (winners[2]) winnerMessage += `3° ${winners[2].name}`;
+                
+                window.radioChat.sendMessage(winnerMessage, 'system');
             }
             
             // Actualizar en Firebase
@@ -343,6 +387,9 @@ class RadioIAM {
             
             // Recargar ranking
             this.loadPlayers();
+            
+            // Limpiar respuestas guardadas
+            this.clearAnsweredQuestions();
         }
     }
 
@@ -359,7 +406,8 @@ class RadioIAM {
                         "Iglesia Amorosa Misionera"
                     ],
                     correct: 0,
-                    points: 10
+                    points: 10,
+                    timeLimit: 30
                 },
                 {
                     id: 2,
@@ -371,14 +419,16 @@ class RadioIAM {
                         "San Pablo"
                     ],
                     correct: 0,
-                    points: 15
+                    points: 15,
+                    timeLimit: 30
                 },
                 {
                     id: 3,
                     question: "¿En qué año se fundó la IAM?",
                     answers: ["1843", "1900", "1950", "2000"],
                     correct: 0,
-                    points: 20
+                    points: 20,
+                    timeLimit: 30
                 },
                 {
                     id: 4,
@@ -390,14 +440,16 @@ class RadioIAM {
                         "La fe sin obras está muerta"
                     ],
                     correct: 0,
-                    points: 10
+                    points: 10,
+                    timeLimit: 30
                 },
                 {
                     id: 5,
                     question: "¿Cuántos países tiene presencia la IAM?",
                     answers: ["130", "50", "200", "80"],
                     correct: 0,
-                    points: 25
+                    points: 25,
+                    timeLimit: 30
                 }
             ],
             adivinanza: [
@@ -406,7 +458,8 @@ class RadioIAM {
                     question: "Soy una obra pontificia donde los niños ayudan a otros niños. ¿Quién soy?",
                     answers: ["La IAM", "Cáritas", "Manos Unidas", "Misiones Diocesanas"],
                     correct: 0,
-                    points: 20
+                    points: 20,
+                    timeLimit: 30
                 }
             ],
             trivia: [
@@ -415,7 +468,8 @@ class RadioIAM {
                     question: "¿Qué Papa declaró a la IAM como Obra Pontificia?",
                     answers: ["Pío XI", "Juan Pablo II", "Francisco", "Benedicto XVI"],
                     correct: 0,
-                    points: 25
+                    points: 25,
+                    timeLimit: 30
                 }
             ]
         };
@@ -458,30 +512,49 @@ class RadioIAM {
     showCurrentGame() {
         if (!this.currentGame || !this.currentGame.questions) return;
         
-        const question = this.currentGame.questions[this.currentGame.questionIndex] || this.currentGame.questions[0];
+        const question = this.currentGame.questions[this.currentQuestionIndex] || this.currentGame.questions[0];
+        const questionId = question.id;
+        
+        // Verificar si ya respondió
+        const hasAnswered = this.hasPlayerAnswered(questionId);
+        
         const html = `
             <div class="active-game-info">
                 <div class="radio-game-timer">
                     <i class="fas fa-clock"></i>
-                    <span>Tiempo: 10:00</span>
+                    <span id="questionTimer">${question.timeLimit || 30}</span> segundos
                 </div>
                 <div class="radio-game-question">
                     ${question.question}
                 </div>
                 <div class="radio-game-answers">
                     ${question.answers.map((answer, index) => `
-                        <button class="radio-game-answer-btn" data-index="${index}" data-question="${question.id}">
-                            ${answer}
+                        <button class="radio-game-answer-btn" 
+                                data-index="${index}" 
+                                data-question="${question.id}"
+                                ${hasAnswered ? 'disabled' : ''}>
+                            ${String.fromCharCode(65 + index)}) ${answer}
                         </button>
                     `).join('')}
                 </div>
-                <p style="text-align: center; margin-top: 15px; color: var(--text-light); font-size: 0.9rem;">
-                    <i class="fas fa-info-circle"></i> Selecciona tu respuesta para ganar ${question.points} puntos
-                </p>
+                ${hasAnswered ? `
+                    <p style="text-align: center; margin-top: 15px; color: var(--warning); font-size: 0.9rem;">
+                        <i class="fas fa-check-circle"></i> Ya respondiste esta pregunta
+                    </p>
+                ` : `
+                    <p style="text-align: center; margin-top: 15px; color: var(--text-light); font-size: 0.9rem;">
+                        <i class="fas fa-info-circle"></i> Tienes ${question.timeLimit || 30} segundos. Solo puedes responder una vez.
+                    </p>
+                `}
             </div>
         `;
         
         document.getElementById('radioCurrentGameInfo').innerHTML = html;
+        
+        // Iniciar temporizador si no ha respondido
+        if (!hasAnswered && this.currentPlayer) {
+            this.startQuestionTimer(questionId, question.timeLimit || 30);
+        }
         
         // Agregar eventos a los botones de respuesta
         document.querySelectorAll('.radio-game-answer-btn').forEach(btn => {
@@ -491,6 +564,76 @@ class RadioIAM {
                 this.submitAnswer(questionId, answerIndex);
             });
         });
+    }
+
+    startQuestionTimer(questionId, seconds) {
+        if (this.questionTimer) clearInterval(this.questionTimer);
+        
+        let timeLeft = seconds;
+        const timerElement = document.getElementById('questionTimer');
+        
+        if (!timerElement) return;
+        
+        this.questionTimer = setInterval(() => {
+            timeLeft--;
+            timerElement.textContent = timeLeft;
+            
+            // Cambiar color cuando quede poco tiempo
+            if (timeLeft <= 10) {
+                timerElement.style.color = 'var(--danger)';
+                timerElement.style.fontWeight = 'bold';
+            } else {
+                timerElement.style.color = 'var(--primary)';
+            }
+            
+            if (timeLeft <= 0) {
+                clearInterval(this.questionTimer);
+                
+                // Deshabilitar botones cuando se acaba el tiempo
+                document.querySelectorAll('.radio-game-answer-btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+                
+                // Marcar como respondida (pero incorrecta por tiempo)
+                if (this.currentPlayer) {
+                    const answeredKey = `answered_${questionId}_${this.currentPlayer.id}`;
+                    localStorage.setItem(answeredKey, 'timeout');
+                }
+                
+                // Mostrar mensaje
+                const messageDiv = document.createElement('div');
+                messageDiv.innerHTML = `
+                    <p style="text-align: center; margin-top: 15px; color: var(--danger); font-size: 0.9rem;">
+                        <i class="fas fa-hourglass-end"></i> ¡Tiempo agotado!
+                    </p>
+                `;
+                const activeGame = document.querySelector('.active-game-info');
+                if (activeGame) {
+                    activeGame.appendChild(messageDiv);
+                }
+                
+                // Mostrar notificación
+                this.showNotification('¡Tiempo agotado!', 'error');
+            }
+        }, 1000);
+    }
+
+    hasPlayerAnswered(questionId) {
+        if (!this.currentPlayer) return false;
+        const answeredKey = `answered_${questionId}_${this.currentPlayer.id}`;
+        return localStorage.getItem(answeredKey) !== null;
+    }
+
+    clearAnsweredQuestions() {
+        if (!this.currentPlayer) return;
+        
+        // Limpiar todas las respuestas de este jugador
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith(`answered_`) && key.includes(this.currentPlayer.id)) {
+                localStorage.removeItem(key);
+            }
+        }
     }
 
     // ===== SISTEMA DE JUGADORES =====
@@ -504,27 +647,61 @@ class RadioIAM {
             return;
         }
         
-        const result = await window.radioBackend.saveRadioPlayer({
-            name: name,
-            phone: phone,
-            email: email
-        });
+        // Verificar si ya existe un jugador con el mismo nombre
+        const localPlayers = JSON.parse(localStorage.getItem('radioPlayers') || '[]');
+        const existingPlayer = localPlayers.find(p => 
+            p.name.toLowerCase() === name.toLowerCase()
+        );
         
-        if (result.success) {
-            this.currentPlayer = result.player;
-            this.showNotification(`¡Bienvenido ${name}! Listo para jugar.`, 'success');
+        if (existingPlayer) {
+            // Usar jugador existente
+            this.currentPlayer = existingPlayer;
+            this.showNotification(`¡Bienvenido de nuevo ${name}!`, 'success');
             
-            // Anunciar en el chat
-            this.addSystemMessage(`👋 ¡Bienvenido ${name} al juego!`);
+            // Guardar en localStorage para referencia
+            localStorage.setItem('radioPlayer', JSON.stringify(existingPlayer));
+            localStorage.setItem('radioPlayerId', existingPlayer.id);
             
-            // Resetear formulario
-            document.getElementById('radioRegisterPlayerForm').reset();
-            
-            // Recargar lista de jugadores
-            this.loadPlayers();
+            // Configurar chat
+            if (window.radioChat) {
+                window.radioChat.setUserName(name);
+            }
         } else {
-            this.showNotification('Error al registrarse. Intenta nuevamente.', 'error');
+            // Crear nuevo jugador
+            const result = await window.radioBackend.saveRadioPlayer({
+                name: name,
+                phone: phone,
+                email: email
+            });
+            
+            if (result.success) {
+                this.currentPlayer = result.player;
+                this.showNotification(`¡Bienvenido ${name}! Listo para jugar.`, 'success');
+                
+                // Guardar en localStorage
+                localStorage.setItem('radioPlayer', JSON.stringify(result.player));
+                localStorage.setItem('radioPlayerId', result.player.id);
+                
+                // Configurar chat
+                if (window.radioChat) {
+                    window.radioChat.setUserName(name);
+                }
+            } else {
+                this.showNotification('Error al registrarse. Intenta nuevamente.', 'error');
+                return;
+            }
         }
+        
+        // Anunciar en el chat
+        if (window.radioChat) {
+            window.radioChat.sendMessage(`👋 ¡Hola a todos! Soy ${name}`, 'greeting');
+        }
+        
+        // Resetear formulario
+        document.getElementById('radioRegisterPlayerForm').reset();
+        
+        // Recargar lista de jugadores
+        this.loadPlayers();
     }
 
     async submitAnswer(questionId, answerIndex) {
@@ -538,6 +715,22 @@ class RadioIAM {
             return;
         }
         
+        // Verificar si ya respondió esta pregunta
+        if (this.hasPlayerAnswered(questionId)) {
+            this.showNotification('Ya respondiste esta pregunta', 'warning');
+            return;
+        }
+        
+        // Deshabilitar botones de respuesta
+        document.querySelectorAll('.radio-game-answer-btn').forEach(btn => {
+            btn.disabled = true;
+        });
+        
+        // Detener temporizador
+        if (this.questionTimer) {
+            clearInterval(this.questionTimer);
+        }
+        
         const question = this.currentGame.questions.find(q => q.id === questionId);
         if (!question) {
             this.showNotification('Pregunta no encontrada', 'error');
@@ -547,34 +740,111 @@ class RadioIAM {
         const isCorrect = answerIndex === question.correct;
         
         if (isCorrect) {
-            // Sumar puntos al jugador
             const pointsToAdd = question.points;
             
-            // Actualizar en localStorage
-            const localPlayers = JSON.parse(localStorage.getItem('radioPlayers') || '[]');
-            const playerIndex = localPlayers.findIndex(p => p.id === this.currentPlayer.id);
+            // Guardar que ya respondió correctamente
+            const answeredKey = `answered_${questionId}_${this.currentPlayer.id}`;
+            localStorage.setItem(answeredKey, 'correct');
             
-            if (playerIndex !== -1) {
-                localPlayers[playerIndex].points += pointsToAdd;
-                localPlayers[playerIndex].gamesPlayed += 1;
-                localStorage.setItem('radioPlayers', JSON.stringify(localPlayers));
+            // Actualizar puntos del jugador existente
+            const result = await this.updatePlayerScore(pointsToAdd);
+            
+            if (result.success) {
+                this.showNotification(`¡Respuesta correcta! +${pointsToAdd} puntos`, 'success');
                 
-                // Actualizar jugador actual
-                this.currentPlayer.points = localPlayers[playerIndex].points;
-                this.currentPlayer.gamesPlayed = localPlayers[playerIndex].gamesPlayed;
+                // Anunciar en el chat
+                if (window.radioChat) {
+                    window.radioChat.sendMessage(
+                        `🎯 ${this.currentPlayer.name} respondió correctamente y ganó ${pointsToAdd} puntos!`,
+                        'system'
+                    );
+                }
+                
+                // Actualizar ranking
+                this.loadPlayers();
+                
+                // Resaltar respuesta correcta
+                this.highlightCorrectAnswer(questionId, answerIndex);
             }
-            
-            this.showNotification(`¡Respuesta correcta! +${pointsToAdd} puntos`, 'success');
-            
-            // Anunciar en el chat
-            this.addSystemMessage(`🎯 ${this.currentPlayer.name} respondió correctamente y ganó ${pointsToAdd} puntos!`);
-            
-            // Actualizar ranking
-            this.loadPlayers();
-            
         } else {
-            this.showNotification('Respuesta incorrecta. Sigue intentando.', 'error');
+            // Guardar que respondió incorrectamente
+            const answeredKey = `answered_${questionId}_${this.currentPlayer.id}`;
+            localStorage.setItem(answeredKey, 'incorrect');
+            
+            this.showNotification('Respuesta incorrecta', 'error');
+            
+            // Mostrar respuesta correcta
+            this.highlightCorrectAnswer(questionId, question.correct);
         }
+    }
+
+    highlightCorrectAnswer(questionId, correctIndex) {
+        // Resaltar la respuesta correcta en verde
+        document.querySelectorAll('.radio-game-answer-btn').forEach((btn, index) => {
+            if (index === correctIndex) {
+                btn.style.backgroundColor = 'var(--success)';
+                btn.style.color = 'white';
+                btn.style.borderColor = 'var(--success)';
+            } else if (parseInt(btn.dataset.index) !== correctIndex) {
+                btn.style.opacity = '0.6';
+            }
+        });
+    }
+
+    async updatePlayerScore(pointsToAdd) {
+        if (!this.currentPlayer) return { success: false, error: 'No hay jugador' };
+        
+        const localPlayers = JSON.parse(localStorage.getItem('radioPlayers') || '[]');
+        let playerIndex = -1;
+        
+        // Buscar jugador por ID o por nombre
+        playerIndex = localPlayers.findIndex(p => p.id === this.currentPlayer.id);
+        
+        if (playerIndex === -1) {
+            // Buscar por nombre (para evitar duplicados)
+            const currentPlayer = localPlayers.find(p => 
+                p.name.toLowerCase() === this.currentPlayer.name.toLowerCase()
+            );
+            if (currentPlayer) {
+                playerIndex = localPlayers.indexOf(currentPlayer);
+            }
+        }
+        
+        if (playerIndex !== -1) {
+            // Actualizar jugador existente
+            localPlayers[playerIndex].points = (localPlayers[playerIndex].points || 0) + pointsToAdd;
+            localPlayers[playerIndex].gamesPlayed = (localPlayers[playerIndex].gamesPlayed || 0) + 1;
+            localPlayers[playerIndex].lastActive = new Date().toISOString();
+            
+            // Actualizar jugador actual
+            this.currentPlayer = localPlayers[playerIndex];
+            
+            // Guardar jugador actualizado
+            localStorage.setItem('radioPlayer', JSON.stringify(this.currentPlayer));
+        } else {
+            // Crear nuevo jugador si no existe
+            const newPlayer = {
+                id: this.currentPlayer.id || 'player_' + Date.now(),
+                name: this.currentPlayer.name,
+                phone: this.currentPlayer.phone || '',
+                email: this.currentPlayer.email || '',
+                points: pointsToAdd,
+                gamesPlayed: 1,
+                createdAt: new Date().toISOString(),
+                lastActive: new Date().toISOString()
+            };
+            localPlayers.push(newPlayer);
+            this.currentPlayer = newPlayer;
+        }
+        
+        localStorage.setItem('radioPlayers', JSON.stringify(localPlayers));
+        
+        // También actualizar en Firebase
+        if (window.radioBackend && window.radioBackend.isInitialized && this.currentPlayer.id) {
+            await window.radioBackend.updatePlayerScore(this.currentPlayer.id, pointsToAdd);
+        }
+        
+        return { success: true, player: this.currentPlayer };
     }
 
     // ===== SISTEMA DE RANKING =====
@@ -683,8 +953,11 @@ class RadioIAM {
     }
 
     calculateWinners() {
-        // Ordenar jugadores por puntos
-        const sortedPlayers = [...this.players].sort((a, b) => (b.points || 0) - (a.points || 0));
+        // Filtrar jugadores con al menos 1 juego
+        const activePlayers = this.players.filter(p => (p.gamesPlayed || 0) > 0);
+        
+        // Ordenar por puntos
+        const sortedPlayers = [...activePlayers].sort((a, b) => (b.points || 0) - (a.points || 0));
         
         // Guardar ganadores en localStorage
         localStorage.setItem('lastWinners', JSON.stringify(sortedPlayers.slice(0, 3)));
@@ -695,51 +968,64 @@ class RadioIAM {
     // ===== SISTEMA DE CHAT =====
     async sendChatMessage() {
         const messageInput = document.getElementById('radioChatMessage');
-        const message = messageInput.value.trim();
+        const message = messageInput?.value.trim();
         
         if (!message) return;
         
-        const playerName = this.currentPlayer ? this.currentPlayer.name : 'Oyente';
-        
-        const chatMessage = {
-            id: Date.now(),
-            playerName: playerName,
-            message: message,
-            timestamp: new Date().toLocaleTimeString('es-ES', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            }),
-            type: 'message'
-        };
-        
-        this.chatMessages.push(chatMessage);
-        this.updateChatDisplay();
-        
-        // Guardar en localStorage
-        this.saveChatToLocalStorage();
+        if (window.radioChat) {
+            await window.radioChat.sendMessage(message, 'message');
+        } else {
+            // Modo local si no hay chat en vivo
+            const playerName = this.currentPlayer ? this.currentPlayer.name : 'Oyente';
+            
+            const chatMessage = {
+                id: Date.now(),
+                playerName: playerName,
+                message: message,
+                timestamp: new Date().toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                }),
+                type: 'message'
+            };
+            
+            this.chatMessages.push(chatMessage);
+            this.updateChatDisplay();
+            
+            // Guardar en localStorage
+            this.saveChatToLocalStorage();
+        }
         
         // Limpiar input
-        messageInput.value = '';
-        messageInput.focus();
+        if (messageInput) {
+            messageInput.value = '';
+            messageInput.focus();
+        }
     }
 
     sendPrayerIntent() {
         const messageInput = document.getElementById('radioChatMessage');
-        messageInput.value = '🙏 Envío mi intención de oración para el programa';
-        messageInput.focus();
+        if (messageInput) {
+            messageInput.value = '🙏 Envío mi intención de oración para el programa';
+            messageInput.focus();
+        }
     }
 
     sendGreeting() {
         const playerName = this.currentPlayer ? this.currentPlayer.name : 'Oyente';
         const messageInput = document.getElementById('radioChatMessage');
-        messageInput.value = `¡Hola a todos! Soy ${playerName}, un saludo desde mi casa. ¡Viva la IAM!`;
-        messageInput.focus();
+        if (messageInput) {
+            messageInput.value = `¡Hola a todos! Soy ${playerName}, un saludo desde mi casa. ¡Viva la IAM!`;
+            messageInput.focus();
+        }
     }
 
     sendQuestion() {
         const messageInput = document.getElementById('radioChatMessage');
-        messageInput.value = '❓ Tengo una pregunta sobre...';
-        messageInput.focus();
+        if (messageInput) {
+            messageInput.value = '❓ Tengo una pregunta sobre...';
+            messageInput.focus();
+        }
     }
 
     updateChatDisplay() {
@@ -764,8 +1050,10 @@ class RadioIAM {
                 `;
             }
             
+            const isCurrentUser = this.currentPlayer && msg.playerName === this.currentPlayer.name;
+            
             return `
-                <div class="radio-chat-message">
+                <div class="radio-chat-message ${isCurrentUser ? 'own-message' : ''}">
                     <div class="radio-chat-header-info">
                         <span class="radio-chat-user">${msg.playerName}</span>
                         <span class="radio-chat-time">${msg.timestamp}</span>
@@ -1172,9 +1460,15 @@ class RadioIAM {
     // ===== CLEANUP =====
     cleanup() {
         if (this.gameTimer) clearInterval(this.gameTimer);
+        if (this.questionTimer) clearInterval(this.questionTimer);
         if (this.countdownInterval) clearInterval(this.countdownInterval);
         if (this.gameListener) clearInterval(this.gameListener);
         if (this.playersListener) clearInterval(this.playersListener);
+        
+        // Limpiar chat
+        if (window.radioChat) {
+            window.radioChat.cleanup();
+        }
     }
 }
 

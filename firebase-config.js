@@ -22,7 +22,8 @@ const COLLECTIONS = {
     RADIO_PLAYERS: 'radio_players',
     RADIO_MESSAGES: 'radio_messages',
     RADIO_SETTINGS: 'radio_settings',
-    RADIO_TRANSACTIONS: 'radio_transactions'
+    RADIO_TRANSACTIONS: 'radio_transactions',
+    RADIO_CHAT: 'radio_chat'
 };
 
 // Variables globales
