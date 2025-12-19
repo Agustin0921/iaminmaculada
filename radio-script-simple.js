@@ -1007,5 +1007,45 @@ function showCurrentQuestion() {
     showRadioNotification('Funcionalidad en desarrollo', 'El juego se implementará completamente con Firebase', 'info');
 }
 
+// ===== SINCRONIZAR JUEGO DESDE FIREBASE (ADMIN + OYENTES) =====
+(function listenRadioGameStatus() {
+    if (!window.firebaseRTDB || !window.firebaseFunctions) {
+        console.error("❌ Firebase RTDB no disponible");
+        return;
+    }
+
+    const { ref, onValue } = window.firebaseFunctions;
+    const db = window.firebaseRTDB;
+
+    // 👉 RUTA REAL DE TU BASE
+    const gameStatusRef = ref(db, 'radio/gameStatus');
+
+    onValue(gameStatusRef, (snapshot) => {
+        const data = snapshot.val();
+
+        if (!data) {
+            console.log("ℹ️ No hay juego activo");
+            updateGameCardsForPlayers(null, false);
+            return;
+        }
+
+        console.log("📡 Estado del juego recibido:", data);
+
+        // Reflejar estado global en UI local
+        window.radio.games.status = data.status;
+        window.radio.games.active = data.activeGame;
+
+        // 👉 SOLO PARA OYENTES
+        if (!window.radio.admin.logged) {
+            if (data.status === 'waiting') {
+                updateGameCardsForPlayers(data.activeGame, true);
+            } else {
+                updateGameCardsForPlayers(null, false);
+            }
+        }
+    });
+})();
+
+
 console.log("✅ Radio script cargado con Firebase integration");
 console.log("✅ radio-script-simple.js cargado (sin estado local)");
