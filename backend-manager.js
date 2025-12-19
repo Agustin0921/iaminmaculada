@@ -454,36 +454,71 @@ class RadioBackendManager {
     }
 
     // ===== ADMIN AUTH =====
-    async loginRadioAdmin(email, password) {
-        if (!this.isInitialized || !window.backendManager.auth) {
-            // Modo local para desarrollo
-            const validAdmins = [
-                { email: "animador@iam.com", password: "animador2025" },
-                { email: "admin@iam.com", password: "admin2026" }
-            ];
-            
-            const admin = validAdmins.find(a => a.email === email && a.password === password);
-            if (admin) {
-                localStorage.setItem('radioAdminLoggedIn', 'true');
-                localStorage.setItem('radioAdminEmail', email);
-                return { success: true, user: { email: email, isAdmin: true } };
-            }
-            return { success: false, error: "Credenciales incorrectas" };
-        }
+    // En tu backend-manager.js, busca la función loginRadioAdmin y CÁMBIALA por:
 
-        // Modo Firebase
+    async loginRadioAdmin(email, password) {
+        // Solo usar Firebase Auth, nada de modo local
+        if (!this.isInitialized || !window.backendManager.auth) {
+            return { 
+                success: false, 
+                error: "Firebase no disponible. Revisa tu conexión." 
+            };
+        }
+    
         try {
             const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
             const userCredential = await signInWithEmailAndPassword(window.backendManager.auth, email, password);
             
-            // Verificar si es admin (debería existir en radio_admins)
-            // Por ahora, asumimos que si puede loguearse es admin
-            localStorage.setItem('radioAdminLoggedIn', 'true');
-            localStorage.setItem('radioAdminEmail', email);
+            const user = userCredential.user;
             
-            return { success: true, user: userCredential.user };
-        } catch (error) {
-            return { success: false, error: "Credenciales incorrectas" };
+            // Verificar si el usuario existe en radio_admins
+            try {
+                const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                const adminDoc = await getDoc(doc(this.db, 'radio_admins', user.uid));
+                
+                if (adminDoc.exists()) {
+                    // Es un admin válido
+                    localStorage.setItem('radioAdminLoggedIn', 'true');
+                    localStorage.setItem('radioAdminEmail', email);
+                    localStorage.setItem('radioAdminUID', user.uid);
+                    
+                    return { 
+                        success: true, 
+                        user: user,
+                        adminData: adminDoc.data()
+                    };
+                } else {
+                    // Usuario existe pero no está en radio_admins
+                    return { 
+                        success: false, 
+                        error: "No tienes permisos de administrador" 
+                    };
+                }
+                
+            } catch (firestoreError) {
+                console.error("Error verificando admin:", firestoreError);
+                return { 
+                    success: false, 
+                    error: "Error verificando permisos" 
+                };
+            }
+            
+        } catch (authError) {
+            console.error("Error de autenticación:", authError);
+            
+            // Traducir errores comunes
+            const errorMessages = {
+                'auth/user-not-found': 'Usuario no encontrado',
+                'auth/wrong-password': 'Contraseña incorrecta',
+                'auth/invalid-email': 'Email inválido',
+                'auth/user-disabled': 'Usuario deshabilitado',
+                'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde'
+            };
+            
+            return { 
+                success: false, 
+                error: errorMessages[authError.code] || 'Error de autenticación' 
+            };
         }
     }
 

@@ -189,53 +189,61 @@ class RadioIAM {
         document.getElementById('radioAdminModal').style.display = 'flex';
     }
 
+    // En tu radio.js, busca la función loginRadioAdmin y CÁMBIALA por:
+
     async loginRadioAdmin() {
-        const username = document.getElementById('radioUsername').value;
-        const password = document.getElementById('radioPassword').value;
-        const code = document.getElementById('radioCode').value;
-
-        // Validar código primero
-        if (code !== 'corazonmisionero') {
-            this.showNotification('Código de programa incorrecto', 'error');
-            return;
-        }
-
-        // Para desarrollo local, aceptar credenciales simples
-        if (username === 'animador' && password === 'radio2024') {
-            this.isAdmin = true;
-            localStorage.setItem('radioAdminLoggedIn', 'true');
-            localStorage.setItem('radioAdminUser', username);
-            
-            document.getElementById('radioAdminModal').style.display = 'none';
-            document.getElementById('radioAdminControls').classList.remove('radio-hidden');
-            document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
-            
-            this.updateGameStatus('admin', 'MODO ANIMADOR');
-            this.showNotification('¡Bienvenido Animador! (Modo local)', 'success');
-            return;
-        }
-
-        // Para producción, usar Firebase Auth
-        const result = await window.radioBackend.loginRadioAdmin(username, password);
+        const email = document.getElementById('radioUsername').value.trim();
+        const password = document.getElementById('radioPassword').value.trim();
         
-        if (result.success) {
-            this.isAdmin = true;
-            localStorage.setItem('radioAdminLoggedIn', 'true');
-            localStorage.setItem('radioAdminUser', username);
+        // Validaciones básicas
+        if (!email || !password) {
+            this.showNotification('Por favor ingresa email y contraseña', 'error');
+            return;
+        }
+        
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            this.showNotification('Por favor ingresa un email válido', 'error');
+            return;
+        }
+        
+        // Mostrar carga
+        const submitBtn = document.querySelector('#radioLoginForm button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
+        submitBtn.disabled = true;
+        
+        try {
+            // Intentar login con Firebase Auth
+            const result = await window.radioBackend.loginRadioAdmin(email, password);
             
-            document.getElementById('radioAdminModal').style.display = 'none';
-            document.getElementById('radioAdminControls').classList.remove('radio-hidden');
-            document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
+            if (result.success) {
+                this.isAdmin = true;
+                
+                document.getElementById('radioAdminModal').style.display = 'none';
+                document.getElementById('radioAdminControls').classList.remove('radio-hidden');
+                document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
+                
+                this.updateGameStatus('admin', 'MODO ANIMADOR');
+                this.showNotification(`¡Bienvenido ${result.adminData?.name || 'Animador'}!`, 'success');
+                
+                // Recargar datos como admin
+                this.loadPlayers();
+                this.loadCurrentGame();
+                
+            } else {
+                this.showNotification(result.error || 'Error de autenticación', 'error');
+            }
             
-            this.updateGameStatus('admin', 'MODO ANIMADOR');
-            this.showNotification('¡Bienvenido Animador!', 'success');
+        } catch (error) {
+            console.error('Error en login:', error);
+            this.showNotification('Error inesperado. Intenta nuevamente.', 'error');
             
-            // Recargar datos como admin
-            this.loadPlayers();
-            this.loadCurrentGame();
-            
-        } else {
-            this.showNotification(result.error || 'Credenciales incorrectas', 'error');
+        } finally {
+            // Restaurar botón
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
         }
     }
 
