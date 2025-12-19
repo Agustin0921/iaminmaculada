@@ -4,31 +4,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
     console.log("📻 Sistema de Radio con Firebase iniciando...");
     
-    // Estado global con Firebase
-    window.radio = {
-        isPlaying: false,
-        currentStream: 'youtube',
-        games: {
-            active: null,
-            currentPlayers: [],
-            currentQuestion: 0,
-            questions: [],
-            status: 'idle', // idle, waiting, active, finished
-            timer: null,
-            timeLeft: 30,
-            minPlayers: 3, // Mínimo de jugadores para iniciar (reducido para pruebas)
-            pointsPerQuestion: 200
-        },
-        admin: {
-            logged: false,
-            username: null,
-            userId: null
-        },
-        // Configuración del mes actual
-        currentMonth: new Date().getMonth() + 1,
-        currentYear: new Date().getFullYear(),
-        ranking: [] // Ranking mensual acumulado
-    };
+    
     
     // Inicializar Firebase Manager
     await initFirebaseSystem();
@@ -1012,3 +988,4 @@ function showCurrentQuestion() {
 }
 
 console.log("✅ Radio script cargado con Firebase integration");
+console.log("✅ radio-script-simple.js cargado (sin estado local)");

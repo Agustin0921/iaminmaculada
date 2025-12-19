@@ -298,6 +298,10 @@
                 </div>
             </div>
 
+            <button id="joinGameBtn" style="display:none; padding:15px; font-size:1.1rem;">
+              🎮 Unirme al juego
+            </button>
+
             <!-- Juegos disponibles -->
             <div class="games-grid">
                 <div class="game-card locked" data-game="quiz">
@@ -502,20 +506,32 @@
     <script src="firebase-config.js"></script>
     <script src="radio-firebase.js"></script>
     <script src="radio-script-simple.js"></script>
+    <script type="module" src="radio-game-sync.js"></script>
 
     <script>
-    // Inicialización adicional
-    document.addEventListener('DOMContentLoaded', function() {
-        // Configurar botones de cerrar modales
-        const cancelLogin = document.getElementById('cancelRadioLogin');
-        const loginModal = document.getElementById('radioLoginModal');
+        // Inicialización adicional
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar botones de cerrar modales
+            const cancelLogin = document.getElementById('cancelRadioLogin');
+            const loginModal = document.getElementById('radioLoginModal');
 
-        if (cancelLogin && loginModal) {
-            cancelLogin.onclick = function() {
-                loginModal.style.display = 'none';
-            };
-        }
-    });
+            if (cancelLogin && loginModal) {
+                cancelLogin.onclick = function() {
+                    loginModal.style.display = 'none';
+                };
+            }
+        });
+    </script>
+<script>
+document.getElementById("joinGameBtn").onclick = () => {
+  const nombre = prompt("Tu nombre");
+
+  if (!nombre) return;
+
+  const uid = crypto.randomUUID();
+  joinGame(uid, nombre);
+};
 </script>
+
 </body>
 </html>
