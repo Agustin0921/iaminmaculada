@@ -216,6 +216,17 @@ class RadioIAM {
                 modal.style.display = 'none';
             }
         });
+
+        if (this.isAdmin) {
+            this.setupQuestionPreview();
+            
+            // Inicializar preview si hay elementos
+            setTimeout(() => {
+                if (document.getElementById('radioQuestionsPreview')) {
+                    this.previewQuestions();
+                }
+            }, 500);
+        }
     }
 
     // ===== SISTEMA DE ADMIN =====
@@ -280,52 +291,90 @@ class RadioIAM {
     }
 
     // ===== SISTEMA DE JUEGOS =====
+    // ===== SISTEMA DE JUEGOS =====
     async startGame() {
         if (!this.isAdmin) {
             this.showNotification('Solo los animadores pueden iniciar juegos', 'error');
             return;
         }
 
+        // Obtener configuración del admin (NUEVO)
         const gameType = document.getElementById('radioGameType').value;
-        const duration = parseInt(document.getElementById('radioGameDuration').value) * 60;
-        const pointsPerQuestion = parseInt(document.getElementById('radioPointsPerQuestion').value);
-        
+        const totalQuestions = parseInt(document.getElementById('radioTotalQuestions')?.value || 10);
+        const gameDuration = parseInt(document.getElementById('radioGameDuration')?.value || 15) * 60;
+        const timePerQuestion = parseInt(document.getElementById('radioTimePerQuestion')?.value || 30);
+        const basePoints = parseInt(document.getElementById('radioPointsPerQuestion')?.value || 10);
+        const difficulty = document.getElementById('radioGameDifficulty')?.value || 'all';
+
+        // Generar preguntas con la nueva configuración
+        const questions = this.generateQuestions(gameType, totalQuestions);
+
+        // Filtrar por dificultad si es necesario
+        let filteredQuestions = questions;
+        if (difficulty !== 'all') {
+            filteredQuestions = questions.filter(q => {
+                if (difficulty === 'easy') return q.difficulty === 'Fácil';
+                if (difficulty === 'medium') return q.difficulty === 'Fácil' || q.difficulty === 'Intermedio';
+                if (difficulty === 'hard') return true;
+                return true;
+            });
+        }
+
+        // Aplicar tiempo configurado a todas las preguntas
+        const questionsWithTime = filteredQuestions.map(q => ({
+            ...q,
+            timeLimit: timePerQuestion
+        }));
+
         this.currentGame = {
             id: 'current',
             type: gameType,
-            duration: duration,
-            pointsPerQuestion: pointsPerQuestion,
+            duration: gameDuration,
+            timePerQuestion: timePerQuestion,
+            totalQuestions: totalQuestions,
+            questions: questionsWithTime,
             startTime: new Date().toISOString(),
             status: 'active',
             currentQuestionIndex: 0,
-            totalQuestions: 5,
             participants: [],
-            questions: this.generateQuestions(gameType)
+            settings: {
+                difficulty: difficulty,
+                totalQuestions: totalQuestions,
+                timePerQuestion: timePerQuestion,
+                basePoints: basePoints
+            }
         };
-        
-        this.gameDuration = duration;
+
+        this.gameDuration = gameDuration;
         this.gameActive = true;
         this.currentQuestionIndex = 0;
-        
+
         this.updateGameStatus('live', 'JUEGO EN VIVO');
         this.showCurrentGame();
         this.startGameTimer();
-        
+
+        // Iniciar actualización de estadísticas para admin
+        if (this.isAdmin) {
+            this.startAdminStats();
+        }
+
         // Guardar en Firebase
         const result = await window.radioBackend.saveCurrentGame(this.currentGame);
-        
+
         if (result.success) {
-            this.showNotification('¡Juego iniciado! Todos los jugadores pueden participar.', 'success');
-            
+            this.showNotification(`¡Juego iniciado! ${totalQuestions} preguntas • ${timePerQuestion}s cada una`, 'success');
+
             // Notificar en el chat
             if (window.radioChat) {
-                window.radioChat.sendMessage('🎮 ¡JUEGO INICIADO! Participa ahora respondiendo las preguntas.', 'system');
+                window.radioChat.sendMessage(
+                    `🎮 ¡JUEGO INICIADO! ${totalQuestions} preguntas • ${timePerQuestion} segundos cada una • ¡Participa ahora!`,
+                    'system'
+                );
             }
         } else {
             this.showNotification('Juego iniciado localmente (Firebase no disponible)', 'warning');
         }
     }
-
     pauseGame() {
         if (this.currentGame && this.currentGame.status === 'active') {
             this.currentGame.status = 'paused';
@@ -393,20 +442,23 @@ class RadioIAM {
         }
     }
 
-    generateQuestions(gameType) {
-        const questions = {
+    generateQuestions(gameType, totalQuestions = 10, customPoints = null) {
+        // Banco de preguntas ampliado
+        const questionBank = {
             preguntas: [
                 {
                     id: 1,
                     question: "¿Qué significa IAM?",
                     answers: [
                         "Infancia y Adolescencia Misionera",
-                        "Iglesia y Amor Misionero",
+                        "Iglesia y Amor Misionero", 
                         "Infancia Animada Misionera",
                         "Iglesia Amorosa Misionera"
                     ],
                     correct: 0,
                     points: 10,
+                    category: "Básico",
+                    difficulty: "Fácil",
                     timeLimit: 30
                 },
                 {
@@ -415,11 +467,13 @@ class RadioIAM {
                     answers: [
                         "Mons. Carlos de Forbin-Janson",
                         "San Francisco de Asís",
-                        "Santa Teresita del Niño Jesús",
+                        "Santa Teresita del Niño Jesús", 
                         "San Pablo"
                     ],
                     correct: 0,
                     points: 15,
+                    category: "Historia",
+                    difficulty: "Fácil",
                     timeLimit: 30
                 },
                 {
@@ -427,8 +481,10 @@ class RadioIAM {
                     question: "¿En qué año se fundó la IAM?",
                     answers: ["1843", "1900", "1950", "2000"],
                     correct: 0,
-                    points: 20,
-                    timeLimit: 30
+                    points: 15,
+                    category: "Historia", 
+                    difficulty: "Fácil",
+                    timeLimit: 25
                 },
                 {
                     id: 4,
@@ -441,6 +497,8 @@ class RadioIAM {
                     ],
                     correct: 0,
                     points: 10,
+                    category: "Básico",
+                    difficulty: "Fácil",
                     timeLimit: 30
                 },
                 {
@@ -448,33 +506,268 @@ class RadioIAM {
                     question: "¿Cuántos países tiene presencia la IAM?",
                     answers: ["130", "50", "200", "80"],
                     correct: 0,
+                    points: 20,
+                    category: "Datos",
+                    difficulty: "Intermedio",
+                    timeLimit: 25
+                },
+                {
+                    id: 6,
+                    question: "¿Qué Papa declaró a la IAM como Obra Pontificia?",
+                    answers: ["Pío XI", "Juan Pablo II", "Francisco", "Benedicto XVI"],
+                    correct: 0,
+                    points: 20,
+                    category: "Historia",
+                    difficulty: "Intermedio",
+                    timeLimit: 30
+                },
+                {
+                    id: 7,
+                    question: "¿Cuál es el color que identifica a la IAM?",
+                    answers: ["Verde", "Rojo", "Azul", "Amarillo"],
+                    correct: 0,
+                    points: 10,
+                    category: "Básico",
+                    difficulty: "Fácil", 
+                    timeLimit: 20
+                },
+                {
+                    id: 8,
+                    question: "¿Qué representa la huchita misionera?",
+                    answers: [
+                        "La cooperación económica para las misiones",
+                        "Un recipiente para guardar dulces",
+                        "Un símbolo de riqueza personal",
+                        "Una tradición antigua sin significado"
+                    ],
+                    correct: 0,
+                    points: 15,
+                    category: "Espiritualidad",
+                    difficulty: "Fácil",
+                    timeLimit: 30
+                },
+                {
+                    id: 9,
+                    question: "¿Cuántos pilares tiene la espiritualidad de la IAM?",
+                    answers: ["4", "3", "5", "7"],
+                    correct: 0,
+                    points: 15,
+                    category: "Espiritualidad",
+                    difficulty: "Fácil",
+                    timeLimit: 25
+                },
+                {
+                    id: 10,
+                    question: "¿Qué día se celebra el DOMUND?",
+                    answers: [
+                        "El penúltimo domingo de octubre",
+                        "El primer domingo de noviembre", 
+                        "Navidad",
+                        "Pascua de Resurrección"
+                    ],
+                    correct: 0,
+                    points: 20,
+                    category: "Fechas",
+                    difficulty: "Intermedio",
+                    timeLimit: 30
+                },
+                {
+                    id: 11,
+                    question: "¿Cuál es el propósito principal de la IAM?",
+                    answers: [
+                        "Formar niños con corazón misionero",
+                        "Recaudar fondos para la Iglesia",
+                        "Organizar campamentos de verano",
+                        "Enseñar catequesis básica"
+                    ],
+                    correct: 0,
+                    points: 15,
+                    category: "Básico",
+                    difficulty: "Fácil",
+                    timeLimit: 30
+                },
+                {
+                    id: 12,
+                    question: "¿En qué continente nació la IAM?",
+                    answers: ["Europa", "América", "Asia", "África"],
+                    correct: 0,
+                    points: 15,
+                    category: "Historia",
+                    difficulty: "Fácil",
+                    timeLimit: 25
+                },
+                {
+                    id: 13,
+                    question: "¿Qué significa 'DOMUND'?",
+                    answers: [
+                        "Domingo Mundial de las Misiones",
+                        "Donación Mundial para la Iglesia",
+                        "Domingo de la Misericordia Universal",
+                        "Día Oficial Mundial de la Unión Divina"
+                    ],
+                    correct: 0,
+                    points: 20,
+                    category: "Fechas",
+                    difficulty: "Intermedio", 
+                    timeLimit: 30
+                },
+                {
+                    id: 14,
+                    question: "¿Cuál es la edad aproximada para participar en la IAM?",
+                    answers: [
+                        "Desde los 6 hasta los 14 años aproximadamente",
+                        "Solo adolescentes de 13 a 17 años",
+                        "Adultos mayores de 18 años",
+                        "Solo niños menores de 10 años"
+                    ],
+                    correct: 0,
+                    points: 15,
+                    category: "Organización",
+                    difficulty: "Fácil",
+                    timeLimit: 30
+                },
+                {
+                    id: 15,
+                    question: "¿Qué santo es patrón de las misiones?",
+                    answers: [
+                        "San Francisco Javier",
+                        "San José",
+                        "Santa Teresa de Calcuta", 
+                        "San Juan Pablo II"
+                    ],
+                    correct: 0,
+                    points: 20,
+                    category: "Santos",
+                    difficulty: "Intermedio",
+                    timeLimit: 30
+                },
+                {
+                    id: 16,
+                    question: "¿Cómo se llama el mensaje del Papa para el DOMUND?",
+                    answers: [
+                        "Mensaje Misionero",
+                        "Encíclica Misionera",
+                        "Carta Apostólica",
+                        "Exhortación Apostólica"
+                    ],
+                    correct: 0,
                     points: 25,
+                    category: "Fechas",
+                    difficulty: "Difícil",
+                    timeLimit: 35
+                },
+                {
+                    id: 17,
+                    question: "¿Qué colores tiene el logotipo de la IAM?",
+                    answers: [
+                        "Verde, amarillo y blanco",
+                        "Azul, rojo y blanco", 
+                        "Verde, rojo y amarillo",
+                        "Azul, amarillo y negro"
+                    ],
+                    correct: 0,
+                    points: 15,
+                    category: "Básico",
+                    difficulty: "Fácil",
+                    timeLimit: 25
+                },
+                {
+                    id: 18,
+                    question: "¿Cuál es el lema bíblico de la IAM?",
+                    answers: [
+                        "De los niños es el Reino de los cielos",
+                        "Vayan y hagan discípulos a todas las naciones",
+                        "Amad a vuestros enemigos",
+                        "Buscad primero el Reino de Dios"
+                    ],
+                    correct: 0,
+                    points: 20,
+                    category: "Espiritualidad",
+                    difficulty: "Intermedio",
+                    timeLimit: 30
+                },
+                {
+                    id: 19,
+                    question: "¿Qué continente fue el primero en recibir la IAM fuera de Europa?",
+                    answers: ["América", "Asia", "África", "Oceanía"],
+                    correct: 0,
+                    points: 25,
+                    category: "Historia",
+                    difficulty: "Difícil",
+                    timeLimit: 35
+                },
+                {
+                    id: 20,
+                    question: "¿Qué significa 'Obra Pontificia'?",
+                    answers: [
+                        "Que está bajo la dirección directa del Papa",
+                        "Que está en el Vaticano",
+                        "Que solo la dirigen sacerdotes",
+                        "Que fue fundada por un Papa"
+                    ],
+                    correct: 0,
+                    points: 20,
+                    category: "Organización",
+                    difficulty: "Intermedio",
                     timeLimit: 30
                 }
             ],
             adivinanza: [
                 {
-                    id: 1,
+                    id: 21,
                     question: "Soy una obra pontificia donde los niños ayudan a otros niños. ¿Quién soy?",
                     answers: ["La IAM", "Cáritas", "Manos Unidas", "Misiones Diocesanas"],
                     correct: 0,
                     points: 20,
+                    category: "Adivinanza",
+                    difficulty: "Fácil",
+                    timeLimit: 30
+                },
+                {
+                    id: 22,
+                    question: "Soy verde, represento esperanza, y me llevan los niños misioneros. ¿Qué soy?",
+                    answers: ["La pañoleta IAM", "Una bandera", "Un uniforme", "Un estandarte"],
+                    correct: 0,
+                    points: 20,
+                    category: "Adivinanza",
+                    difficulty: "Fácil",
                     timeLimit: 30
                 }
             ],
             trivia: [
                 {
-                    id: 1,
-                    question: "¿Qué Papa declaró a la IAM como Obra Pontificia?",
-                    answers: ["Pío XI", "Juan Pablo II", "Francisco", "Benedicto XVI"],
+                    id: 23,
+                    question: "¿En qué año el Papa Pío XI declaró la IAM como Obra Pontificia?",
+                    answers: ["1922", "1900", "1950", "1843"],
                     correct: 0,
                     points: 25,
+                    category: "Historia",
+                    difficulty: "Difícil",
                     timeLimit: 30
+                },
+                {
+                    id: 24,
+                    question: "¿Cuántos continentes abarca actualmente la IAM?",
+                    answers: ["5", "4", "6", "7"],
+                    correct: 0,
+                    points: 20,
+                    category: "Datos",
+                    difficulty: "Fácil",
+                    timeLimit: 25
                 }
             ]
         };
-        
-        return questions[gameType] || questions.preguntas;
+
+        const questions = questionBank[gameType] || questionBank.preguntas;
+
+        // Mezclar preguntas aleatoriamente
+        const shuffledQuestions = [...questions].sort(() => Math.random() - 0.5);
+
+        // Tomar el número solicitado de preguntas
+        return shuffledQuestions.slice(0, totalQuestions).map((q, index) => ({
+            ...q,
+            displayNumber: index + 1
+        }));
     }
 
     startGameTimer() {
@@ -566,6 +859,113 @@ class RadioIAM {
         });
     }
 
+    startAdminStats() {
+        if (!this.isAdmin) return;
+        
+        // Actualizar estadísticas cada segundo
+        this.adminStatsInterval = setInterval(() => {
+            this.updateAdminStats();
+        }, 1000);
+    }
+
+    updateAdminStats() {
+        if (!this.isAdmin || !document.getElementById('adminConnectedPlayers')) return;
+
+        // Jugadores conectados (últimos 5 minutos)
+        const connectedPlayers = this.players.filter(p => {
+            if (!p.lastActive) return false;
+            const lastActive = new Date(p.lastActive);
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+            return lastActive > fiveMinutesAgo;
+        }).length;
+
+        // Actualizar UI
+        document.getElementById('adminConnectedPlayers').textContent = connectedPlayers;
+
+        if (this.currentGame && this.gameActive) {
+            const currentQ = this.currentQuestionIndex + 1;
+            const totalQ = this.currentGame.questions?.length || 0;
+            document.getElementById('adminCurrentQuestion').textContent = `${currentQ}/${totalQ}`;
+
+            // Tiempo restante
+            const timeLeft = this.gameDuration - Math.floor((Date.now() - new Date(this.currentGame.startTime).getTime()) / 1000);
+            const minutes = Math.floor(Math.max(0, timeLeft) / 60);
+            const seconds = Math.max(0, timeLeft) % 60;
+            document.getElementById('adminTimeRemaining').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        } else {
+            document.getElementById('adminCurrentQuestion').textContent = '0/0';
+            document.getElementById('adminTimeRemaining').textContent = '00:00';
+        }
+
+        // Puntos totales
+        const totalPoints = this.players.reduce((sum, p) => sum + (p.points || 0), 0);
+        document.getElementById('adminTotalPoints').textContent = totalPoints;
+    }
+
+    // Función para previsualizar preguntas
+    previewQuestions() {
+        if (!this.isAdmin) return;
+
+        const gameType = document.getElementById('radioGameType')?.value || 'preguntas';
+        const totalQuestions = parseInt(document.getElementById('radioTotalQuestions')?.value || 10);
+        const difficulty = document.getElementById('radioGameDifficulty')?.value || 'all';
+
+        const questions = this.generateQuestions(gameType, totalQuestions);
+
+        // Filtrar por dificultad
+        let filteredQuestions = questions;
+        if (difficulty !== 'all') {
+            filteredQuestions = questions.filter(q => {
+                if (difficulty === 'easy') return q.difficulty === 'Fácil';
+                if (difficulty === 'medium') return q.difficulty === 'Fácil' || q.difficulty === 'Intermedio';
+                if (difficulty === 'hard') return true;
+                return true;
+            });
+        }
+
+        const previewHTML = filteredQuestions.map((q, index) => `
+            <div class="question-item">
+                <div class="question-number">${index + 1}</div>
+                <div class="question-text">
+                    <strong>${q.question}</strong>
+                    <div style="font-size: 0.8rem; margin-top: 5px; color: #666;">
+                        ${q.category} • ${q.points} puntos • ${q.timeLimit || 30}s
+                    </div>
+                </div>
+                <div class="question-difficulty difficulty-${q.difficulty.toLowerCase()}">
+                    ${q.difficulty}
+                </div>
+            </div>
+        `).join('');
+
+        const previewContainer = document.getElementById('radioQuestionsPreview');
+        if (previewContainer) {
+            previewContainer.innerHTML = previewHTML || '<p>No hay preguntas disponibles con esta configuración.</p>';
+        }
+    }
+
+    setupQuestionPreview() {
+        if (!this.isAdmin) return;
+
+        const previewBtn = document.getElementById('radioPreviewQuestionsBtn');
+        if (previewBtn) {
+            previewBtn.addEventListener('click', () => {
+                this.previewQuestions();
+            });
+        }
+
+        // Actualizar preview cuando cambie la configuración
+        ['radioGameType', 'radioTotalQuestions', 'radioGameDifficulty'].forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', () => {
+                    this.previewQuestions();
+                });
+            }
+        });
+    }
+
     startQuestionTimer(questionId, seconds) {
         if (this.questionTimer) clearInterval(this.questionTimer);
         
@@ -637,7 +1037,7 @@ class RadioIAM {
     }
 
     // ===== SISTEMA DE JUGADORES =====
-    async registerPlayer() {
+        async registerPlayer() {
         const name = document.getElementById('radioPlayerName').value.trim();
         const phone = document.getElementById('radioPlayerPhone').value.trim();
         const email = document.getElementById('radioPlayerEmail').value.trim();
@@ -646,62 +1046,184 @@ class RadioIAM {
             this.showNotification('Por favor ingresa tu nombre', 'error');
             return;
         }
-        
-        // Verificar si ya existe un jugador con el mismo nombre
-        const localPlayers = JSON.parse(localStorage.getItem('radioPlayers') || '[]');
-        const existingPlayer = localPlayers.find(p => 
+
+        // Validar nombre (solo letras y espacios)
+        const nameRegex = /^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]{2,30}$/;
+        if (!nameRegex.test(name)) {
+            this.showNotification('Nombre inválido. Solo letras (2-30 caracteres)', 'error');
+            return;
+        }
+
+        // Validar email si se proporciona
+        if (email && !this.validateEmail(email)) {
+            this.showNotification('Email inválido', 'error');
+            return;
+        }
+
+        // Validar teléfono si se proporciona
+        if (phone && !this.validatePhone(phone)) {
+            this.showNotification('Teléfono inválido (solo números)', 'error');
+            return;
+        }
+
+        // Verificar si el nombre ya está registrado y ACTIVO en los últimos 30 minutos
+        const isDuplicate = await this.checkDuplicatePlayer(name);
+
+        if (isDuplicate) {
+            this.showNotification(`El nombre "${name}" ya está jugando. Usa un apodo o variación.`, 'error');
+            return;
+        }
+
+        // Cargar jugadores existentes
+        const result = await window.radioBackend.getRadioPlayers();
+        const existingPlayers = result.success ? result.data : [];
+
+        // Buscar si ya existe un jugador con el mismo nombre
+        const existingPlayer = existingPlayers.find(p => 
             p.name.toLowerCase() === name.toLowerCase()
         );
-        
+
         if (existingPlayer) {
-            // Usar jugador existente
-            this.currentPlayer = existingPlayer;
-            this.showNotification(`¡Bienvenido de nuevo ${name}!`, 'success');
-            
-            // Guardar en localStorage para referencia
-            localStorage.setItem('radioPlayer', JSON.stringify(existingPlayer));
-            localStorage.setItem('radioPlayerId', existingPlayer.id);
-            
-            // Configurar chat
-            if (window.radioChat) {
-                window.radioChat.setUserName(name);
-            }
-        } else {
-            // Crear nuevo jugador
-            const result = await window.radioBackend.saveRadioPlayer({
-                name: name,
-                phone: phone,
-                email: email
-            });
-            
-            if (result.success) {
-                this.currentPlayer = result.player;
-                this.showNotification(`¡Bienvenido ${name}! Listo para jugar.`, 'success');
-                
-                // Guardar en localStorage
-                localStorage.setItem('radioPlayer', JSON.stringify(result.player));
-                localStorage.setItem('radioPlayerId', result.player.id);
-                
+            // Preguntar si quiere usar el jugador existente
+            const useExisting = confirm(`¿Eres ${existingPlayer.name}? Si es así, haz clic en "Aceptar". Si eres otra persona, haz clic en "Cancelar" y usa un apodo.`);
+
+            if (useExisting) {
+                // Usar jugador existente
+                this.currentPlayer = existingPlayer;
+                this.currentPlayer.lastActive = new Date().toISOString();
+
+                // Actualizar datos si cambió teléfono o email
+                if (phone) this.currentPlayer.phone = phone;
+                if (email) this.currentPlayer.email = email;
+
+                // Guardar en localStorage para referencia
+                localStorage.setItem('radioPlayer', JSON.stringify(this.currentPlayer));
+                localStorage.setItem('radioPlayerId', this.currentPlayer.id);
+                localStorage.setItem('playerSessionStart', new Date().toISOString());
+
                 // Configurar chat
                 if (window.radioChat) {
                     window.radioChat.setUserName(name);
+                }
+
+                this.showNotification(`¡Bienvenido de nuevo ${name}!`, 'success');
+
+                // Anunciar en el chat
+                if (window.radioChat) {
+                    window.radioChat.sendMessage(`👋 ¡Hola a todos! Soy ${name} de vuelta`, 'greeting');
+                }
+            } else {
+                this.showNotification('Por favor, usa un apodo o tu nombre completo para diferenciarte.', 'info');
+                return;
+            }
+        } else {
+            // Crear nuevo jugador con ID único
+            const playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+
+            const result = await window.radioBackend.saveRadioPlayer({
+                id: playerId,
+                name: name,
+                phone: phone,
+                email: email,
+                points: 0,
+                gamesPlayed: 0,
+                createdAt: new Date().toISOString(),
+                lastActive: new Date().toISOString(),
+                sessionId: 'session_' + Date.now()
+            });
+
+            if (result.success) {
+                this.currentPlayer = result.player;
+
+                // Guardar en localStorage
+                localStorage.setItem('radioPlayer', JSON.stringify(this.currentPlayer));
+                localStorage.setItem('radioPlayerId', this.currentPlayer.id);
+                localStorage.setItem('playerSessionStart', new Date().toISOString());
+
+                // Configurar chat
+                if (window.radioChat) {
+                    window.radioChat.setUserName(name);
+                }
+
+                this.showNotification(`¡Bienvenido ${name}! Listo para jugar.`, 'success');
+
+                // Anunciar en el chat
+                if (window.radioChat) {
+                    window.radioChat.sendMessage(`👋 ¡Hola a todos! Soy ${name}, nuevo jugador`, 'greeting');
                 }
             } else {
                 this.showNotification('Error al registrarse. Intenta nuevamente.', 'error');
                 return;
             }
         }
-        
-        // Anunciar en el chat
-        if (window.radioChat) {
-            window.radioChat.sendMessage(`👋 ¡Hola a todos! Soy ${name}`, 'greeting');
-        }
-        
+
         // Resetear formulario
         document.getElementById('radioRegisterPlayerForm').reset();
-        
+
         // Recargar lista de jugadores
         this.loadPlayers();
+
+        // Registrar sesión activa
+        this.registerActiveSession(name);
+    }
+
+    // Agrega estas funciones auxiliares a tu clase RadioIAM:
+
+    validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    validatePhone(phone) {
+        const phoneRegex = /^[0-9+\-\s()]{7,15}$/;
+        return phoneRegex.test(phone);
+    }
+
+    async checkDuplicatePlayer(name) {
+        const result = await window.radioBackend.getRadioPlayers();
+        if (!result.success) return false;
+
+        const players = result.data;
+        const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+
+        // Buscar jugadores con el mismo nombre que estén activos (últimos 30 min)
+        const duplicate = players.find(player => {
+            if (player.name.toLowerCase() === name.toLowerCase()) {
+                if (player.lastActive) {
+                    const lastActive = new Date(player.lastActive);
+                    return lastActive > thirtyMinutesAgo;
+                }
+            }
+            return false;
+        });
+
+        return duplicate !== undefined;
+    }
+
+    registerActiveSession(playerName) {
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions') || '{}');
+        activeSessions[playerName.toLowerCase()] = {
+            startTime: new Date().toISOString(),
+            playerName: playerName
+        };
+        localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
+
+        // Limpiar sesiones antiguas cada 5 minutos
+        this.cleanupOldSessions();
+    }
+
+    cleanupOldSessions() {
+        const activeSessions = JSON.parse(localStorage.getItem('activeSessions') || '{}');
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+
+        Object.keys(activeSessions).forEach(key => {
+            const session = activeSessions[key];
+            if (new Date(session.startTime) < oneHourAgo) {
+                delete activeSessions[key];
+            }
+        });
+
+        localStorage.setItem('activeSessions', JSON.stringify(activeSessions));
     }
 
     async submitAnswer(questionId, answerIndex) {
@@ -1464,6 +1986,11 @@ class RadioIAM {
         if (this.countdownInterval) clearInterval(this.countdownInterval);
         if (this.gameListener) clearInterval(this.gameListener);
         if (this.playersListener) clearInterval(this.playersListener);
+        
+        // NUEVO: Limpiar intervalo de estadísticas del admin
+        if (this.adminStatsInterval) {
+            clearInterval(this.adminStatsInterval);
+        }
         
         // Limpiar chat
         if (window.radioChat) {

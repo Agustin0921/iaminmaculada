@@ -351,41 +351,181 @@
                         
                         <div class="radio-game-content">
                             <!-- Controles de Admin (solo visible para animadores) -->
-                            <div class="radio-admin-controls radio-hidden" id="radioAdminControls">
-                                <h4><i class="fas fa-user-shield"></i> Controles del Animador</h4>
-                                <div class="radio-admin-buttons">
-                                    <button class="radio-btn radio-btn-primary" id="radioStartGameBtn">
-                                        <i class="fas fa-play"></i> Iniciar Juego
-                                    </button>
-                                    <button class="radio-btn" style="background: var(--warning); color: white;" id="radioPauseGameBtn">
-                                        <i class="fas fa-pause"></i> Pausar
-                                    </button>
-                                    <button class="radio-btn" style="background: var(--danger); color: white;" id="radioEndGameBtn">
-                                        <i class="fas fa-stop"></i> Finalizar
-                                    </button>
-                                </div>
+                            <!-- Reemplaza la sección de Configuración del Juego en radio.html -->
+                        <div class="radio-admin-controls radio-hidden" id="radioAdminControls">
+                            <h4><i class="fas fa-user-shield"></i> Controles del Animador</h4>
+                            
+                            <div class="radio-admin-buttons">
+                                <button class="radio-btn radio-btn-success" id="radioStartGameBtn">
+                                    <i class="fas fa-play"></i> Iniciar Juego
+                                </button>
+                                <button class="radio-btn radio-btn-warning" id="radioPauseGameBtn">
+                                    <i class="fas fa-pause"></i> Pausar
+                                </button>
+                                <button class="radio-btn radio-btn-danger" id="radioEndGameBtn">
+                                    <i class="fas fa-stop"></i> Finalizar
+                                </button>
+                                <button class="radio-btn radio-btn-info" id="radioNextQuestionBtn">
+                                    <i class="fas fa-forward"></i> Siguiente Pregunta
+                                </button>
+                            </div>
+                            
+                            <div class="radio-game-settings">
+                                <h5><i class="fas fa-cog"></i> Configuración Avanzada</h5>
                                 
-                                <div class="radio-game-settings">
-                                    <h5>Configuración del Juego</h5>
+                                <div class="radio-settings-grid">
                                     <div class="radio-setting-item">
-                                        <label for="radioGameType">Tipo de Juego:</label>
+                                        <label for="radioGameType"><i class="fas fa-gamepad"></i> Tipo de Juego:</label>
                                         <select id="radioGameType">
                                             <option value="preguntas">Preguntas y Respuestas</option>
                                             <option value="adivinanza">Adivinanza</option>
                                             <option value="trivia">Trivia Bíblica</option>
                                             <option value="memoria">Memoria Misionera</option>
+                                            <option value="mezclado">Mezclado (Todos los tipos)</option>
                                         </select>
                                     </div>
+                                    
                                     <div class="radio-setting-item">
-                                        <label for="radioGameDuration">Duración (min):</label>
-                                        <input type="number" id="radioGameDuration" min="1" max="30" value="10">
+                                        <label for="radioTotalQuestions"><i class="fas fa-question-circle"></i> Total de Preguntas:</label>
+                                        <select id="radioTotalQuestions">
+                                            <option value="5">5 preguntas (Rápido)</option>
+                                            <option value="10" selected>10 preguntas (Normal)</option>
+                                            <option value="15">15 preguntas (Extendido)</option>
+                                            <option value="20">20 preguntas (Completo)</option>
+                                            <option value="25">25 preguntas (Maratón)</option>
+                                        </select>
                                     </div>
+                                    
                                     <div class="radio-setting-item">
-                                        <label for="radioPointsPerQuestion">Puntos por acierto:</label>
-                                        <input type="number" id="radioPointsPerQuestion" min="1" max="100" value="10">
+                                        <label for="radioGameDifficulty"><i class="fas fa-chart-line"></i> Dificultad:</label>
+                                        <select id="radioGameDifficulty">
+                                            <option value="all">Todas las dificultades</option>
+                                            <option value="easy" selected>Solo Fácil</option>
+                                            <option value="medium">Fácil + Intermedio</option>
+                                            <option value="hard">Todas (Incluye Difícil)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="radio-setting-item">
+                                        <label for="radioGameDuration"><i class="fas fa-clock"></i> Duración Total (min):</label>
+                                        <input type="number" id="radioGameDuration" min="5" max="60" value="15" step="5">
+                                    </div>
+                                    
+                                    <div class="radio-setting-item">
+                                        <label for="radioTimePerQuestion"><i class="fas fa-hourglass-half"></i> Tiempo por pregunta (seg):</label>
+                                        <select id="radioTimePerQuestion">
+                                            <option value="15">15 segundos (Súper rápido)</option>
+                                            <option value="20">20 segundos (Rápido)</option>
+                                            <option value="30" selected>30 segundos (Normal)</option>
+                                            <option value="45">45 segundos (Relajado)</option>
+                                            <option value="60">60 segundos (Analítico)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="radio-setting-item">
+                                        <label for="radioPointsPerQuestion"><i class="fas fa-star"></i> Puntos base por acierto:</label>
+                                        <input type="number" id="radioPointsPerQuestion" min="5" max="50" value="10" step="5">
+                                    </div>
+                                    
+                                    <div class="radio-setting-item">
+                                        <label for="radioPointsDifficulty"><i class="fas fa-medal"></i> Bonus por dificultad:</label>
+                                        <select id="radioPointsDifficulty">
+                                            <option value="no">Sin bonus</option>
+                                            <option value="small" selected>Bonus pequeño (+25%)</option>
+                                            <option value="medium">Bonus medio (+50%)</option>
+                                            <option value="large">Bonus grande (+100%)</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="radio-setting-item">
+                                        <label for="radioShowCorrect"><i class="fas fa-eye"></i> Mostrar respuesta correcta:</label>
+                                        <select id="radioShowCorrect">
+                                            <option value="always">Siempre</option>
+                                            <option value="timeout">Solo si se acaba el tiempo</option>
+                                            <option value="never" selected>Nunca</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="radio-advanced-options">
+                                    <h6><i class="fas fa-sliders-h"></i> Opciones Avanzadas</h6>
+                                    <div class="radio-checkbox-options">
+                                        <label>
+                                            <input type="checkbox" id="radioShuffleQuestions" checked>
+                                            <span>Mezclar preguntas aleatoriamente</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="radioAllowMultipleDevices" checked>
+                                            <span>Permitir múltiples dispositivos por jugador</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="radioShowLiveRanking" checked>
+                                            <span>Mostrar ranking en vivo durante el juego</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="radioSoundEffects" checked>
+                                            <span>Efectos de sonido</span>
+                                        </label>
+                                        <label>
+                                            <input type="checkbox" id="radioChatIntegration" checked>
+                                            <span>Integrar con chat en vivo</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="radio-question-preview">
+                                    <h6><i class="fas fa-list-ol"></i> Vista Previa de Preguntas</h6>
+                                    <div id="radioQuestionsPreview">
+                                        <p>Selecciona las opciones para ver las preguntas...</p>
+                                    </div>
+                                    <button class="radio-btn radio-btn-secondary" id="radioPreviewQuestionsBtn">
+                                        <i class="fas fa-search"></i> Previsualizar Preguntas
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-game-stats">
+                                <h5><i class="fas fa-chart-bar"></i> Estadísticas en Vivo</h5>
+                                <div class="radio-stats-grid">
+                                    <div class="radio-stat-card">
+                                        <div class="radio-stat-icon">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div class="radio-stat-info">
+                                            <h6>Jugadores Conectados</h6>
+                                            <p id="adminConnectedPlayers">0</p>
+                                        </div>
+                                    </div>
+                                    <div class="radio-stat-card">
+                                        <div class="radio-stat-icon">
+                                            <i class="fas fa-question-circle"></i>
+                                        </div>
+                                        <div class="radio-stat-info">
+                                            <h6>Pregunta Actual</h6>
+                                            <p id="adminCurrentQuestion">0/0</p>
+                                        </div>
+                                    </div>
+                                    <div class="radio-stat-card">
+                                        <div class="radio-stat-icon">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div class="radio-stat-info">
+                                            <h6>Tiempo Restante</h6>
+                                            <p id="adminTimeRemaining">00:00</p>
+                                        </div>
+                                    </div>
+                                    <div class="radio-stat-card">
+                                        <div class="radio-stat-icon">
+                                            <i class="fas fa-trophy"></i>
+                                        </div>
+                                        <div class="radio-stat-info">
+                                            <h6>Puntos Totales</h6>
+                                            <p id="adminTotalPoints">0</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
 
                             <!-- Panel de Usuario -->
                             <div class="radio-user-game-panel" id="radioUserGamePanel">
