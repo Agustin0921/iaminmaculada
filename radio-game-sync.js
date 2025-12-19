@@ -14,6 +14,12 @@ const gameRef = ref(db, "radioGame");
 onValue(gameRef, (snapshot) => {
   const game = snapshot.val();
 
+  window.radio.games.status = game.status;
+
+  if (game.status === "waiting") {
+    mostrarBotonUnirse();
+  }
+
   if (!game) {
     ocultarTodo();
     return;

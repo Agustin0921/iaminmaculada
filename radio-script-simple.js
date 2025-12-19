@@ -4,6 +4,26 @@
 document.addEventListener('DOMContentLoaded', async function() {
     console.log("📻 Sistema de Radio con Firebase iniciando...");
     
+
+    // ===== ESTADO BASE (NO JUEGO, SOLO UI) =====
+    window.radio = {
+        isPlaying: false,
+        currentStream: 'youtube',
+        admin: {
+            logged: false,
+            username: null,
+            userId: null
+        },
+        games: {
+            // ⚠️ ESTADO LOCAL SOLO PARA UI
+            active: null,
+            status: 'idle',
+            currentPlayers: [],
+            minPlayers: 3,
+            pointsPerQuestion: 200
+        }
+    };
+
     
     
     // Inicializar Firebase Manager
