@@ -3,535 +3,712 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Radio Morenita del Valle 104.5 - Con Corazón Misionero</title>
+    <title>Radio IAM - Con Corazón Misionero</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="radio-styles.css">
+    <!-- SOLO USAMOS radio.css - NO styles.css -->
+    <link rel="stylesheet" href="radio.css">
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="img/radio-favicon.png">
-    <!-- En el <head> de radio.html, agrega esto ANTES de tus scripts -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-      import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-      import { getFirestore, setDoc, updateDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-      import { getDatabase, ref, set, update, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        
-      // Tu configuración de Firebase
-      const firebaseConfig = {
-          apiKey: "AIzaSyB5oQcEv5anwzjEM5aTNdavYqOBMsx2byE",
-          authDomain: "iam-campamento-2026.firebaseapp.com",
-          projectId: "iam-campamento-2026",
-          storageBucket: "iam-campamento-2026.firebasestorage.app",
-          messagingSenderId: "600822219804",
-          appId: "1:600822219804:web:3f8345d0e8479592d88bd9"
-      };
-  
-      // Inicializar Firebase
-      const firebaseApp = initializeApp(firebaseConfig);
-      const firebaseAuth = getAuth(firebaseApp);
-      const firebaseDb = getFirestore(firebaseApp);
-      const firebaseRTDB = getDatabase(firebaseApp);
-  
-      // Hacerlas disponibles globalmente
-      window.firebaseApp = firebaseApp;
-      window.firebaseAuth = firebaseAuth;
-      window.firebaseDb = firebaseDb;
-      window.firebaseRTDB = firebaseRTDB;
-      // Exportar funciones específicas
-      window.firebaseFunctions = { 
-        signInWithEmailAndPassword, 
-        signOut,
-        setDoc, 
-        updateDoc, 
-        doc, 
-        getDoc, 
-        ref, 
-        set, 
-        update, 
-        onValue 
-      };
-      
-      console.log("✅ Firebase Modular cargado correctamente");
-    </script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 </head>
-<body class="radio-page">
-    <!-- Header -->
-    <header>
+<body>
+    <!-- Modal de Login para Admin de Radio -->
+    <div class="radio-modal" id="radioAdminModal">
+        <div class="radio-modal-content">
+            <button class="radio-modal-close" id="cancelRadioLogin">&times;</button>
+            <div class="radio-modal-icon">
+                <i class="fas fa-broadcast-tower"></i>
+            </div>
+            <h3>Acceso Animador de Radio</h3>
+            <p>Credenciales para controlar juegos en vivo</p>
+            
+            <form id="radioLoginForm">
+                <div class="radio-form-group">
+                    <label for="radioUsername">Usuario Animador</label>
+                    <input type="text" id="radioUsername" name="username" required placeholder="Tu usuario">
+                </div>
+                
+                <div class="radio-form-group">
+                    <label for="radioPassword">Contraseña</label>
+                    <input type="password" id="radioPassword" name="password" required placeholder="Tu contraseña">
+                </div>
+                
+                <div class="radio-form-group">
+                    <label for="radioCode">Código de Programa</label>
+                    <input type="password" id="radioCode" name="adminCode" required placeholder="Código del programa">
+                </div>
+                
+                <button type="submit" class="radio-btn radio-btn-primary radio-btn-block">
+                    <i class="fas fa-sign-in-alt"></i> ¡Ingresar al Estudio!
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Header Radio (INDEPENDIENTE) -->
+    <header class="radio-header">
         <div class="container">
-            <nav class="navbar">
-                <div class="nav-brand">
-                    <a href="index.html" class="logo">
-                        <img class="logo-img" src="img/logo-iam.png" alt="IAM">
-                        <div class="logo-text">
+            <nav class="radio-navbar">
+                <div class="radio-nav-brand">
+                    <a href="index.html" class="radio-logo">
+                        <img class="radio-logo-img" src="img/logo-iam.png" alt="Logo IAM Radio">
+                        <div class="radio-logo-text">
                             <h1>IAM</h1>
-                            <span>Infancia y Adolescencia Misionera</span>
+                            <span>Radio Misionera</span>
                         </div>
                     </a>
                 </div>
 
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <!-- Botón Hamburguesa -->
+                <button class="radio-mobile-menu-btn" id="radioMobileMenuBtn">
                     <i class="fas fa-bars"></i>
                 </button>
 
-                <div class="nav-menu" id="mainNav">
-                    <ul class="nav-links">
-                        <li><a href="index.html" class="nav-link">Inicio IAM</a></li>
-                        <li><a href="index.html#sobre-iam" class="nav-link">¿Qué es IAM?</a></li>
-                        <li><a href="#radio-player" class="nav-link active">Escuchar Radio</a></li>
-                        <li><a href="#programa" class="nav-link">Programa IAM</a></li>
-                        <li><a href="#juegos" class="nav-link">Juegos en Vivo</a></li>
-                        <li><a href="inscripcion.html" class="nav-link">Campamento 2026</a></li>
+                <!-- Navegación Principal -->
+                <div class="radio-nav-menu" id="radioMainNav">
+                    <ul class="radio-nav-links">
+                        <li><a href="index.html" class="radio-nav-link">Inicio IAM</a></li>
+                        <li><a href="#programa" class="radio-nav-link active">El Programa</a></li>
+                        <li><a href="#juego" class="radio-nav-link">Juego en Vivo</a></li>
+                        <li><a href="#ranking" class="radio-nav-link">Ranking</a></li>
+                        <li><a href="#programacion" class="radio-nav-link">Programación</a></li>
+                        <li><a href="inscripcion.html" class="radio-nav-link">Campamento</a></li>
                     </ul>
                 </div>
 
-                <!-- Botón Admin específico para radio -->
-                <button class="admin-access-btn" id="radioAdminBtn" title="Acceso Animadores">
-                    <i class="fas fa-user-shield"></i>
+                <button class="radio-admin-btn" id="radioAdminBtn" title="Acceso Animadores Radio">
+                    <i class="fas fa-broadcast-tower"></i>
                 </button>
             </nav>
         </div>
     </header>
 
-    <!-- Encabezado de Radio -->
-    <section class="radio-header">
+    <!-- Hero Section Radio -->
+    <section class="radio-hero" id="inicio">
         <div class="container">
-            <div class="radio-logo-container">
-                <div class="radio-logo">
-                    <i class="fas fa-radio" style="font-size: 4rem; color: var(--radio-primary);"></i>
+            <div class="radio-hero-content">
+                <div class="radio-hero-badge">
+                    <span><i class="fas fa-broadcast-tower"></i> Transmitiendo en vivo</span>
                 </div>
-                <div class="radio-frequency">
-                    <h1>Radio <span>Morenita del Valle</span></h1>
-                    <p>104.5 FM - Transmitiendo desde Concepción, Tucumán</p>
-                </div>
-            </div>
-            
-            <div style="text-align: center; margin-top: 20px;">
-                <p style="font-size: 1.2rem; max-width: 800px; margin: 0 auto; opacity: 0.9;">
-                    <i class="fas fa-heart" style="color: var(--radio-accent);"></i>
-                    La voz de nuestra comunidad católica
+                <h1 class="radio-hero-title">
+                    Radio IAM <span class="highlight">"Con Corazón Misionero"</span>
+                </h1>
+                <p class="radio-hero-subtitle">
+                    Todos los sábados de 10:30 a 12:30 hs. Un espacio de oración, evangelización y juegos para toda la familia misionera.
                 </p>
+
+                <!-- Estado de la Radio -->
+                <div class="radio-status">
+                    <div class="status-indicator">
+                        <div class="status-dot live" id="radioStatusDot"></div>
+                        <span class="status-text" id="radioStatusText">EN VIVO AHORA</span>
+                    </div>
+                    <div class="radio-info">
+                        <p><i class="fas fa-clock"></i> Sábados 10:30 - 12:30 hs</p>
+                        <p><i class="fas fa-microphone-alt"></i> Animadores: Equipo IAM</p>
+                        <p><i class="fas fa-heart"></i> ¡Participa en los juegos!</p>
+                    </div>
+                </div>
+
+                <div class="radio-controls">
+                    <a href="#juego" class="radio-btn radio-btn-primary radio-btn-lg">
+                        <i class="fas fa-gamepad"></i> ¡Participar en el Juego!
+                    </a>
+                    <button class="radio-btn radio-btn-secondary radio-btn-lg" id="playRadioBtn">
+                        <i class="fas fa-play"></i> Escuchar Radio
+                    </button>
+                </div>
             </div>
-            
-            <!-- Ondas de radio animadas -->
-            <div class="radio-wave"></div>
-            <div class="radio-wave"></div>
-            <div class="radio-wave"></div>
         </div>
     </section>
 
-    <!-- Contenido Principal -->
-    <main class="radio-main-container">
-        <!-- Reproductor de Radio -->
-        <section id="radio-player" class="radio-player-section">
-            <div class="radio-player-header">
-                <h2><i class="fas fa-broadcast-tower"></i> Escucha en Vivo</h2>
-                <div class="live-badge">
-                    <i class="fas fa-circle"></i> EN VIVO
-                </div>
+    <!-- El Programa -->
+    <section class="radio-section" id="programa">
+        <div class="container">
+            <div class="radio-section-header">
+                <h2 class="radio-section-title">"Con Corazón Misionero"</h2>
+                <p class="radio-section-subtitle">Un programa que une oración, evangelización y diversión</p>
             </div>
 
-            <div class="radio-player-main">
-                <div class="player-controls">
-                    <div class="station-info">
-                        <h3>Radio Morenita del Valle</h3>
-                        <p>104.5 FM - Concepción, Tucumán</p>
-                    </div>
-
-                    <div class="audio-level">
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                        <div class="audio-bar"></div>
-                    </div>
-
-                    <div class="volume-control">
-                        <label style="display: block; margin-bottom: 10px;">
-                            <i class="fas fa-volume-up"></i> Volumen
-                        </label>
-                        <input type="range" min="0" max="100" value="70" class="volume-slider" id="volumeControl">
-                    </div>
-
-                    <div class="main-controls">
-                        <button class="control-btn" id="prevBtn" title="Anterior" onclick="skipBack()">
-                            <i class="fas fa-step-backward"></i>
-                        </button>
-                        <button class="control-btn play-btn" id="playBtn" title="Reproducir/Pausar" onclick="togglePlay()">
-                            <i class="fas fa-play" id="playIcon"></i>
-                        </button>
-                        <button class="control-btn" id="nextBtn" title="Siguiente" onclick="skipForward()">
-                            <i class="fas fa-step-forward"></i>
-                        </button>
-                    </div>
-
-                    <div style="text-align: center; margin-top: 20px;">
-                        <p id="nowPlaying"><i class="fas fa-info-circle"></i> Haz clic en reproducir para escuchar</p>
-                    </div>
-                </div>
-
-                <!-- Reemplaza la sección player-streams con esto: -->
-                <div class="player-streams">
-                    <h4><i class="fas fa-stream"></i> Opciones de Escucha</h4>
-
-                    <div class="stream-option active" data-stream="youtube" onclick="selectStream('youtube')">
-                        <div class="stream-icon">
-                            <i class="fab fa-youtube"></i>
+            <div class="radio-program-description">
+                <div class="radio-program-content">
+                    <h3><i class="fas fa-heart"></i> ¿Qué hacemos en el programa?</h3>
+                    <div class="radio-features-grid">
+                        <div class="radio-feature-card">
+                            <i class="fas fa-pray radio-feature-icon"></i>
+                            <h4>Oración Comunitaria</h4>
+                            <p>Rezamos juntos, especialmente por las intenciones de nuestros oyentes.</p>
                         </div>
-                        <div class="stream-info">
-                            <h5>YouTube Live</h5>
-                            <p>Transmisión en vivo por YouTube</p>
+                        <div class="radio-feature-card">
+                            <i class="fas fa-bible radio-feature-icon"></i>
+                            <h4>Reflexión del Evangelio</h4>
+                            <p>Leemos y reflexionamos sobre el Evangelio del día, adaptado para niños y jóvenes.</p>
                         </div>
-                    </div>
-                
-                    <div class="stream-option" data-stream="radio" onclick="selectStream('radio')">
-                        <div class="stream-icon">
-                            <i class="fas fa-radio"></i>
+                        <div class="radio-feature-card">
+                            <i class="fas fa-book radio-feature-icon"></i>
+                            <h4>Historias Misioneras</h4>
+                            <p>Compartimos testimonios y vidas de santos misioneros.</p>
                         </div>
-                        <div class="stream-info">
-                            <h5>Directo por FM</h5>
-                            <p>Escucha la transmisión en vivo 104.5 FM</p>
+                        <div class="radio-feature-card">
+                            <i class="fas fa-gamepad radio-feature-icon"></i>
+                            <h4>Juegos en Vivo</h4>
+                            <p>Concursos y juegos donde puedes participar desde tu casa.</p>
                         </div>
-                    </div>
-                
-                    <!-- Reproductor de YouTube integrado (oculto inicialmente) -->
-                    <div id="youtubePlayerContainer" style="display: none; margin-top: 20px;">
-                        <div style="background: #000; border-radius: 10px; overflow: hidden; position: relative; padding-bottom: 56.25%; height: 0;">
-                            <iframe id="youtubeLivePlayer" 
-                                    style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;"
-                                    src=""
-                                    title="Radio Morenita del Valle - YouTube Live"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen>
-                            </iframe>
+                        <div class="radio-feature-card">
+                            <i class="fas fa-music radio-feature-icon"></i>
+                            <h4>Música Católica</h4>
+                            <p>Alabanzas y canciones que alegran el corazón.</p>
                         </div>
-                        <p style="text-align: center; margin-top: 10px; font-size: 0.9rem; color: #718096;">
-                            <i class="fas fa-info-circle"></i> Reproduciendo en vivo desde YouTube
-                        </p>
+                        <div class="radio-feature-card">
+                            <i class="fas fa-users radio-feature-icon"></i>
+                            <h4>Participación</h4>
+                            <p>Los oyentes pueden llamar, enviar mensajes y participar activamente.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Programa "Con Corazón Misionero" -->
-        <section id="programa" class="program-section">
-            <div class="program-header">
-                <h2><i class="fas fa-microphone-alt"></i> Con Corazón Misionero</h2>
-                <div class="schedule-badge">
-                    <i class="fas fa-clock"></i> Sábados 10:30 - 12:30 hs
-                </div>
+    <!-- Juego en Vivo -->
+    <section class="radio-section radio-bg-light" id="juego">
+        <div class="container">
+            <div class="radio-section-header">
+                <h2 class="radio-section-title">¡Juego en Vivo!</h2>
+                <p class="radio-section-subtitle">Participa desde tu casa y gana puntos para el ranking mensual</p>
             </div>
 
-            <div class="program-content">
-                <div class="program-image">
-                    <div style="width: 100%; height: 300px; background: linear-gradient(135deg, #9C27B0, #BA68C8); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white;">
-                        <div style="text-align: center; padding: 20px;">
-                            <i class="fas fa-microphone-alt" style="font-size: 4rem; margin-bottom: 20px;"></i>
-                            <h3 style="color: white; margin-bottom: 10px;">Programa IAM</h3>
-                            <p>En vivo todos los sábados</p>
+            <div class="radio-main-container">
+                <!-- Columna Izquierda -->
+                <div class="radio-left-column">
+                    <!-- Player de Radio -->
+                    <div class="radio-player-container">
+                        <div class="radio-player-header">
+                            <h3><i class="fas fa-broadcast-tower"></i> Radio IAM - En Vivo</h3>
+                            <div class="radio-player-actions">
+                                <button class="radio-player-btn" id="radioPrevBtn" title="Anterior">
+                                    <i class="fas fa-backward"></i>
+                                </button>
+                                <button class="radio-player-btn" id="radioPlayBtn" title="Reproducir">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="radio-player-btn" id="radioNextBtn" title="Siguiente">
+                                    <i class="fas fa-forward"></i>
+                                </button>
+                                <button class="radio-player-btn" id="radioVolumeBtn" title="Volumen">
+                                    <i class="fas fa-volume-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="radio-player-content">
+                            <div class="radio-video-container" id="radioVideoContainer">
+                                <div class="radio-offline-message">
+                                    <i class="fas fa-broadcast-tower"></i>
+                                    <h4>Radio IAM - Con Corazón Misionero</h4>
+                                    <p>Sintoniza nuestro programa los sábados de 10:30 a 12:30 hs</p>
+                                    <div class="radio-countdown">
+                                        <p>Próximo programa en:</p>
+                                        <div class="radio-countdown-display" id="radioCountdownDisplay">
+                                            <div class="radio-countdown-unit">
+                                                <div class="radio-unit-value">00</div>
+                                                <div class="radio-unit-label">HORAS</div>
+                                            </div>
+                                            <div class="radio-countdown-separator">:</div>
+                                            <div class="radio-countdown-unit">
+                                                <div class="radio-unit-value">00</div>
+                                                <div class="radio-unit-label">MIN</div>
+                                            </div>
+                                            <div class="radio-countdown-separator">:</div>
+                                            <div class="radio-countdown-unit">
+                                                <div class="radio-unit-value">00</div>
+                                                <div class="radio-unit-label">SEG</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-audio-player">
+                                <div class="radio-visualizer">
+                                    <div class="radio-visualizer-bars" id="radioVisualizerBars">
+                                        <!-- Barras se generan con JS -->
+                                    </div>
+                                </div>
+                                
+                                <div class="radio-audio-controls">
+                                    <button class="radio-audio-btn" id="radioRewindBtn" title="Retroceder 10s">
+                                        <i class="fas fa-backward"></i>
+                                    </button>
+                                    <button class="radio-audio-btn radio-audio-btn-play" id="radioAudioPlayBtn">
+                                        <i class="fas fa-play"></i>
+                                    </button>
+                                    <button class="radio-audio-btn" id="radioForwardBtn" title="Adelantar 10s">
+                                        <i class="fas fa-forward"></i>
+                                    </button>
+                                    
+                                    <div class="radio-volume-control">
+                                        <i class="fas fa-volume-down"></i>
+                                        <input type="range" id="radioVolumeSlider" min="0" max="100" value="80">
+                                        <i class="fas fa-volume-up"></i>
+                                    </div>
+                                </div>
+                                
+                                <div class="radio-player-info">
+                                    <div class="radio-now-playing">
+                                        <h4 id="radioCurrentSong">Radio IAM - En Vivo</h4>
+                                        <p id="radioCurrentShow">Con Corazón Misionero</p>
+                                    </div>
+                                    
+                                    <div class="radio-player-time">
+                                        <span id="radioCurrentTime">00:00</span>
+                                        <input type="range" id="radioProgressBar" min="0" max="100" value="0">
+                                        <span id="radioTotalTime">00:00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="radio-player-footer">
+                            <div class="radio-stream-quality">
+                                <span><i class="fas fa-wifi"></i> 128 kbps</span>
+                                <span><i class="fas fa-headphones"></i> Estéreo</span>
+                            </div>
+                            <div class="radio-share-links">
+                                <a href="#" class="radio-share-link" title="Compartir en WhatsApp">
+                                    <i class="fab fa-whatsapp"></i>
+                                </a>
+                                <a href="#" class="radio-share-link" title="Compartir en Facebook">
+                                    <i class="fab fa-facebook-f"></i>
+                                </a>
+                                <a href="#" class="radio-share-link" title="Copiar enlace">
+                                    <i class="fas fa-link"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chat en Vivo -->
+                    <div class="radio-chat-container">
+                        <div class="radio-chat-header">
+                            <h3><i class="fas fa-comments"></i> Chat en Vivo</h3>
+                            <div class="radio-online-count">
+                                <i class="fas fa-users"></i>
+                                <span id="radioOnlineCount">0</span> conectados
+                            </div>
+                        </div>
+                        
+                        <div class="radio-chat-messages" id="radioChatMessages">
+                            <div class="radio-system-message">
+                                <i class="fas fa-info-circle"></i>
+                                <p>¡Bienvenido al chat de Radio IAM! Aquí puedes compartir tus intenciones de oración y participar durante el programa.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="radio-chat-input-container">
+                            <form id="radioChatForm">
+                                <input type="text" class="radio-chat-input" id="radioChatMessage" placeholder="Escribe tu mensaje..." maxlength="200" required>
+                                <button type="submit" class="radio-chat-send-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </form>
+                            
+                            <div class="radio-chat-actions">
+                                <button class="radio-chat-action-btn" id="radioSendPrayerBtn">
+                                    <i class="fas fa-pray"></i> Enviar intención
+                                </button>
+                                <button class="radio-chat-action-btn" id="radioSendGreetingBtn">
+                                    <i class="fas fa-hand-peace"></i> Saludar
+                                </button>
+                                <button class="radio-chat-action-btn" id="radioSendQuestionBtn">
+                                    <i class="fas fa-question-circle"></i> Preguntar
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="program-details">
-                    <h3>El programa de la IAM en la radio</h3>
+                <!-- Columna Derecha -->
+                <div class="radio-right-column">
+                    <!-- Panel de Juego -->
+                    <div class="radio-game-panel">
+                        <div class="radio-game-header">
+                            <h3><i class="fas fa-gamepad"></i> Juego en Vivo</h3>
+                            <div class="radio-game-status">
+                                <div class="status-dot offline" id="radioGameStatusDot"></div>
+                                <span class="status-text" id="radioGameStatusText">ESPERANDO</span>
+                            </div>
+                        </div>
+                        
+                        <div class="radio-game-content">
+                            <!-- Controles de Admin (solo visible para animadores) -->
+                            <div class="radio-admin-controls radio-hidden" id="radioAdminControls">
+                                <h4><i class="fas fa-user-shield"></i> Controles del Animador</h4>
+                                <div class="radio-admin-buttons">
+                                    <button class="radio-btn radio-btn-primary" id="radioStartGameBtn">
+                                        <i class="fas fa-play"></i> Iniciar Juego
+                                    </button>
+                                    <button class="radio-btn" style="background: var(--warning); color: white;" id="radioPauseGameBtn">
+                                        <i class="fas fa-pause"></i> Pausar
+                                    </button>
+                                    <button class="radio-btn" style="background: var(--danger); color: white;" id="radioEndGameBtn">
+                                        <i class="fas fa-stop"></i> Finalizar
+                                    </button>
+                                </div>
+                                
+                                <div class="radio-game-settings">
+                                    <h5>Configuración del Juego</h5>
+                                    <div class="radio-setting-item">
+                                        <label for="radioGameType">Tipo de Juego:</label>
+                                        <select id="radioGameType">
+                                            <option value="preguntas">Preguntas y Respuestas</option>
+                                            <option value="adivinanza">Adivinanza</option>
+                                            <option value="trivia">Trivia Bíblica</option>
+                                            <option value="memoria">Memoria Misionera</option>
+                                        </select>
+                                    </div>
+                                    <div class="radio-setting-item">
+                                        <label for="radioGameDuration">Duración (min):</label>
+                                        <input type="number" id="radioGameDuration" min="1" max="30" value="10">
+                                    </div>
+                                    <div class="radio-setting-item">
+                                        <label for="radioPointsPerQuestion">Puntos por acierto:</label>
+                                        <input type="number" id="radioPointsPerQuestion" min="1" max="100" value="10">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Panel de Usuario -->
+                            <div class="radio-user-game-panel" id="radioUserGamePanel">
+                                <div class="radio-game-description">
+                                    <h4><i class="fas fa-info-circle"></i> ¿Cómo participar?</h4>
+                                    <ul class="radio-game-instructions">
+                                        <li><i class="fas fa-check-circle"></i> Escucha el programa los sábados</li>
+                                        <li><i class="fas fa-check-circle"></i> Cuando anuncien el juego, regístrate aquí</li>
+                                        <li><i class="fas fa-check-circle"></i> Responde las preguntas en tiempo real</li>
+                                        <li><i class="fas fa-check-circle"></i> ¡Gana puntos para el ranking mensual!</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="radio-current-game" id="radioCurrentGameInfo">
+                                    <div class="radio-no-game">
+                                        <i class="fas fa-clock"></i>
+                                        <p>Esperando que inicie un juego...</p>
+                                        <p>¡Sintoniza el programa los sábados!</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Formulario para registrarse en el juego -->
+                                <div class="radio-join-game">
+                                    <h4><i class="fas fa-user-plus"></i> ¡Regístrate para jugar!</h4>
+                                    <form id="radioRegisterPlayerForm">
+                                        <div class="radio-form-group">
+                                            <input type="text" id="radioPlayerName" placeholder="Tu nombre" required maxlength="30">
+                                        </div>
+                                        <div class="radio-form-group">
+                                            <input type="tel" id="radioPlayerPhone" placeholder="Tu teléfono (opcional)" maxlength="15">
+                                        </div>
+                                        <div class="radio-form-group">
+                                            <input type="email" id="radioPlayerEmail" placeholder="Tu email (opcional)" maxlength="50">
+                                        </div>
+                                        <button type="submit" class="radio-btn radio-btn-primary radio-btn-block" id="radioRegisterPlayerBtn">
+                                            <i class="fas fa-user-check"></i> ¡Quiero Jugar!
+                                        </button>
+                                    </form>
+                                    <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 10px; text-align: center;">
+                                        <i class="fas fa-lock"></i> Tus datos solo se usan para el juego
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ranking -->
+                    <div class="radio-ranking-container">
+                        <div class="radio-ranking-header">
+                            <h3><i class="fas fa-trophy"></i> Ranking Mensual</h3>
+                            <div class="radio-ranking-period">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="radioRankingPeriod">Noviembre 2024</span>
+                            </div>
+                        </div>
+                        
+                        <div class="radio-ranking-list" id="radioRankingList">
+                            <div class="radio-ranking-item top1">
+                                <div class="radio-rank-position">1</div>
+                                <div class="radio-player-avatar">
+                                    <i class="fas fa-crown"></i>
+                                </div>
+                                <div class="radio-ranking-player-info">
+                                    <h5>María González</h5>
+                                    <p>15 puntos</p>
+                                </div>
+                                <div class="radio-player-points">
+                                    <i class="fas fa-star"></i>
+                                    <span>150</span>
+                                </div>
+                            </div>
+                            <!-- Más items se agregarán con JS -->
+                        </div>
+                        
+                        <div class="radio-ranking-footer">
+                            <p><i class="fas fa-gift"></i> ¡Premios sorpresa al final del mes!</p>
+                            <button class="radio-btn radio-btn-secondary" id="radioViewFullRanking">
+                                <i class="fas fa-list-ol"></i> Ver ranking completo
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Participantes Conectados -->
+                    <div class="radio-participants-container">
+                        <div class="radio-participants-header">
+                            <h3><i class="fas fa-users"></i> Participantes</h3>
+                            <div class="radio-participants-count">
+                                <i class="fas fa-user-friends"></i>
+                                <span id="radioParticipantsCount">0</span> jugadores
+                            </div>
+                        </div>
+                        
+                        <div class="radio-participants-list" id="radioParticipantsList">
+                            <!-- Lista de participantes se carga aquí -->
+                        </div>
+                        
+                        <div class="radio-participants-stats">
+                            <div class="radio-stat-item">
+                                <i class="fas fa-gamepad"></i>
+                                <h4 id="radioGamesPlayed">0</h4>
+                                <p>Juegos jugados</p>
+                            </div>
+                            <div class="radio-stat-item">
+                                <i class="fas fa-trophy"></i>
+                                <h4 id="radioTotalPoints">0</h4>
+                                <p>Puntos totales</p>
+                            </div>
+                            <div class="radio-stat-item">
+                                <i class="fas fa-users"></i>
+                                <h4 id="radioTotalPlayers">0</h4>
+                                <p>Jugadores totales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Programación -->
+    <section class="radio-section" id="programacion">
+        <div class="container">
+            <div class="radio-section-header">
+                <h2 class="radio-section-title">Programación</h2>
+                <p class="radio-section-subtitle">Lo que hacemos cada sábado en "Con Corazón Misionero"</p>
+            </div>
+
+            <div class="radio-schedule">
+                <div class="radio-schedule-timeline">
+                    <div class="radio-schedule-item highlight">
+                        <div class="radio-schedule-time">10:30</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-play"></i> Apertura del Programa</h4>
+                            <p>Saludo inicial, presentación del equipo y oración de apertura.</p>
+                            <span class="radio-schedule-badge">En Vivo</span>
+                        </div>
+                    </div>
                     
-                    <ul class="program-features">
-                        <li><i class="fas fa-child"></i> Hecho por y para niños misioneros</li>
-                        <li><i class="fas fa-pray"></i> Oración y reflexión del Evangelio</li>
-                        <li><i class="fas fa-music"></i> Música católica infantil</li>
-                        <li><i class="fas fa-gamepad"></i> Juegos y concursos en vivo</li>
-                        <li><i class="fas fa-phone-alt"></i> Llamadas de los oyentes</li>
-                        <li><i class="fas fa-gift"></i> Sorpresas y premios</li>
-                    </ul>
-
-                    <div class="program-description">
-                        <p>Un espacio creado especialmente para los niños y adolescentes misioneros, donde compartimos la alegría del Evangelio, aprendemos sobre las misiones y nos divertimos juntos.</p>
-                        <p><strong>Conducción:</strong> Equipo de animadores de la IAM</p>
-                        <p><strong>Participa:</strong> Llama al (03865) 42-XXXX durante el programa</p>
+                    <div class="radio-schedule-item">
+                        <div class="radio-schedule-time">10:45</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-bible"></i> Lectura y Reflexión del Evangelio</h4>
+                            <p>Leemos el Evangelio del día y reflexionamos sobre su mensaje para nuestra vida misionera.</p>
+                        </div>
                     </div>
-
-                    <button class="btn btn-primary" style="margin-top: 20px; width: 100%;" onclick="window.open('https://www.youtube.com/@radiomorenitadelvalle/videos', '_blank')">
-                        <i class="fab fa-youtube"></i> Ver programas anteriores en YouTube
-                    </button>
+                    
+                    <div class="radio-schedule-item">
+                        <div class="radio-schedule-time">11:15</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-book"></i> Historia Misionera</h4>
+                            <p>Conocemos la vida de un santo misionero o un testimonio actual.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="radio-schedule-item highlight">
+                        <div class="radio-schedule-time">11:30</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-gamepad"></i> ¡Juego en Vivo!</h4>
+                            <p>Participa desde tu casa en nuestro juego interactivo.</p>
+                            <span class="radio-schedule-badge">Participa</span>
+                        </div>
+                    </div>
+                    
+                    <div class="radio-schedule-item">
+                        <div class="radio-schedule-time">11:50</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-pray"></i> Oración Comunitaria</h4>
+                            <p>Rezamos por las intenciones de nuestros oyentes y por las misiones.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="radio-schedule-item">
+                        <div class="radio-schedule-time">12:15</div>
+                        <div class="radio-schedule-content">
+                            <h4><i class="fas fa-music"></i> Música y Despedida</h4>
+                            <p>Compartimos canciones y nos despedimos hasta el próximo sábado.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </section>
 
-        <!-- Juegos Interactivos -->
-        <section id="juegos" class="games-section">
-            <div class="games-header">
-                <h2><i class="fas fa-gamepad"></i> Juegos Interactivos en Vivo</h2>
-                <p>Participa en los juegos durante el programa "Con Corazón Misionero". Solo el animador puede activar los juegos.</p>
-            </div>
-
-            <!-- Panel de control para admin -->
-            <div class="admin-control-panel" id="adminPanel" style="display: none;">
-                <h3><i class="fas fa-user-shield"></i> Panel de Control del Animador</h3>
-                <div class="control-buttons">
-                    <button class="admin-btn" id="startGameBtn">
-                        <i class="fas fa-play-circle"></i>
-                        <span>Iniciar Juego</span>
-                    </button>
-                    <button class="admin-btn" id="stopGameBtn">
-                        <i class="fas fa-stop-circle"></i>
-                        <span>Detener Juego</span>
-                    </button>
-                    <button class="admin-btn" id="resetGameBtn">
-                        <i class="fas fa-redo"></i>
-                        <span>Reiniciar Juego</span>
-                    </button>
-                    <button class="admin-btn" id="viewResultsBtn">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Ver Resultados</span>
-                    </button>
+            <!-- Contenidos destacados -->
+            <div class="radio-content-grid">
+                <div class="radio-content-card">
+                    <div class="radio-content-icon">
+                        <i class="fas fa-podcast"></i>
+                    </div>
+                    <h3>Programas Anteriores</h3>
+                    <p>Escucha los programas que te perdiste. Disponibles en nuestro canal de YouTube.</p>
+                    <a href="https://www.youtube.com/@iaminmaculada" class="radio-btn radio-btn-primary" target="_blank">
+                        <i class="fab fa-youtube"></i> Ver en YouTube
+                    </a>
                 </div>
                 
-                <div style="margin-top: 20px; background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px;">
-                    <h4 style="margin-bottom: 10px; color: var(--radio-secondary);">Juego Actual</h4>
-                    <p id="currentGameStatus">No hay juego activo</p>
-                    <p id="playerCount">Jugadores conectados: 0</p>
+                <div class="radio-content-card">
+                    <div class="radio-content-icon">
+                        <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Materiales Descargables</h3>
+                    <p>Guías de oración, reflexiones y actividades relacionadas con cada programa.</p>
+                    <a href="#" class="radio-btn radio-btn-primary">
+                        <i class="fas fa-download"></i> Descargar
+                    </a>
+                </div>
+                
+                <div class="radio-content-card">
+                    <div class="radio-content-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <h3>Participa en Vivo</h3>
+                    <p>¿Quieres saludar o enviar tu intención de oración durante el programa?</p>
+                    <a href="#" class="radio-btn radio-btn-primary">
+                        <i class="fas fa-comment-alt"></i> Contactar
+                    </a>
                 </div>
             </div>
-
-            <button id="joinGameBtn" style="display:none; padding:15px; font-size:1.1rem;">
-              🎮 Unirme al juego
-            </button>
-
-            <!-- Juegos disponibles -->
-            <div class="games-grid">
-                <div class="game-card locked" data-game="quiz">
-                    <div class="game-icon">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <div class="game-status locked">
-                        <i class="fas fa-lock"></i> BLOQUEADO
-                    </div>
-                    <h4>Quiz Misionero</h4>
-                    <p>Responde preguntas sobre la fe, las misiones y el Evangelio</p>
-                    <button class="btn" style="width: 100%; opacity: 0.5;" disabled>
-                        Esperando al animador...
-                    </button>
-                </div>
-
-                <div class="game-card locked" data-game="memory">
-                    <div class="game-icon">
-                        <i class="fas fa-brain"></i>
-                    </div>
-                    <div class="game-status locked">
-                        <i class="fas fa-lock"></i> BLOQUEADO
-                    </div>
-                    <h4>Memoria Bíblica</h4>
-                    <p>Encuentra las parejas de versículos bíblicos</p>
-                    <button class="btn" style="width: 100%; opacity: 0.5;" disabled>
-                        Esperando al animador...
-                    </button>
-                </div>
-
-                <div class="game-card locked" data-game="trivia">
-                    <div class="game-icon">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <div class="game-status locked">
-                        <i class="fas fa-lock"></i> BLOQUEADO
-                    </div>
-                    <h4>Trivia IAM</h4>
-                    <p>Demuestra cuánto sabes sobre la Infancia Misionera</p>
-                    <button class="btn" style="width: 100%; opacity: 0.5;" disabled>
-                        Esperando al animador...
-                    </button>
-                </div>
-
-                <div class="game-card locked" data-game="wordsearch">
-                    <div class="game-icon">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <div class="game-status locked">
-                        <i class="fas fa-lock"></i> BLOQUEADO
-                    </div>
-                    <h4>Sopa de Letras</h4>
-                    <p>Encuentra palabras relacionadas con las misiones</p>
-                    <button class="btn" style="width: 100%; opacity: 0.5;" disabled>
-                        Esperando al animador...
-                    </button>
-                </div>
-            </div>
-
-            <!-- Información para participantes -->
-            <div style="text-align: center; margin-top: 30px; padding: 20px; background: rgba(42, 110, 187, 0.1); border-radius: 10px;">
-                <h4 style="color: var(--radio-primary); margin-bottom: 10px;">
-                    <i class="fas fa-info-circle"></i> ¿Cómo participar?
-                </h4>
-                <p style="color: #4A5568; max-width: 600px; margin: 0 auto;">
-                    Los juegos solo se activan durante el programa en vivo. Cuando el animador inicie un juego, 
-                    aparecerá aquí para que todos puedan participar. ¡Estén atentos los sábados de 10:30 a 12:30!
-                </p>
-                <p style="color: var(--radio-accent); margin-top: 10px; font-weight: 600;">
-                    <i class="fas fa-exclamation-triangle"></i> Solo el animador puede iniciar/detener los juegos
-                </p>
-            </div>
-        </section>
-
-        <!-- Oyentes conectados -->
-        <div class="current-listeners">
-            <div class="listener-count" id="listenerCount">42</div>
-            <p>Personas escuchando ahora</p>
-            
-            <div class="listeners-list" id="listenersList">
-                <!-- Se llenará automáticamente con JavaScript -->
-            </div>
-            
-            <button class="btn" style="margin-top: 20px; background: rgba(255,255,255,0.2); color: white; border: 2px solid rgba(255,255,255,0.3);" 
-                    onclick="showImListening()">
-                <i class="fas fa-hand-paper"></i> ¡Yo también estoy escuchando!
-            </button>
         </div>
-    </main>
+    </section>
 
-    <!-- Footer -->
+    <!-- Footer Radio -->
     <footer class="radio-footer">
-        <div class="radio-footer-content">
-            <div class="footer-radio-info">
-                <h3><i class="fas fa-radio"></i> Radio Morenita del Valle</h3>
-                <p>
-                    104.5 FM - Transmitiendo desde Concepción, Tucumán<br>
-                    La voz católica de nuestra comunidad.
-                </p>
+        <div class="container">
+            <div class="radio-footer-content">
+                <div class="radio-footer-section">
+                    <div class="radio-footer-logo">
+                        <img class="radio-logo-footer" src="img/logo-iam.png" alt="Logo IAM Radio">
+                        <div>
+                            <h3>RADIO IAM</h3>
+                            <p>"Con Corazón Misionero"</p>
+                        </div>
+                    </div>
+                    <p class="radio-footer-description">
+                        Un espacio de evangelización, oración y diversión para toda la familia misionera.
+                    </p>
+                    <div class="radio-social-links">
+                        <a href="https://www.facebook.com/profile.php?id=100080380153994" class="radio-social-link" title="Facebook" target="_blank">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://www.instagram.com/iaminmaculada/" class="radio-social-link" title="Instagram" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@iaminmaculada" class="radio-social-link" title="YouTube" target="_blank">
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                        <a href="#" class="radio-social-link" title="WhatsApp">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+                    </div>
+                </div>
                 
-                <div class="social-icons">
-                    <a href="https://www.youtube.com/@radiomorenitadelvalle" class="social-icon" target="_blank">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    <a href="https://www.facebook.com/radiomorenitadelvalle" class="social-icon" target="_blank">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a href="https://www.instagram.com/radiomorenitadelvalle" class="social-icon" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="https://wa.me/5493865123456" class="social-icon" target="_blank">
-                        <i class="fab fa-whatsapp"></i>
-                    </a>
+                <div class="radio-footer-section">
+                    <h4>Horarios</h4>
+                    <ul class="radio-contact-list">
+                        <li>
+                            <i class="fas fa-calendar-day"></i> Sábados 10:30 - 12:30 hs
+                        </li>
+                        <li>
+                            <i class="fas fa-clock"></i> Duración: 2 horas
+                        </li>
+                        <li>
+                            <i class="fas fa-microphone-alt"></i> En vivo desde la Parroquia
+                        </li>
+                        <li>
+                            <i class="fas fa-headphones"></i> Escucha desde cualquier dispositivo
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="radio-footer-section">
+                    <h4>Contacto del Programa</h4>
+                    <ul class="radio-footer-links">
+                        <li>
+                            <a href="mailto:iaminmaculada@gmail.com">
+                                <i class="fas fa-envelope"></i> iaminmaculada@gmail.com
+                            </a>
+                        </li>
+                        <li>
+                            <a href="tel:+543764123456">
+                                <i class="fas fa-phone-alt"></i> +54 3764 12-3456
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://wa.me/543764123456" target="_blank">
+                                <i class="fab fa-whatsapp"></i> WhatsApp del programa
+                            </a>
+                        </li>
+                        <li>
+                            <a href="index.html">
+                                <i class="fas fa-home"></i> Volver al sitio IAM
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
             
-            <div class="footer-section">
-                <h4>Contacto</h4>
-                <ul class="contact-list">
-                    <li><i class="fab fa-youtube"></i> @radiomorenitadelvalle</li>
-                    <li><i class="fas fa-phone"></i> (03865) 42-XXXX</li>
-                    <li><i class="fas fa-envelope"></i> contacto@radiomorenita.com</li>
-                    <li><i class="fas fa-map-marker-alt"></i> Concepción, Tucumán</li>
-                </ul>
+            <div class="radio-footer-bottom">
+                <p>
+                    &copy; 2024 Radio IAM - "Con Corazón Misionero". Todos los derechos reservados.
+                </p>
+                <p>
+                    Una producción de la Infancia y Adolescencia Misionera.
+                </p>
             </div>
-            
-            <div class="footer-section">
-                <h4>Programación Destacada</h4>
-                <ul class="footer-links">
-                    <li><a href="#programa"><i class="fas fa-chevron-right"></i> Con Corazón Misionero (Sáb 10:30)</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Santa Misa Diaria (7:00)</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Rosario de la Aurora (6:30)</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> Música Católica 24/7</a></li>
-                </ul>
-            </div>
-        </div>
-        
-        <div class="radio-footer-bottom">
-            <p>&copy; 2025 Radio Morenita del Valle 104.5 FM - Todos los derechos reservados</p>
-            <p>Una emisora al servicio de la comunidad católica de Concepción, Tucumán</p>
-            <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.7;">
-                <i class="fas fa-handshake"></i> En colaboración con IAM - Infancia y Adolescencia Misionera
-            </p>
         </div>
     </footer>
 
-    <!-- Modal para juegos -->
-    <div class="modal" id="gameModal">
-        <div class="modal-content game-modal">
-            <button class="modal-close" id="closeGameModal">&times;</button>
-            <div class="modal-header" id="gameModalHeader">
-                <h3><i class="fas fa-gamepad"></i> Juego en Vivo</h3>
-            </div>
-            <div class="game-content" id="gameContent">
-                <!-- Aquí se carga el juego activo -->
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de login para admin de radio -->
-    <div class="modal" id="radioLoginModal">
-        <div class="modal-content login-modal">
-            <button class="modal-close" id="cancelRadioLogin">&times;</button>
-            <div class="modal-icon">
-                <i class="fas fa-broadcast-tower"></i>
-            </div>
-            <h3>Acceso Animador de Radio</h3>
-            <p>Usa las mismas credenciales del sistema IAM</p>
-            
-            <form id="radioLoginForm">
-                <div class="form-group">
-                    <label for="radioUsername"><i class="fas fa-user"></i> Usuario</label>
-                    <input type="text" id="radioUsername" name="username" required placeholder="admin" value="admin">
-                </div>
-                
-                <div class="form-group">
-                    <label for="radioPassword"><i class="fas fa-key"></i> Contraseña</label>
-                    <input type="password" id="radioPassword" name="password" required placeholder="admin123" value="admin123">
-                </div>
-                
-                <div class="form-group">
-                    <label for="radioAdminCode"><i class="fas fa-lock"></i> Código Secreto</label>
-                    <input type="password" id="radioAdminCode" name="adminCode" required placeholder="IAM2026" value="IAM2026">
-                </div>
-                
-                <button type="submit" class="btn btn-primary btn-block">
-                    <i class="fas fa-sign-in-alt"></i> Ingresar al Panel de Control
-                </button>
-            </form>
-            
-            <div style="margin-top: 20px; font-size: 0.9rem; color: var(--text-light); text-align: center;">
-                <p><strong>Credenciales de prueba:</strong></p>
-                <p>Usuario: <code>admin</code> | Contraseña: <code>admin123</code></p>
-                <p>Código: <code>IAM2026</code></p>
-            </div>
-        </div>
-    </div>
-
     <!-- Scripts -->
-    <script src="script.js"></script>
-    <!-- En el body, antes de cerrar </body> -->
     <script src="firebase-config.js"></script>
-    <script src="radio-firebase.js"></script>
-    <script src="radio-script-simple.js"></script>
-    <script type="module" src="radio-game-sync.js"></script>
-
+    <script src="backend-manager.js"></script>
+    <script src="radio.js"></script>
+    
+    <!-- Script de inicialización -->
     <script>
-        // Inicialización adicional
         document.addEventListener('DOMContentLoaded', function() {
-            // Configurar botones de cerrar modales
-            const cancelLogin = document.getElementById('cancelRadioLogin');
-            const loginModal = document.getElementById('radioLoginModal');
+            // Inicializar backend para múltiples dispositivos
+            window.backendManager.initialize().then(result => {
+                console.log("Backend inicializado en modo:", result.mode);
+                console.log("✅ Listo para múltiples dispositivos");
+                
+                // Verificar si hay admin logueado para radio
+                if (localStorage.getItem('radioAdminLoggedIn') === 'true') {
+                    document.getElementById('adminControls').classList.remove('hidden');
+                    document.getElementById('userGamePanel').classList.add('hidden');
+                }
+            });
 
-            if (cancelLogin && loginModal) {
-                cancelLogin.onclick = function() {
-                    loginModal.style.display = 'none';
-                };
-            }
+            // Scripts existentes...
+            // (Tu código actual de animaciones y navegación)
         });
     </script>
-<script>
-document.getElementById("joinGameBtn").onclick = () => {
-  const nombre = prompt("Tu nombre");
-
-  if (!nombre) return;
-
-  const uid = crypto.randomUUID();
-  joinGame(uid, nombre);
-};
-</script>
-
 </body>
 </html>

@@ -262,5 +262,311 @@ class BackendManager {
     }
 }
 
+// Agrega esto en tu backend-manager.js (después de la clase BackendManager)
+
+class RadioBackendManager {
+    constructor() {
+        this.db = null;
+        this.isInitialized = false;
+    }
+
+    async initialize() {
+        try {
+            const result = await window.backendManager.initialize();
+            if (result.success && result.mode === 'firebase') {
+                this.db = window.backendManager.db;
+                this.isInitialized = true;
+                console.log("✅ RadioBackendManager inicializado con Firebase");
+                return { success: true };
+            }
+            throw new Error("Firebase no disponible");
+        } catch (error) {
+            console.warn("⚠️ Radio usando localStorage:", error.message);
+            return { success: false };
+        }
+    }
+
+    // ===== JUGADORES =====
+    async saveRadioPlayer(playerData) {
+        const playerId = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        
+        const playerToSave = {
+            ...playerData,
+            id: playerId,
+            name: playerData.name || 'Anónimo',
+            phone: playerData.phone || '',
+            email: playerData.email || '',
+            points: 0,
+            gamesPlayed: 0,
+            createdAt: new Date().toISOString(),
+            lastActive: new Date().toISOString()
+        };
+
+        // 1. Guardar en localStorage (siempre)
+        const localPlayers = this.getLocalRadioPlayers();
+        localPlayers.push(playerToSave);
+        localStorage.setItem('radioPlayers', JSON.stringify(localPlayers));
+
+        // 2. Intentar guardar en Firebase (solo si está inicializado)
+        if (this.isInitialized && this.db) {
+            try {
+                const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                
+                // Crear documento en 'radio_players' (allow create: if true)
+                const docRef = await addDoc(collection(this.db, 'radio_players'), {
+                    name: playerToSave.name,
+                    phone: playerToSave.phone,
+                    email: playerToSave.email,
+                    points: playerToSave.points,
+                    gamesPlayed: playerToSave.gamesPlayed,
+                    createdAt: playerToSave.createdAt,
+                    lastActive: playerToSave.lastActive,
+                    localId: playerId  // ID local para referencia
+                });
+                
+                console.log("✅ Jugador guardado en Firebase con ID:", docRef.id);
+                playerToSave.firebaseId = docRef.id;
+                
+            } catch (error) {
+                console.warn("⚠️ No se pudo guardar en Firebase, solo en localStorage:", error.message);
+            }
+        }
+
+        return { 
+            success: true, 
+            player: playerToSave,
+            message: "¡Registrado exitosamente!" 
+        };
+    }
+
+    async updatePlayerScore(playerId, pointsToAdd) {
+        // 1. Actualizar en localStorage
+        const localPlayers = this.getLocalRadioPlayers();
+        const playerIndex = localPlayers.findIndex(p => p.id === playerId);
+        
+        if (playerIndex !== -1) {
+            localPlayers[playerIndex].points += pointsToAdd;
+            localPlayers[playerIndex].gamesPlayed += 1;
+            localPlayers[playerIndex].lastActive = new Date().toISOString();
+            localStorage.setItem('radioPlayers', JSON.stringify(localPlayers));
+        }
+
+        // 2. Si tiene firebaseId y estamos como admin, actualizar en Firebase
+        const player = localPlayers[playerIndex];
+        if (player && player.firebaseId && this.isInitialized && this.db) {
+            try {
+                // Esto solo funcionará si el usuario está logueado como admin
+                const { doc, updateDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                
+                await updateDoc(doc(this.db, 'radio_players', player.firebaseId), {
+                    points: player.points,
+                    gamesPlayed: player.gamesPlayed,
+                    lastActive: player.lastActive
+                });
+                
+                console.log("✅ Puntos actualizados en Firebase");
+            } catch (error) {
+                console.warn("⚠️ No se pudieron actualizar puntos en Firebase:", error.message);
+            }
+        }
+    }
+
+    async getRadioPlayers() {
+        // 1. Intentar desde Firebase
+        if (this.isInitialized && this.db) {
+            try {
+                const { collection, getDocs, query, orderBy } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                
+                const q = query(collection(this.db, 'radio_players'), orderBy('points', 'desc'));
+                const querySnapshot = await getDocs(q);
+                
+                const players = [];
+                querySnapshot.forEach((doc) => {
+                    players.push({
+                        id: doc.id,
+                        firebaseId: doc.id,
+                        ...doc.data()
+                    });
+                });
+                
+                // Combinar con jugadores locales
+                const localPlayers = this.getLocalRadioPlayers();
+                const allPlayers = this.mergePlayers(players, localPlayers);
+                
+                return { success: true, data: allPlayers, source: 'firebase' };
+            } catch (error) {
+                console.warn("⚠️ Error cargando de Firebase:", error.message);
+            }
+        }
+
+        // 2. Si Firebase falla, usar solo localStorage
+        const localPlayers = this.getLocalRadioPlayers();
+        return { success: true, data: localPlayers, source: 'localstorage' };
+    }
+
+    // ===== JUEGOS =====
+    async saveCurrentGame(gameData) {
+        if (!this.isInitialized || !this.db) {
+            console.warn("⚠️ Firebase no disponible para guardar juego");
+            return { success: false, error: "Firebase no disponible" };
+        }
+
+        try {
+            const { doc, setDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            
+            // Guardar en 'radio_games/current' (como indican tus reglas)
+            await setDoc(doc(this.db, 'radio_games', 'current'), {
+                ...gameData,
+                id: 'current',
+                updatedAt: new Date().toISOString(),
+                status: gameData.status || 'waiting'
+            });
+            
+            console.log("✅ Juego actual guardado en Firebase");
+            return { success: true };
+            
+        } catch (error) {
+            console.error("❌ Error guardando juego:", error);
+            return { success: false, error: error.message };
+        }
+    }
+
+    async getCurrentGame() {
+        if (!this.isInitialized || !this.db) {
+            return { success: false, data: null };
+        }
+
+        try {
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            
+            const gameDoc = await getDoc(doc(this.db, 'radio_games', 'current'));
+            
+            if (gameDoc.exists()) {
+                return { success: true, data: gameDoc.data() };
+            } else {
+                return { success: true, data: null };
+            }
+            
+        } catch (error) {
+            console.warn("⚠️ Error obteniendo juego actual:", error.message);
+            return { success: false, data: null };
+        }
+    }
+
+    // ===== ADMIN AUTH =====
+    async loginRadioAdmin(email, password) {
+        if (!this.isInitialized || !window.backendManager.auth) {
+            // Modo local para desarrollo
+            const validAdmins = [
+                { email: "animador@iam.com", password: "animador2025" },
+                { email: "admin@iam.com", password: "admin2026" }
+            ];
+            
+            const admin = validAdmins.find(a => a.email === email && a.password === password);
+            if (admin) {
+                localStorage.setItem('radioAdminLoggedIn', 'true');
+                localStorage.setItem('radioAdminEmail', email);
+                return { success: true, user: { email: email, isAdmin: true } };
+            }
+            return { success: false, error: "Credenciales incorrectas" };
+        }
+
+        // Modo Firebase
+        try {
+            const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+            const userCredential = await signInWithEmailAndPassword(window.backendManager.auth, email, password);
+            
+            // Verificar si es admin (debería existir en radio_admins)
+            // Por ahora, asumimos que si puede loguearse es admin
+            localStorage.setItem('radioAdminLoggedIn', 'true');
+            localStorage.setItem('radioAdminEmail', email);
+            
+            return { success: true, user: userCredential.user };
+        } catch (error) {
+            return { success: false, error: "Credenciales incorrectas" };
+        }
+    }
+
+    isRadioAdminLoggedIn() {
+        return localStorage.getItem('radioAdminLoggedIn') === 'true';
+    }
+
+    logoutRadioAdmin() {
+        localStorage.removeItem('radioAdminLoggedIn');
+        localStorage.removeItem('radioAdminEmail');
+        return { success: true };
+    }
+
+    // ===== FUNCIONES AUXILIARES =====
+    getLocalRadioPlayers() {
+        const stored = localStorage.getItem('radioPlayers');
+        return stored ? JSON.parse(stored) : [];
+    }
+
+    mergePlayers(firebasePlayers, localPlayers) {
+        const merged = [...firebasePlayers];
+        
+        // Agregar jugadores locales que no estén en Firebase
+        localPlayers.forEach(localPlayer => {
+            if (!merged.some(p => p.localId === localPlayer.id)) {
+                merged.push({
+                    ...localPlayer,
+                    id: localPlayer.firebaseId || localPlayer.id,
+                    localId: localPlayer.id
+                });
+            }
+        });
+        
+        // Ordenar por puntos
+        return merged.sort((a, b) => (b.points || 0) - (a.points || 0));
+    }
+
+    async syncLocalToFirebase() {
+        if (!this.isInitialized || !this.db) return;
+        
+        const localPlayers = this.getLocalRadioPlayers();
+        if (localPlayers.length === 0) return;
+        
+        console.log(`🔄 Sincronizando ${localPlayers.length} jugadores locales...`);
+        
+        try {
+            const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            
+            for (const player of localPlayers) {
+                // Solo sincronizar si no tiene firebaseId
+                if (!player.firebaseId) {
+                    try {
+                        const docRef = await addDoc(collection(this.db, 'radio_players'), {
+                            name: player.name,
+                            phone: player.phone || '',
+                            email: player.email || '',
+                            points: player.points || 0,
+                            gamesPlayed: player.gamesPlayed || 0,
+                            createdAt: player.createdAt || new Date().toISOString(),
+                            lastActive: player.lastActive || new Date().toISOString(),
+                            localId: player.id
+                        });
+                        
+                        // Actualizar localmente con el firebaseId
+                        player.firebaseId = docRef.id;
+                    } catch (error) {
+                        console.warn(`⚠️ No se pudo sincronizar jugador ${player.name}:`, error.message);
+                    }
+                }
+            }
+            
+            // Guardar de vuelta en localStorage con los firebaseIds
+            localStorage.setItem('radioPlayers', JSON.stringify(localPlayers));
+            
+            console.log("✅ Sincronización completada");
+        } catch (error) {
+            console.error("❌ Error en sincronización:", error);
+        }
+    }
+}
+
+// Crear instancia global
+window.radioBackend = new RadioBackendManager();
+
 // Crear instancia global
 window.backendManager = new BackendManager();
