@@ -190,7 +190,14 @@ class BackendManager {
                 await addDoc(collection(this.db, 'applicants'), applicantToSave);
                 console.log("✅ Aventurero guardado en Firebase");
             } catch (error) {
-                console.warn("⚠️ No se pudo guardar en Firebase, solo en localStorage");
+                console.warn("⚠️ Error guardando en Firebase:", error.code, error.message);
+                
+                // Si es error de permisos, solo guardar en localStorage
+                if (error.code === 'permission-denied') {
+                    console.warn("📝 Solo se guardó en localStorage (sin permisos de Firebase)");
+                } else {
+                    console.warn("⚠️ No se pudo guardar en Firebase, solo en localStorage");
+                }
             }
         }
 

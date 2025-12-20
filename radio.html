@@ -849,16 +849,19 @@
                 console.log("Backend inicializado en modo:", result.mode);
                 console.log("✅ Listo para múltiples dispositivos");
                 
-                // Verificar si hay admin logueado para radio
-                if (localStorage.getItem('radioAdminLoggedIn') === 'true') {
-                    const adminControls = document.getElementById('radioAdminControls');
-                    const userGamePanel = document.getElementById('radioUserGamePanel');
-                                
-                    if (adminControls) adminControls.classList.remove('radio-hidden');
-                    if (userGamePanel) userGamePanel.classList.add('radio-hidden');
+                // Inicializar Radio IAM
+                if (document.querySelector('.radio-header')) {
+                    window.radioIAM = new RadioIAM();
+                    
+                    // Limpiar al salir de la página
+                    window.addEventListener('beforeunload', () => {
+                        if (window.radioIAM) {
+                            window.radioIAM.cleanup();
+                        }
+                    });
                 }
             });
-
+        
             // Scripts existentes...
             // (Tu código actual de animaciones y navegación)
         });
