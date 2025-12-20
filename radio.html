@@ -848,8 +848,11 @@
                 
                 // Verificar si hay admin logueado para radio
                 if (localStorage.getItem('radioAdminLoggedIn') === 'true') {
-                    document.getElementById('adminControls').classList.remove('hidden');
-                    document.getElementById('userGamePanel').classList.add('hidden');
+                    const adminControls = document.getElementById('radioAdminControls'); // ← NOMBRE CORRECTO
+                    const userGamePanel = document.getElementById('radioUserGamePanel');
+                                
+                    if (adminControls) adminControls.classList.remove('radio-hidden');
+                    if (userGamePanel) userGamePanel.classList.add('radio-hidden');
                 }
             });
 
