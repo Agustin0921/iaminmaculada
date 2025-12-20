@@ -1,4 +1,3 @@
-// backend-manager.js
 // ===== GESTIÓN DEL BACKEND =====
 
 class BackendManager {
@@ -31,6 +30,11 @@ class BackendManager {
                 this.auth.onAuthStateChanged((user) => {
                     this.currentUser = user;
                     console.log("👤 Estado de autenticación:", user ? "Conectado" : "Desconectado");
+                    
+                    // Verificar si era admin del campamento
+                    if (user && localStorage.getItem('iamAdminLoggedIn') === 'true') {
+                        this.restoreIamAdminSession(user.uid);
+                    }
                 });
                 
                 return { success: true, mode: 'firebase' };
@@ -44,59 +48,116 @@ class BackendManager {
         }
     }
 
-    // ===== AUTENTICACIÓN =====
-    async loginAdmin(email, password) {
-        if (this.useLocalStorage || !this.isInitialized) {
-            // Modo respaldo: verificar contra usuarios locales
-            const localAdmins = this.getLocalAdmins();
-            const admin = localAdmins.find(a => a.email === email && a.password === password);
-            
-            if (admin) {
-                this.currentUser = { email: admin.email, isAdmin: true };
-                localStorage.setItem('adminLoggedIn', 'true');
-                localStorage.setItem('adminEmail', email);
-                return { success: true, user: this.currentUser };
-            }
-            return { success: false, error: "Credenciales incorrectas" };
+    // ===== AUTENTICACIÓN PARA CAMPAMENTO IAM =====
+    async loginIamAdmin(email, password, adminCode) {
+        // Verificar código secreto del campamento
+        if (adminCode !== "IAM2026") { // Código del campamento
+            return { success: false, error: "Código secreto incorrecto" };
         }
-
-        // Modo Firebase
+        
         try {
             const { signInWithEmailAndPassword } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            this.currentUser = userCredential.user;
-            return { success: true, user: this.currentUser };
+            const user = userCredential.user;
+            
+            // Verificar si está en radio_admins para dar permisos
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            const adminDoc = await getDoc(doc(this.db, 'radio_admins', user.uid));
+            
+            if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+                this.currentUser = {
+                    uid: user.uid,
+                    email: user.email,
+                    role: adminDoc.data().role,
+                    isIamAdmin: true
+                };
+                
+                // Guardar en localStorage para persistencia
+                localStorage.setItem('iamAdminLoggedIn', 'true');
+                localStorage.setItem('iamAdminEmail', email);
+                localStorage.setItem('iamAdminUID', user.uid);
+                
+                return { 
+                    success: true, 
+                    user: this.currentUser
+                };
+            } else {
+                // Cerrar sesión si no es admin
+                const { signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
+                await signOut(this.auth);
+                
+                return { 
+                    success: false, 
+                    error: "No tienes permisos de administrador" 
+                };
+            }
         } catch (error) {
-            return { success: false, error: this.translateAuthError(error.code) };
+            console.error("Error en loginIamAdmin:", error);
+            
+            // Traducir errores
+            const errorMessages = {
+                'auth/user-not-found': 'Usuario no encontrado',
+                'auth/wrong-password': 'Contraseña incorrecta',
+                'auth/invalid-email': 'Email inválido',
+                'auth/user-disabled': 'Usuario deshabilitado',
+                'auth/too-many-requests': 'Demasiados intentos. Intenta más tarde'
+            };
+            
+            return { 
+                success: false, 
+                error: errorMessages[error.code] || 'Error de autenticación' 
+            };
         }
     }
 
-    async logoutAdmin() {
-        if (this.useLocalStorage || !this.isInitialized) {
-            localStorage.removeItem('adminLoggedIn');
-            localStorage.removeItem('adminEmail');
-            this.currentUser = null;
-            return { success: true };
-        }
-
+    // Restaurar sesión del admin del campamento
+    async restoreIamAdminSession(uid) {
         try {
-            const { signOut } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js");
-            await signOut(this.auth);
-            this.currentUser = null;
-            return { success: true };
+            const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+            const adminDoc = await getDoc(doc(this.db, 'radio_admins', uid));
+            
+            if (adminDoc.exists() && adminDoc.data().role === 'admin') {
+                this.currentUser = {
+                    uid: uid,
+                    email: localStorage.getItem('iamAdminEmail'),
+                    role: adminDoc.data().role,
+                    isIamAdmin: true
+                };
+                return true;
+            }
         } catch (error) {
-            return { success: false, error: error.message };
+            console.error("Error restaurando sesión del campamento:", error);
         }
+        return false;
     }
 
-    isAdminAuthenticated() {
-        if (this.useLocalStorage || !this.isInitialized) {
-            return localStorage.getItem('adminLoggedIn') === 'true';
+    isIamAdminAuthenticated() {
+        // Verificar localStorage primero
+        const isLoggedIn = localStorage.getItem('iamAdminLoggedIn') === 'true';
+        const adminUID = localStorage.getItem('iamAdminUID');
+        
+        if (isLoggedIn && adminUID && this.currentUser) {
+            return true;
         }
-        return this.currentUser !== null;
+        
+        return false;
     }
 
-    // ===== OPERACIONES CON SOLICITANTES =====
+    logoutIamAdmin() {
+        // Limpiar solo las variables del campamento
+        localStorage.removeItem('iamAdminLoggedIn');
+        localStorage.removeItem('iamAdminEmail');
+        localStorage.removeItem('iamAdminUID');
+        
+        // No cerrar sesión de Firebase completamente (para no afectar radio)
+        if (this.currentUser && this.currentUser.isIamAdmin) {
+            this.currentUser.isIamAdmin = false;
+        }
+        
+        return { success: true };
+    }
+
+    // ===== OPERACIONES CON SOLICITANTES DEL CAMPAMENTO =====
     async saveApplicant(applicantData) {
         // Primero guardar en localStorage (siempre)
         const localApplicants = this.getLocalApplicants();
@@ -262,8 +323,7 @@ class BackendManager {
     }
 }
 
-// Agrega esto en tu backend-manager.js (después de la clase BackendManager)
-
+// ===== RADIO BACKEND MANAGER (NO MODIFICAR) =====
 class RadioBackendManager {
     constructor() {
         this.db = null;
@@ -454,8 +514,6 @@ class RadioBackendManager {
     }
 
     // ===== ADMIN AUTH =====
-    // En tu backend-manager.js, busca la función loginRadioAdmin y CÁMBIALA por:
-
     async loginRadioAdmin(email, password) {
         // Solo usar Firebase Auth, nada de modo local
         if (!this.isInitialized || !window.backendManager.auth) {
@@ -529,6 +587,7 @@ class RadioBackendManager {
     logoutRadioAdmin() {
         localStorage.removeItem('radioAdminLoggedIn');
         localStorage.removeItem('radioAdminEmail');
+        localStorage.removeItem('radioAdminUID');
         return { success: true };
     }
 
@@ -600,8 +659,6 @@ class RadioBackendManager {
     }
 }
 
-// Crear instancia global
-window.radioBackend = new RadioBackendManager();
-
-// Crear instancia global
+// Crear instancias globales
 window.backendManager = new BackendManager();
+window.radioBackend = new RadioBackendManager();

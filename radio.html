@@ -181,6 +181,7 @@
         </div>
     </section>
 
+    
     <!-- Juego en Vivo -->
     <section class="radio-section radio-bg-light" id="juego">
         <div class="container">
@@ -189,158 +190,156 @@
                 <p class="radio-section-subtitle">Participa desde tu casa y gana puntos para el ranking mensual</p>
             </div>
 
-            <!-- NUEVO LAYOUT CORREGIDO -->
-            <div class="radio-main-layout">
-                <!-- Columna Izquierda -->
-                <div class="radio-main-left">
-                    <!-- Player de Radio -->
-                    <div class="radio-player-container">
-                        <div class="radio-player-header">
-                            <h3><i class="fas fa-broadcast-tower"></i> Radio IAM - En Vivo</h3>
-                            <div class="radio-player-actions">
-                                <button class="radio-player-btn" id="radioPrevBtn" title="Anterior">
-                                    <i class="fas fa-backward"></i>
-                                </button>
-                                <button class="radio-player-btn" id="radioPlayBtn" title="Reproducir">
-                                    <i class="fas fa-play"></i>
-                                </button>
-                                <button class="radio-player-btn" id="radioNextBtn" title="Siguiente">
-                                    <i class="fas fa-forward"></i>
-                                </button>
-                                <button class="radio-player-btn" id="radioVolumeBtn" title="Volumen">
-                                    <i class="fas fa-volume-up"></i>
-                                </button>
-                            </div>
+            <div class="radio-main-container">
+                <!-- Player de Radio -->
+                <div class="radio-player-container">
+                    <!-- MANTENER TODO EL CONTENIDO DEL PLAYER SIN CAMBIOS -->
+                    <div class="radio-player-header">
+                        <h3><i class="fas fa-broadcast-tower"></i> Radio IAM - En Vivo</h3>
+                        <div class="radio-player-actions">
+                            <button class="radio-player-btn" id="radioPrevBtn" title="Anterior">
+                                <i class="fas fa-backward"></i>
+                            </button>
+                            <button class="radio-player-btn" id="radioPlayBtn" title="Reproducir">
+                                <i class="fas fa-play"></i>
+                            </button>
+                            <button class="radio-player-btn" id="radioNextBtn" title="Siguiente">
+                                <i class="fas fa-forward"></i>
+                            </button>
+                            <button class="radio-player-btn" id="radioVolumeBtn" title="Volumen">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
                         </div>
-                        <div class="radio-player-content">
-                            <div class="radio-video-container" id="radioVideoContainer">
-                                <div class="radio-offline-message">
-                                    <i class="fas fa-broadcast-tower"></i>
-                                    <h4>Radio IAM - Con Corazón Misionero</h4>
-                                    <p>Sintoniza nuestro programa los sábados de 10:30 a 12:30 hs</p>
-                                    <div class="radio-countdown">
-                                        <p>Próximo programa en:</p>
-                                        <div class="radio-countdown-display" id="radioCountdownDisplay">
-                                            <div class="radio-countdown-unit">
-                                                <div class="radio-unit-value">00</div>
-                                                <div class="radio-unit-label">HORAS</div>
-                                            </div>
-                                            <div class="radio-countdown-separator">:</div>
-                                            <div class="radio-countdown-unit">
-                                                <div class="radio-unit-value">00</div>
-                                                <div class="radio-unit-label">MIN</div>
-                                            </div>
-                                            <div class="radio-countdown-separator">:</div>
-                                            <div class="radio-countdown-unit">
-                                                <div class="radio-unit-value">00</div>
-                                                <div class="radio-unit-label">SEG</div>
-                                            </div>
+                    </div>
+                    <div class="radio-player-content">
+                        <div class="radio-video-container" id="radioVideoContainer">
+                            <div class="radio-offline-message">
+                                <i class="fas fa-broadcast-tower"></i>
+                                <h4>Radio IAM - Con Corazón Misionero</h4>
+                                <p>Sintoniza nuestro programa los sábados de 10:30 a 12:30 hs</p>
+                                <div class="radio-countdown">
+                                    <p>Próximo programa en:</p>
+                                    <div class="radio-countdown-display" id="radioCountdownDisplay">
+                                        <div class="radio-countdown-unit">
+                                            <div class="radio-unit-value">00</div>
+                                            <div class="radio-unit-label">HORAS</div>
+                                        </div>
+                                        <div class="radio-countdown-separator">:</div>
+                                        <div class="radio-countdown-unit">
+                                            <div class="radio-unit-value">00</div>
+                                            <div class="radio-unit-label">MIN</div>
+                                        </div>
+                                        <div class="radio-countdown-separator">:</div>
+                                        <div class="radio-countdown-unit">
+                                            <div class="radio-unit-value">00</div>
+                                            <div class="radio-unit-label">SEG</div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
-                            <div class="radio-audio-player">
-                                <div class="radio-visualizer">
-                                    <div class="radio-visualizer-bars" id="radioVisualizerBars">
-                                        <!-- Barras se generan con JS -->
-                                    </div>
-                                </div>
-                                
-                                <div class="radio-audio-controls">
-                                    <button class="radio-audio-btn" id="radioRewindBtn" title="Retroceder 10s">
-                                        <i class="fas fa-backward"></i>
-                                    </button>
-                                    <button class="radio-audio-btn radio-audio-btn-play" id="radioAudioPlayBtn">
-                                        <i class="fas fa-play"></i>
-                                    </button>
-                                    <button class="radio-audio-btn" id="radioForwardBtn" title="Adelantar 10s">
-                                        <i class="fas fa-forward"></i>
-                                    </button>
-                                    
-                                    <div class="radio-volume-control">
-                                        <i class="fas fa-volume-down"></i>
-                                        <input type="range" id="radioVolumeSlider" min="0" max="100" value="80">
-                                        <i class="fas fa-volume-up"></i>
-                                    </div>
-                                </div>
-                                
-                                <div class="radio-player-info">
-                                    <div class="radio-now-playing">
-                                        <h4 id="radioCurrentSong">Radio IAM - En Vivo</h4>
-                                        <p id="radioCurrentShow">Con Corazón Misionero</p>
-                                    </div>
-                                    
-                                    <div class="radio-player-time">
-                                        <span id="radioCurrentTime">00:00</span>
-                                        <input type="range" id="radioProgressBar" min="0" max="100" value="0">
-                                        <span id="radioTotalTime">00:00</span>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                         
-                        <div class="radio-player-footer">
-                            <div class="radio-stream-quality">
-                                <span><i class="fas fa-wifi"></i> 128 kbps</span>
-                                <span><i class="fas fa-headphones"></i> Estéreo</span>
+                        <div class="radio-audio-player">
+                            <div class="radio-visualizer">
+                                <div class="radio-visualizer-bars" id="radioVisualizerBars">
+                                    <!-- Barras se generan con JS -->
+                                </div>
                             </div>
-                            <div class="radio-share-links">
-                                <a href="#" class="radio-share-link" title="Compartir en WhatsApp">
-                                    <i class="fab fa-whatsapp"></i>
-                                </a>
-                                <a href="#" class="radio-share-link" title="Compartir en Facebook">
-                                    <i class="fab fa-facebook-f"></i>
-                                </a>
-                                <a href="#" class="radio-share-link" title="Copiar enlace">
-                                    <i class="fas fa-link"></i>
-                                </a>
+                            
+                            <div class="radio-audio-controls">
+                                <button class="radio-audio-btn" id="radioRewindBtn" title="Retroceder 10s">
+                                    <i class="fas fa-backward"></i>
+                                </button>
+                                <button class="radio-audio-btn radio-audio-btn-play" id="radioAudioPlayBtn">
+                                    <i class="fas fa-play"></i>
+                                </button>
+                                <button class="radio-audio-btn" id="radioForwardBtn" title="Adelantar 10s">
+                                    <i class="fas fa-forward"></i>
+                                </button>
+                                
+                                <div class="radio-volume-control">
+                                    <i class="fas fa-volume-down"></i>
+                                    <input type="range" id="radioVolumeSlider" min="0" max="100" value="80">
+                                    <i class="fas fa-volume-up"></i>
+                                </div>
+                            </div>
+                            
+                            <div class="radio-player-info">
+                                <div class="radio-now-playing">
+                                    <h4 id="radioCurrentSong">Radio IAM - En Vivo</h4>
+                                    <p id="radioCurrentShow">Con Corazón Misionero</p>
+                                </div>
+                                
+                                <div class="radio-player-time">
+                                    <span id="radioCurrentTime">00:00</span>
+                                    <input type="range" id="radioProgressBar" min="0" max="100" value="0">
+                                    <span id="radioTotalTime">00:00</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Chat en Vivo -->
-                    <div class="radio-chat-container">
-                        <div class="radio-chat-header">
-                            <h3><i class="fas fa-comments"></i> Chat en Vivo</h3>
-                            <div class="radio-online-count">
-                                <i class="fas fa-users"></i>
-                                <span id="radioOnlineCount">0</span> conectados
-                            </div>
+                    
+                    <div class="radio-player-footer">
+                        <div class="radio-stream-quality">
+                            <span><i class="fas fa-wifi"></i> 128 kbps</span>
+                            <span><i class="fas fa-headphones"></i> Estéreo</span>
                         </div>
-                        
-                        <div class="radio-chat-messages" id="radioChatMessages">
-                            <div class="radio-system-message">
-                                <i class="fas fa-info-circle"></i>
-                                <p>¡Bienvenido al chat de Radio IAM! Aquí puedes compartir tus intenciones de oración y participar durante el programa.</p>
-                            </div>
-                        </div>
-                        
-                        <div class="radio-chat-input-container">
-                            <form id="radioChatForm">
-                                <input type="text" class="radio-chat-input" id="radioChatMessage" placeholder="Escribe tu mensaje..." maxlength="200" required>
-                                <button type="submit" class="radio-chat-send-btn">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
-                            </form>
-                            
-                            <div class="radio-chat-actions">
-                                <button class="radio-chat-action-btn" id="radioSendPrayerBtn">
-                                    <i class="fas fa-pray"></i> Enviar intención
-                                </button>
-                                <button class="radio-chat-action-btn" id="radioSendGreetingBtn">
-                                    <i class="fas fa-hand-peace"></i> Saludar
-                                </button>
-                                <button class="radio-chat-action-btn" id="radioSendQuestionBtn">
-                                    <i class="fas fa-question-circle"></i> Preguntar
-                                </button>
-                            </div>
+                        <div class="radio-share-links">
+                            <a href="#" class="radio-share-link" title="Compartir en WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                            <a href="#" class="radio-share-link" title="Compartir en Facebook">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#" class="radio-share-link" title="Copiar enlace">
+                                <i class="fas fa-link"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Columna Derecha -->
-                <div class="radio-main-right">
+                <!-- Chat en Vivo -->
+                <div class="radio-chat-container">
+                    <!-- MANTENER TODO EL CONTENIDO DEL CHAT SIN CAMBIOS -->
+                    <div class="radio-chat-header">
+                        <h3><i class="fas fa-comments"></i> Chat en Vivo</h3>
+                        <div class="radio-online-count">
+                            <i class="fas fa-users"></i>
+                            <span id="radioOnlineCount">0</span> conectados
+                        </div>
+                    </div>
+                    
+                    <div class="radio-chat-messages" id="radioChatMessages">
+                        <div class="radio-system-message">
+                            <i class="fas fa-info-circle"></i>
+                            <p>¡Bienvenido al chat de Radio IAM! Aquí puedes compartir tus intenciones de oración y participar durante el programa.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="radio-chat-input-container">
+                        <form id="radioChatForm">
+                            <input type="text" class="radio-chat-input" id="radioChatMessage" placeholder="Escribe tu mensaje..." maxlength="200" required>
+                            <button type="submit" class="radio-chat-send-btn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </form>
+                        
+                        <div class="radio-chat-actions">
+                            <button class="radio-chat-action-btn" id="radioSendPrayerBtn">
+                                <i class="fas fa-pray"></i> Enviar intención
+                            </button>
+                            <button class="radio-chat-action-btn" id="radioSendGreetingBtn">
+                                <i class="fas fa-hand-peace"></i> Saludar
+                            </button>
+                            <button class="radio-chat-action-btn" id="radioSendQuestionBtn">
+                                <i class="fas fa-question-circle"></i> Preguntar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CONTENEDOR DE JUEGO -->
+                <div class="radio-game-chat-container">
                     <!-- Panel de Juego -->
                     <div class="radio-game-panel">
                         <div class="radio-game-header">
@@ -528,7 +527,7 @@
                                 </div>
                             </div>
 
-                            <!-- Panel de Usuario -->
+                            <!-- Panel de Usuario (visible para todos) -->
                             <div class="radio-user-game-panel" id="radioUserGamePanel">
                                 <div class="radio-game-description">
                                     <h4><i class="fas fa-info-circle"></i> ¿Cómo participar?</h4>
@@ -572,7 +571,10 @@
                             </div>
                         </div>
                     </div>
+                </div>
 
+                <!-- CONTENEDOR DE RANKING Y PARTICIPANTES -->
+                <div class="radio-side-panels">
                     <!-- Ranking -->
                     <div class="radio-ranking-container">
                         <div class="radio-ranking-header">

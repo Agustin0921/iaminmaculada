@@ -22,14 +22,26 @@ const PDF_COLORS = {
     success: [56, 178, 172]      // Verde turquesa
 };
 
-// ===== INICIALIZACIÓN =====
-document.addEventListener('DOMContentLoaded', function() {
+// ===== INICIALIZACIÓN MEJORADA =====
+document.addEventListener('DOMContentLoaded', async function() {
     console.log("🚀 ¡La Aventura Misionera IAM 2026 está cargada!");
     
-    loadApplicantsFromStorage();
+    // Inicializar backend primero
+    if (window.backendManager) {
+        try {
+            const backendResult = await window.backendManager.initialize();
+            console.log("✅ Backend inicializado en modo:", backendResult.mode);
+        } catch (error) {
+            console.warn("⚠️ Backend no disponible, usando solo localStorage");
+        }
+    }
+    
+    // Cargar datos
+    await loadApplicantsFromStorage();
     updateApplicantCounter();
     updateAvailableSpots();
     
+    // Inicializar otros componentes
     initNavigation();
     initCountdown();
     initForm();
@@ -395,50 +407,124 @@ async function handleFormSubmit(e) {
         applicant.diet = [...new Set(applicant.diet)];
     }
     
-    // Agregar metadatos
-    applicant.id = Date.now();
-    applicant.registrationDate = new Date().toLocaleString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-    applicant.status = 'Pendiente';
-    applicant.registrationNumber = `AVENT-${String(applicant.id).slice(-6)}`;
+    // MOSTRAR SPINNER DE CARGA
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalBtnText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+    submitBtn.disabled = true;
     
-    // Guardar
-    applicants.push(applicant);
-    applicantCount++;
-    
-    saveApplicantsToStorage();
-    updateApplicantCounter();
-    updateAvailableSpots();
-    
-    showConfirmationModal(applicant);
-    
-    form.reset();
-    
-    if (isAdminAuthenticated) {
-        updateAdminStats();
-        updateRecentApplicants();
+    try {
+        // Usar backendManager para guardar en Firebase y localStorage
+        if (window.backendManager && window.backendManager.saveApplicant) {
+            const saveResult = await window.backendManager.saveApplicant(applicant);
+            
+            if (saveResult.success) {
+                // Actualizar datos locales
+                applicants.push(saveResult.data);
+                applicantCount++;
+                
+                saveApplicantsToStorage();
+                updateApplicantCounter();
+                updateAvailableSpots();
+                
+                showConfirmationModal(saveResult.data);
+                form.reset();
+                
+                if (isAdminAuthenticated) {
+                    updateAdminStats();
+                    updateRecentApplicants();
+                }
+                
+                showNotification('¡Misión aceptada! Ya formas parte de la aventura', 'success');
+            } else {
+                showNotification('Error al guardar la inscripción: ' + saveResult.error, 'error');
+            }
+        } else {
+            // Fallback al sistema anterior si backendManager no está disponible
+            const applicantId = Date.now();
+            const registrationNumber = `AVENT-${String(applicantId).slice(-6)}`;
+            
+            applicant.id = applicantId;
+            applicant.registrationDate = new Date().toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            applicant.status = 'Pendiente';
+            applicant.registrationNumber = registrationNumber;
+            
+            // Guardar
+            applicants.push(applicant);
+            applicantCount++;
+            
+            saveApplicantsToStorage();
+            updateApplicantCounter();
+            updateAvailableSpots();
+            
+            showConfirmationModal(applicant);
+            form.reset();
+            
+            if (isAdminAuthenticated) {
+                updateAdminStats();
+                updateRecentApplicants();
+            }
+            
+            showNotification('¡Misión aceptada! Ya formas parte de la aventura', 'success');
+        }
+    } catch (error) {
+        console.error('Error al guardar inscripción:', error);
+        showNotification('Hubo un error al enviar tu inscripción', 'error');
+    } finally {
+        // RESTAURAR BOTÓN
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
     }
-    
-    showNotification('¡Misión aceptada! Ya formas parte de la aventura', 'success');
 }
 
 // ===== ALMACENAMIENTO LOCAL =====
-function loadApplicantsFromStorage() {
+async function loadApplicantsFromStorage() {
+    // Primero cargar desde localStorage (para rapidez)
     const storedApplicants = localStorage.getItem('iamApplicants');
     if (storedApplicants) {
         try {
             applicants = JSON.parse(storedApplicants);
             applicantCount = applicants.length;
-            console.log(`📊 Cargados ${applicantCount} aventureros desde el almacenamiento`);
+            console.log(`📊 Cargados ${applicantCount} aventureros desde localStorage`);
         } catch (error) {
-            console.error('Error cargando datos:', error);
+            console.error('Error cargando datos locales:', error);
             applicants = [];
             applicantCount = 0;
+        }
+    }
+    
+    // Luego intentar sincronizar con Firebase si backend está disponible
+    if (window.backendManager && window.backendManager.isInitialized && window.backendManager.getAllApplicants) {
+        try {
+            console.log("🔄 Sincronizando con Firebase...");
+            const firebaseResult = await window.backendManager.getAllApplicants();
+            
+            if (firebaseResult.success && firebaseResult.data.length > 0) {
+                // Si hay más datos en Firebase, actualizar
+                if (firebaseResult.data.length > applicantCount) {
+                    applicants = firebaseResult.data;
+                    applicantCount = applicants.length;
+                    
+                    // Guardar en localStorage para offline
+                    localStorage.setItem('iamApplicants', JSON.stringify(applicants));
+                    
+                    console.log(`✅ Sincronizado con Firebase: ${applicantCount} aventureros`);
+                    
+                    // Si hay admin autenticado, actualizar estadísticas
+                    if (isAdminAuthenticated) {
+                        updateAdminStats();
+                        updateRecentApplicants();
+                    }
+                }
+            }
+        } catch (error) {
+            console.warn("⚠️ No se pudo sincronizar con Firebase:", error.message);
         }
     }
 }
@@ -917,7 +1003,7 @@ function showConfirmationModal(applicant) {
     });
 }
 
-// ===== SISTEMA DE ADMINISTRACIÓN - VERSIÓN CORREGIDA =====
+// ===== SISTEMA DE ADMINISTRACIÓN - ACTUALIZADO PARA FIREBASE =====
 function initAdminSystem() {
     const adminAccessBtn = document.getElementById('adminAccessBtn');
     const loginModal = document.getElementById('loginModal');
@@ -933,6 +1019,15 @@ function initAdminSystem() {
         return;
     }
     
+    // Verificar si ya hay admin autenticado desde localStorage
+    if (window.backendManager && window.backendManager.isIamAdminAuthenticated) {
+        const isLoggedIn = window.backendManager.isIamAdminAuthenticated();
+        if (isLoggedIn) {
+            isAdminAuthenticated = true;
+            console.log("✅ Admin ya autenticado desde sesión previa");
+        }
+    }
+    
     // === 1. BOTÓN DE ACCESO ADMIN ===
     adminAccessBtn.onclick = function() {
         if (isAdminAuthenticated) {
@@ -942,9 +1037,9 @@ function initAdminSystem() {
         }
     };
     
-    // === 2. FORMULARIO DE LOGIN ===
+    // === 2. FORMULARIO DE LOGIN - ACTUALIZADO PARA FIREBASE ===
     if (loginForm) {
-        loginForm.onsubmit = function(e) {
+        loginForm.onsubmit = async function(e) {
             e.preventDefault();
             e.stopPropagation();
             
@@ -952,29 +1047,52 @@ function initAdminSystem() {
             const password = document.getElementById('password').value;
             const adminCode = document.getElementById('adminCode').value;
             
-            console.log("🔐 Intentando login:", { username, password, adminCode });
+            console.log("🔐 Intentando login con Firebase...");
             
-            // Verificar código primero
+            // Verificar código secreto
             if (adminCode !== adminPassword) {
                 showNotification('❌ Código secreto incorrecto', 'error');
                 return false;
             }
             
-            // Buscar usuario en la lista
-            const user = adminUsers.find(u => 
-                u.username === username && u.password === password
-            );
+            // Crear email para Firebase (si solo es username, agregar dominio)
+            const email = username.includes('@') ? username : `${username}@iam.com`;
             
-            if (user) {
-                isAdminAuthenticated = true;
-                loginModal.style.display = 'none';
-                showAdminPanel();
-                showNotification('✅ ¡Acceso concedido!', 'success');
-                loginForm.reset();
-                console.log("✅ Usuario autenticado:", username);
-            } else {
-                showNotification('❌ Usuario o contraseña incorrectos', 'error');
-                console.log("❌ Login fallido para:", username);
+            try {
+                // Usar el backendManager para login
+                if (window.backendManager && window.backendManager.loginIamAdmin) {
+                    const loginResult = await window.backendManager.loginIamAdmin(email, password, adminCode);
+                    
+                    if (loginResult.success) {
+                        isAdminAuthenticated = true;
+                        loginModal.style.display = 'none';
+                        showAdminPanel();
+                        showNotification('✅ ¡Acceso concedido al Cuartel General!', 'success');
+                        loginForm.reset();
+                        console.log("✅ Admin autenticado:", email);
+                    } else {
+                        showNotification('❌ ' + loginResult.error, 'error');
+                    }
+                } else {
+                    // Fallback al sistema antiguo si backendManager no está disponible
+                    const user = adminUsers.find(u => 
+                        u.username === username && u.password === password
+                    );
+                    
+                    if (user) {
+                        isAdminAuthenticated = true;
+                        loginModal.style.display = 'none';
+                        showAdminPanel();
+                        showNotification('✅ ¡Acceso concedido! (modo local)', 'success');
+                        loginForm.reset();
+                        console.log("✅ Usuario autenticado en modo local:", username);
+                    } else {
+                        showNotification('❌ Usuario o contraseña incorrectos', 'error');
+                    }
+                }
+            } catch (error) {
+                console.error("Error en login:", error);
+                showNotification('❌ Error de conexión', 'error');
             }
             
             return false;
@@ -1088,7 +1206,7 @@ function showAdminPanel() {
     adminModal.style.display = 'flex';
 }
 
-function updateAdminStats() {
+async function updateAdminStats() {
     const adminTotalCount = document.getElementById('adminTotalCount');
     const adminAvgAge = document.getElementById('adminAvgAge');
     const adminMedicalCount = document.getElementById('adminMedicalCount');
@@ -1115,30 +1233,58 @@ function updateAdminStats() {
     }
 }
 
-function updateRecentApplicants() {
+async function updateRecentApplicants() {
     const container = document.getElementById('recentApplicants');
     if (!container) return;
     
-    const recentApplicants = [...applicants]
-        .sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate))
-        .slice(0, 5);
-    
-    if (recentApplicants.length === 0) {
+    try {
+        // Usar backendManager si está disponible
+        if (window.backendManager && window.backendManager.getRecentApplicants) {
+            const result = await window.backendManager.getRecentApplicants(5);
+            
+            if (result.success && result.data.length > 0) {
+                const recentApplicants = result.data;
+                
+                container.innerHTML = recentApplicants.map(applicant => `
+                    <div class="applicant-item">
+                        <div class="applicant-info">
+                            <h5>${applicant.fullName}</h5>
+                            <p>${applicant.age} años • ${applicant.parish || 'Base secreta'}</p>
+                        </div>
+                        <div class="applicant-date">
+                            ${applicant.registrationDate}
+                        </div>
+                    </div>
+                `).join('');
+                return;
+            }
+        }
+        
+        // Fallback al sistema local
+        const recentApplicants = [...applicants]
+            .sort((a, b) => new Date(b.registrationDate) - new Date(a.registrationDate))
+            .slice(0, 5);
+        
+        if (recentApplicants.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 30px; font-style: italic;">No hay nuevos reclutas todavía</p>';
+            return;
+        }
+        
+        container.innerHTML = recentApplicants.map(applicant => `
+            <div class="applicant-item">
+                <div class="applicant-info">
+                    <h5>${applicant.fullName}</h5>
+                    <p>${applicant.age} años • ${applicant.parish || 'Base secreta'}</p>
+                </div>
+                <div class="applicant-date">
+                    ${applicant.registrationDate}
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        console.warn("Error obteniendo inscritos recientes:", error);
         container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 30px; font-style: italic;">No hay nuevos reclutas todavía</p>';
-        return;
     }
-    
-    container.innerHTML = recentApplicants.map(applicant => `
-        <div class="applicant-item">
-            <div class="applicant-info">
-                <h5>${applicant.fullName}</h5>
-                <p>${applicant.age} años • ${applicant.parish || 'Base secreta'}</p>
-            </div>
-            <div class="applicant-date">
-                ${applicant.registrationDate}
-            </div>
-        </div>
-    `).join('');
 }
 
 function initAdminButtons() {
@@ -1193,13 +1339,50 @@ function initAdminButtons() {
     // Botón: Limpiar Datos
     const clearDataBtn = document.getElementById('clearData');
     if (clearDataBtn) {
-        clearDataBtn.addEventListener('click', function() {
+        clearDataBtn.addEventListener('click', async function() {
             if (!isAdminAuthenticated) {
                 showNotification('Acceso no autorizado al Cuartel General', 'error');
                 return;
             }
-            if (confirm('⚠️ ¿Reiniciar toda la misión? Esto eliminará TODOS los datos de aventureros. ¡Esta acción no se puede deshacer!')) {
-                clearAllData();
+            
+            if (!confirm('⚠️ ¿Reiniciar toda la misión? Esto eliminará TODOS los datos de aventureros. ¡Esta acción no se puede deshacer!')) {
+                return;
+            }
+            
+            try {
+                // Usar backendManager si está disponible
+                if (window.backendManager && window.backendManager.clearAllData) {
+                    const result = await window.backendManager.clearAllData();
+                    
+                    if (result.success) {
+                        applicants = [];
+                        applicantCount = 0;
+                        
+                        updateApplicantCounter();
+                        updateAvailableSpots();
+                        updateAdminStats();
+                        updateRecentApplicants();
+                        
+                        showNotification('¡Misión reiniciada! Todos los datos han sido eliminados', 'warning');
+                    } else {
+                        showNotification('Error al limpiar datos: ' + result.error, 'error');
+                    }
+                } else {
+                    // Fallback al sistema local
+                    applicants = [];
+                    applicantCount = 0;
+                    
+                    localStorage.removeItem('iamApplicants');
+                    
+                    updateApplicantCounter();
+                    updateAvailableSpots();
+                    updateAdminStats();
+                    updateRecentApplicants();
+                    
+                    showNotification('¡Misión reiniciada! Todos los datos han sido eliminados', 'warning');
+                }
+            } catch (error) {
+                showNotification('Error al limpiar datos', 'error');
             }
         });
     }
@@ -1494,20 +1677,6 @@ function exportToExcel() {
     }
 }
 
-function clearAllData() {
-    applicants = [];
-    applicantCount = 0;
-    
-    localStorage.removeItem('iamApplicants');
-    
-    updateApplicantCounter();
-    updateAvailableSpots();
-    updateAdminStats();
-    updateRecentApplicants();
-    
-    showNotification('¡Misión reiniciada! Todos los datos han sido eliminados', 'warning');
-}
-
 // ===== NOTIFICACIONES =====
 function showNotification(message, type = 'success') {
     const notification = document.createElement('div');
@@ -1752,6 +1921,53 @@ window.addEventListener('load', function() {
         }
     });
 });
+
+// ===== MEJORAS PARA MÓVIL =====
+function initMobileEnhancements() {
+    // Solo aplicar en dispositivos móviles
+    if (window.innerWidth <= 768) {
+        console.log("📱 Inicializando mejoras para móvil");
+        
+        // Suavizar scroll para la galería
+        const galleryItems = document.querySelectorAll('.gallery-item');
+        galleryItems.forEach(item => {
+            item.style.cursor = 'pointer';
+            item.style.webkitTapHighlightColor = 'transparent';
+            
+            // Prevenir doble clic en móvil
+            let lastTap = 0;
+            item.addEventListener('touchend', function(e) {
+                const currentTime = new Date().getTime();
+                const tapLength = currentTime - lastTap;
+                if (tapLength < 500 && tapLength > 0) {
+                    e.preventDefault();
+                }
+                lastTap = currentTime;
+            });
+        });
+        
+        // Mejorar experiencia táctil en la cuenta regresiva
+        const countdownUnits = document.querySelectorAll('.countdown-unit');
+        countdownUnits.forEach(unit => {
+            unit.style.webkitTapHighlightColor = 'rgba(255, 255, 255, 0.1)';
+        });
+        
+        // Ajustar altura automáticamente en iOS
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            document.documentElement.style.height = 'calc(100% + 60px)';
+            
+            // Arreglo para el viewport de iOS
+            window.addEventListener('orientationchange', function() {
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                }, 100);
+            });
+        }
+        
+        // Optimizar imágenes para móvil
+        optimizeImagesForMobile();
+    }
+}
 
 // Forzar recarga si hay problemas
 setTimeout(() => {
