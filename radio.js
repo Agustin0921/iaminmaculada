@@ -59,12 +59,35 @@ class RadioIAM {
     }
 
     checkAdminStatus() {
-        this.isAdmin = window.radioBackend.isRadioAdminLoggedIn();
+        // VERIFICAR CON localStorage EN LUGAR DE FIREBASE PARA PRUEBAS
+        const isAdmin = localStorage.getItem('radioAdminLoggedIn') === 'true';
+        
+        this.isAdmin = isAdmin;
+        
+        const adminControls = document.getElementById('radioAdminControls');
+        const userGamePanel = document.getElementById('radioUserGamePanel');
+        
         if (this.isAdmin) {
-            document.getElementById('radioAdminControls').classList.remove('radio-hidden');
-            document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
+            // MOSTRAR controles de admin y OCULTAR panel de usuario
+            if (adminControls) {
+                adminControls.classList.remove('radio-hidden');
+            }
+            if (userGamePanel) {
+                userGamePanel.classList.add('radio-hidden');
+            }
+            
             this.updateGameStatus('admin', 'MODO ANIMADOR');
             console.log("👑 Modo administrador activado");
+        } else {
+            // OCULTAR controles de admin y MOSTRAR panel de usuario
+            if (adminControls) {
+                adminControls.classList.add('radio-hidden');
+            }
+            if (userGamePanel) {
+                userGamePanel.classList.remove('radio-hidden');
+            }
+            
+            console.log("👤 Modo usuario normal");
         }
     }
 
@@ -82,10 +105,13 @@ class RadioIAM {
     }
 
     setupEventListeners() {
-        // Botón admin radio
-        document.getElementById('radioAdminBtn').addEventListener('click', () => {
-            this.showRadioAdminModal();
-        });
+        // Botón admin radio - ASEGURAR QUE ESTÁ DISPONIBLE
+        const adminBtn = document.getElementById('radioAdminBtn');
+        if (adminBtn) {
+            adminBtn.addEventListener('click', () => {
+                this.showRadioAdminModal();
+            });
+        }
 
         // Formulario login admin radio
         document.getElementById('radioLoginForm').addEventListener('submit', (e) => {
@@ -99,71 +125,116 @@ class RadioIAM {
         });
 
         // Botones de juego admin
-        document.getElementById('radioStartGameBtn').addEventListener('click', () => {
-            this.startGame();
-        });
+        const startGameBtn = document.getElementById('radioStartGameBtn');
+        if (startGameBtn) {
+            startGameBtn.addEventListener('click', () => {
+                this.startGame();
+            });
+        }
 
-        document.getElementById('radioPauseGameBtn').addEventListener('click', () => {
-            this.pauseGame();
-        });
+        const pauseGameBtn = document.getElementById('radioPauseGameBtn');
+        if (pauseGameBtn) {
+            pauseGameBtn.addEventListener('click', () => {
+                this.pauseGame();
+            });
+        }
 
-        document.getElementById('radioEndGameBtn').addEventListener('click', () => {
-            this.endGame();
-        });
+        const endGameBtn = document.getElementById('radioEndGameBtn');
+        if (endGameBtn) {
+            endGameBtn.addEventListener('click', () => {
+                this.endGame();
+            });
+        }
 
         // Registro de jugador
-        document.getElementById('radioRegisterPlayerForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.registerPlayer();
-        });
+        const registerForm = document.getElementById('radioRegisterPlayerForm');
+        if (registerForm) {
+            registerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.registerPlayer();
+            });
+        }
 
         // Chat - Enviar mensaje
-        document.getElementById('radioChatForm')?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.sendChatMessage();
-        });
+        const chatForm = document.getElementById('radioChatForm');
+        if (chatForm) {
+            chatForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.sendChatMessage();
+            });
+        }
 
         // Botones de chat
-        document.getElementById('radioSendPrayerBtn')?.addEventListener('click', () => {
-            this.sendPrayerIntent();
-        });
+        const prayerBtn = document.getElementById('radioSendPrayerBtn');
+        if (prayerBtn) {
+            prayerBtn.addEventListener('click', () => {
+                this.sendPrayerIntent();
+            });
+        }
 
-        document.getElementById('radioSendGreetingBtn')?.addEventListener('click', () => {
-            this.sendGreeting();
-        });
+        const greetingBtn = document.getElementById('radioSendGreetingBtn');
+        if (greetingBtn) {
+            greetingBtn.addEventListener('click', () => {
+                this.sendGreeting();
+            });
+        }
 
-        document.getElementById('radioSendQuestionBtn')?.addEventListener('click', () => {
-            this.sendQuestion();
-        });
+        const questionBtn = document.getElementById('radioSendQuestionBtn');
+        if (questionBtn) {
+            questionBtn.addEventListener('click', () => {
+                this.sendQuestion();
+            });
+        }
 
         // Player de audio
-        document.getElementById('radioAudioPlayBtn')?.addEventListener('click', () => {
-            this.toggleAudio();
-        });
+        const audioPlayBtn = document.getElementById('radioAudioPlayBtn');
+        if (audioPlayBtn) {
+            audioPlayBtn.addEventListener('click', () => {
+                this.toggleAudio();
+            });
+        }
 
-        document.getElementById('playRadioBtn')?.addEventListener('click', () => {
-            this.playRadioStream();
-        });
+        const playRadioBtn = document.getElementById('playRadioBtn');
+        if (playRadioBtn) {
+            playRadioBtn.addEventListener('click', () => {
+                this.playRadioStream();
+            });
+        }
 
         // Volumen
-        document.getElementById('radioVolumeSlider')?.addEventListener('input', (e) => {
-            this.setVolume(e.target.value);
-        });
+        const volumeSlider = document.getElementById('radioVolumeSlider');
+        if (volumeSlider) {
+            volumeSlider.addEventListener('input', (e) => {
+                this.setVolume(e.target.value);
+            });
+        }
 
         // Ver ranking completo
-        document.getElementById('radioViewFullRanking')?.addEventListener('click', () => {
-            this.showFullRanking();
-        });
+        const viewRankingBtn = document.getElementById('radioViewFullRanking');
+        if (viewRankingBtn) {
+            viewRankingBtn.addEventListener('click', () => {
+                this.showFullRanking();
+            });
+        }
 
         // Mobile menu
-        document.getElementById('radioMobileMenuBtn')?.addEventListener('click', () => {
-            document.getElementById('radioMainNav').classList.toggle('active');
-        });
+        const mobileMenuBtn = document.getElementById('radioMobileMenuBtn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                const mainNav = document.getElementById('radioMainNav');
+                if (mainNav) {
+                    mainNav.classList.toggle('active');
+                }
+            });
+        }
 
         // Cerrar menú al hacer clic en enlace
         document.querySelectorAll('.radio-nav-link').forEach(link => {
             link.addEventListener('click', () => {
-                document.getElementById('radioMainNav').classList.remove('active');
+                const mainNav = document.getElementById('radioMainNav');
+                if (mainNav) {
+                    mainNav.classList.remove('active');
+                }
             });
         });
 
@@ -185,21 +256,33 @@ class RadioIAM {
         });
 
         // Botones de player
-        document.getElementById('radioPlayBtn')?.addEventListener('click', () => {
-            this.toggleAudio();
-        });
+        const radioPlayBtn = document.getElementById('radioPlayBtn');
+        if (radioPlayBtn) {
+            radioPlayBtn.addEventListener('click', () => {
+                this.toggleAudio();
+            });
+        }
 
-        document.getElementById('radioPrevBtn')?.addEventListener('click', () => {
-            this.prevTrack();
-        });
+        const prevBtn = document.getElementById('radioPrevBtn');
+        if (prevBtn) {
+            prevBtn.addEventListener('click', () => {
+                this.prevTrack();
+            });
+        }
 
-        document.getElementById('radioNextBtn')?.addEventListener('click', () => {
-            this.nextTrack();
-        });
+        const nextBtn = document.getElementById('radioNextBtn');
+        if (nextBtn) {
+            nextBtn.addEventListener('click', () => {
+                this.nextTrack();
+            });
+        }
 
-        document.getElementById('radioVolumeBtn')?.addEventListener('click', () => {
-            this.toggleMute();
-        });
+        const volumeBtn = document.getElementById('radioVolumeBtn');
+        if (volumeBtn) {
+            volumeBtn.addEventListener('click', () => {
+                this.toggleMute();
+            });
+        }
 
         // Botón para recargar jugadores
         const refreshBtn = document.getElementById('refreshPlayersBtn');
@@ -231,7 +314,10 @@ class RadioIAM {
 
     // ===== SISTEMA DE ADMIN =====
     showRadioAdminModal() {
-        document.getElementById('radioAdminModal').style.display = 'flex';
+        const modal = document.getElementById('radioAdminModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
     }
 
     async loginRadioAdmin() {
@@ -265,10 +351,10 @@ class RadioIAM {
                 this.isAdmin = true;
                 
                 document.getElementById('radioAdminModal').style.display = 'none';
-                document.getElementById('radioAdminControls').classList.remove('radio-hidden');
-                document.getElementById('radioUserGamePanel').classList.add('radio-hidden');
                 
-                this.updateGameStatus('admin', 'MODO ANIMADOR');
+                // Actualizar visibilidad
+                this.checkAdminStatus();
+                
                 this.showNotification(`¡Bienvenido ${result.adminData?.name || 'Animador'}!`, 'success');
                 
                 // Recargar datos como admin
@@ -291,14 +377,13 @@ class RadioIAM {
     }
 
     // ===== SISTEMA DE JUEGOS =====
-    // ===== SISTEMA DE JUEGOS =====
     async startGame() {
         if (!this.isAdmin) {
             this.showNotification('Solo los animadores pueden iniciar juegos', 'error');
             return;
         }
 
-        // Obtener configuración del admin (NUEVO)
+        // Obtener configuración del admin
         const gameType = document.getElementById('radioGameType').value;
         const totalQuestions = parseInt(document.getElementById('radioTotalQuestions')?.value || 10);
         const gameDuration = parseInt(document.getElementById('radioGameDuration')?.value || 15) * 60;
@@ -375,6 +460,7 @@ class RadioIAM {
             this.showNotification('Juego iniciado localmente (Firebase no disponible)', 'warning');
         }
     }
+
     pauseGame() {
         if (this.currentGame && this.currentGame.status === 'active') {
             this.currentGame.status = 'paused';
@@ -402,20 +488,23 @@ class RadioIAM {
             const winners = this.calculateWinners();
             
             // Resetear interfaz
-            document.getElementById('radioCurrentGameInfo').innerHTML = `
-                <div class="radio-no-game">
-                    <i class="fas fa-flag-checkered"></i>
-                    <p>¡Juego finalizado!</p>
-                    <p>Gracias a todos por participar.</p>
-                    ${winners.length > 0 ? `
-                        <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
-                            🏆 Ganador: ${winners[0]?.name || 'Nadie'}
-                        </p>
-                        ${winners[1] ? `<p>🥈 Segundo: ${winners[1]?.name}</p>` : ''}
-                        ${winners[2] ? `<p>🥉 Tercero: ${winners[2]?.name}</p>` : ''}
-                    ` : ''}
-                </div>
-            `;
+            const currentGameInfo = document.getElementById('radioCurrentGameInfo');
+            if (currentGameInfo) {
+                currentGameInfo.innerHTML = `
+                    <div class="radio-no-game">
+                        <i class="fas fa-flag-checkered"></i>
+                        <p>¡Juego finalizado!</p>
+                        <p>Gracias a todos por participar.</p>
+                        ${winners.length > 0 ? `
+                            <p style="margin-top: 10px; font-weight: bold; color: var(--primary);">
+                                🏆 Ganador: ${winners[0]?.name || 'Nadie'}
+                            </p>
+                            ${winners[1] ? `<p>🥈 Segundo: ${winners[1]?.name}</p>` : ''}
+                            ${winners[2] ? `<p>🥉 Tercero: ${winners[2]?.name}</p>` : ''}
+                        ` : ''}
+                    </div>
+                `;
+            }
             
             this.showNotification('Juego finalizado. Resultados calculados.', 'success');
             
@@ -842,7 +931,10 @@ class RadioIAM {
             </div>
         `;
         
-        document.getElementById('radioCurrentGameInfo').innerHTML = html;
+        const currentGameInfo = document.getElementById('radioCurrentGameInfo');
+        if (currentGameInfo) {
+            currentGameInfo.innerHTML = html;
+        }
         
         // Iniciar temporizador si no ha respondido
         if (!hasAnswered && this.currentPlayer) {
@@ -1037,7 +1129,7 @@ class RadioIAM {
     }
 
     // ===== SISTEMA DE JUGADORES =====
-        async registerPlayer() {
+    async registerPlayer() {
         const name = document.getElementById('radioPlayerName').value.trim();
         const phone = document.getElementById('radioPlayerPhone').value.trim();
         const email = document.getElementById('radioPlayerEmail').value.trim();
@@ -1158,7 +1250,10 @@ class RadioIAM {
         }
 
         // Resetear formulario
-        document.getElementById('radioRegisterPlayerForm').reset();
+        const registerForm = document.getElementById('radioRegisterPlayerForm');
+        if (registerForm) {
+            registerForm.reset();
+        }
 
         // Recargar lista de jugadores
         this.loadPlayers();
@@ -1166,8 +1261,6 @@ class RadioIAM {
         // Registrar sesión activa
         this.registerActiveSession(name);
     }
-
-    // Agrega estas funciones auxiliares a tu clase RadioIAM:
 
     validateEmail(email) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -1428,7 +1521,10 @@ class RadioIAM {
         const count = this.players.length;
         
         if (participantsList) {
-            document.getElementById('radioParticipantsCount').textContent = count;
+            const participantsCount = document.getElementById('radioParticipantsCount');
+            if (participantsCount) {
+                participantsCount.textContent = count;
+            }
             
             participantsList.innerHTML = this.players.slice(0, 8).map(player => {
                 const avatarText = player.name.charAt(0).toUpperCase();
@@ -1463,15 +1559,13 @@ class RadioIAM {
         const totalPoints = this.players.reduce((sum, player) => sum + (player.points || 0), 0);
         const gamesPlayed = this.players.reduce((sum, player) => sum + (player.gamesPlayed || 0), 0);
         
-        if (document.getElementById('radioGamesPlayed')) {
-            document.getElementById('radioGamesPlayed').textContent = gamesPlayed;
-        }
-        if (document.getElementById('radioTotalPoints')) {
-            document.getElementById('radioTotalPoints').textContent = totalPoints;
-        }
-        if (document.getElementById('radioTotalPlayers')) {
-            document.getElementById('radioTotalPlayers').textContent = this.players.length;
-        }
+        const gamesPlayedEl = document.getElementById('radioGamesPlayed');
+        const totalPointsEl = document.getElementById('radioTotalPoints');
+        const totalPlayersEl = document.getElementById('radioTotalPlayers');
+        
+        if (gamesPlayedEl) gamesPlayedEl.textContent = gamesPlayed;
+        if (totalPointsEl) totalPointsEl.textContent = totalPoints;
+        if (totalPlayersEl) totalPlayersEl.textContent = this.players.length;
     }
 
     calculateWinners() {
@@ -1987,7 +2081,7 @@ class RadioIAM {
         if (this.gameListener) clearInterval(this.gameListener);
         if (this.playersListener) clearInterval(this.playersListener);
         
-        // NUEVO: Limpiar intervalo de estadísticas del admin
+        // Limpiar intervalo de estadísticas del admin
         if (this.adminStatsInterval) {
             clearInterval(this.adminStatsInterval);
         }

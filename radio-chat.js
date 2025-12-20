@@ -256,10 +256,36 @@ class RadioChat {
         }
     }
 
-    // ... (el resto de tus funciones permanecen igual)
-    loadUserFromStorage() { /* tu código */ }
-    showLocalError(message) { /* tu código */ }
-    cleanup() { /* tu código */ }
+    loadUserFromStorage() {
+        const savedPlayer = localStorage.getItem('radioPlayer');
+        if (savedPlayer) {
+            try {
+                const player = JSON.parse(savedPlayer);
+                this.userName = player.name;
+                this.userId = player.id || 'user_' + Date.now();
+                console.log(`👤 Chat configurado para usuario: ${this.userName}`);
+            } catch (error) {
+                console.error("Error cargando usuario del chat:", error);
+            }
+        }
+    }
+
+    setUserName(name) {
+        this.userName = name;
+        console.log(`👤 Nombre de chat actualizado a: ${name}`);
+    }
+
+    showLocalError(message) {
+        console.error("❌ Error en chat:", message);
+        // Podrías mostrar una notificación aquí si quieres
+    }
+
+    cleanup() {
+        if (this.unsubscribeChat) {
+            this.unsubscribeChat();
+            console.log("🧹 Chat limpiado");
+        }
+    }
 }
 
 // Inicializar chat globalmente
