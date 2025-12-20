@@ -526,8 +526,8 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <!-- Panel de Usuario (visible para todos) -->
+                        
+                            <!-- Panel de Usuario (visible para todos por defecto) -->
                             <div class="radio-user-game-panel" id="radioUserGamePanel">
                                 <div class="radio-game-description">
                                     <h4><i class="fas fa-info-circle"></i> ¿Cómo participar?</h4>
@@ -848,11 +848,11 @@
             window.backendManager.initialize().then(result => {
                 console.log("Backend inicializado en modo:", result.mode);
                 console.log("✅ Listo para múltiples dispositivos");
-                
+
                 // Inicializar Radio IAM
                 if (document.querySelector('.radio-header')) {
                     window.radioIAM = new RadioIAM();
-                    
+
                     // Limpiar al salir de la página
                     window.addEventListener('beforeunload', () => {
                         if (window.radioIAM) {
@@ -861,7 +861,7 @@
                     });
                 }
             });
-        
+
             // Scripts existentes...
             // (Tu código actual de animaciones y navegación)
         });

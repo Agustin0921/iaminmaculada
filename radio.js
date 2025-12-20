@@ -59,16 +59,14 @@ class RadioIAM {
     }
 
     checkAdminStatus() {
-        // VERIFICAR CON localStorage
         const isAdmin = localStorage.getItem('radioAdminLoggedIn') === 'true';
-        
         this.isAdmin = isAdmin;
         
         const adminControls = document.getElementById('radioAdminControls');
         const userGamePanel = document.getElementById('radioUserGamePanel');
         
         if (this.isAdmin) {
-            // MOSTRAR controles de admin y OCULTAR panel de usuario
+            // MOSTRAR controles admin, OCULTAR panel usuario
             if (adminControls) {
                 adminControls.classList.remove('radio-hidden');
                 adminControls.classList.add('radio-visible');
@@ -81,7 +79,7 @@ class RadioIAM {
             this.updateGameStatus('admin', 'MODO ANIMADOR');
             console.log("👑 Modo administrador activado");
         } else {
-            // OCULTAR controles de admin y MOSTRAR panel de usuario
+            // OCULTAR controles admin, MOSTRAR panel usuario
             if (adminControls) {
                 adminControls.classList.add('radio-hidden');
                 adminControls.classList.remove('radio-visible');
