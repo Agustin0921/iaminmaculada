@@ -118,6 +118,27 @@ async function loginToBackend(username, password, adminCode) {
     }
 }
 
+// ===== FUNCIÓN AUXILIAR: Cargar todos los datos del backend =====
+async function loadAllApplicantsFromBackend() {
+    try {
+        const token = localStorage.getItem('iamAuthToken');
+        if (!token) return [];
+        
+        const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            return result.success ? result.data : [];
+        }
+    } catch (error) {
+        console.warn("Error cargando datos del backend:", error);
+    }
+    
+    return [];
+}
+
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', async function() {
     console.log("🚀 IAM Frontend cargado");
@@ -705,7 +726,7 @@ function removeDuplicateApplicants() {
     return 0;
 }
 
-// ===== GALERÍA (MANTENER IGUAL) =====
+// ===== GALERÍA =====
 function initGallery() {
     const galleryItems = document.querySelectorAll('.gallery-item');
     
@@ -1139,8 +1160,13 @@ async function loadAdminDataFromBackend() {
                 const adminMedicalCount = document.getElementById('adminMedicalCount');
                 
                 if (adminTotalCount) adminTotalCount.textContent = dashboardData.stats.total;
-                if (adminAvgAge) adminAvgAge.textContent = dashboardData.stats.ages.average;
-                if (adminMedicalCount) adminMedicalCount.textContent = dashboardData.stats.medical.withConditions || 0;
+                if (adminAvgAge) adminAvgAge.textContent = dashboardData.stats.avgAge || '0';
+                if (adminMedicalCount) adminMedicalCount.textContent = dashboardData.stats.withMedical || 0;
+                
+                // Actualizar estadísticas públicas también
+                applicantCount = dashboardData.stats.total;
+                updateApplicantCounter();
+                updateAvailableSpots();
             }
         }
         
@@ -1163,30 +1189,66 @@ async function loadAdminDataFromBackend() {
     }
 }
 
-function updateAdminStats() {
-    const adminTotalCount = document.getElementById('adminTotalCount');
-    const adminAvgAge = document.getElementById('adminAvgAge');
-    const adminMedicalCount = document.getElementById('adminMedicalCount');
-    
-    if (adminTotalCount) {
-        adminTotalCount.textContent = applicantCount;
-    }
-    
-    if (adminAvgAge) {
-        if (applicants.length > 0) {
-            const totalAge = applicants.reduce((sum, app) => sum + parseInt(app.age || 0), 0);
-            const avgAge = (totalAge / applicants.length).toFixed(1);
-            adminAvgAge.textContent = avgAge;
-        } else {
-            adminAvgAge.textContent = '0';
+async function updateAdminStats() {
+    try {
+        const token = localStorage.getItem('iamAuthToken');
+        
+        if (token && isAdminAuthenticated) {
+            // Obtener estadísticas del backend
+            const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/dashboard`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success) {
+                    const adminTotalCount = document.getElementById('adminTotalCount');
+                    const adminAvgAge = document.getElementById('adminAvgAge');
+                    const adminMedicalCount = document.getElementById('adminMedicalCount');
+                    
+                    if (adminTotalCount) adminTotalCount.textContent = data.stats.total;
+                    if (adminAvgAge) adminAvgAge.textContent = data.stats.avgAge || '0';
+                    if (adminMedicalCount) adminMedicalCount.textContent = data.stats.withMedical || 0;
+                    
+                    // Actualizar contadores públicos también
+                    applicantCount = data.stats.total;
+                    updateApplicantCounter();
+                    updateAvailableSpots();
+                    
+                    return; // Salir si se cargaron del backend
+                }
+            }
         }
-    }
-    
-    if (adminMedicalCount) {
-        const withMedicalConditions = applicants.filter(app => 
-            app.health && !app.health.includes('Ninguna')
-        ).length;
-        adminMedicalCount.textContent = withMedicalConditions;
+        
+        // Fallback a datos locales si no hay conexión o no está autenticado
+        const adminTotalCount = document.getElementById('adminTotalCount');
+        const adminAvgAge = document.getElementById('adminAvgAge');
+        const adminMedicalCount = document.getElementById('adminMedicalCount');
+        
+        if (adminTotalCount) {
+            adminTotalCount.textContent = applicantCount;
+        }
+        
+        if (adminAvgAge) {
+            if (applicants.length > 0) {
+                const totalAge = applicants.reduce((sum, app) => sum + parseInt(app.age || 0), 0);
+                const avgAge = (totalAge / applicants.length).toFixed(1);
+                adminAvgAge.textContent = avgAge;
+            } else {
+                adminAvgAge.textContent = '0';
+            }
+        }
+        
+        if (adminMedicalCount) {
+            const withMedicalConditions = applicants.filter(app => 
+                app.health && !app.health.includes('Ninguna')
+            ).length;
+            adminMedicalCount.textContent = withMedicalConditions;
+        }
+        
+    } catch (error) {
+        console.warn("Error obteniendo stats admin:", error);
+        // Mantener el fallback local
     }
 }
 
@@ -1485,24 +1547,69 @@ function showNotification(message, type = 'success') {
     }, 5000);
 }
 
-// ===== FUNCIONES RESTANTES (MANTENER IGUAL) =====
-function showAllApplicantsData() {
+// ===== FUNCIONES ACTUALIZADAS =====
+async function showAllApplicantsData() {
     const modal = document.createElement('div');
     modal.className = 'modal';
     modal.style.display = 'flex';
     modal.style.zIndex = '2001';
     
-    const applicantsHTML = applicants.map((app, index) => `
+    let applicantsData = [];
+    
+    try {
+        // Intentar cargar desde backend si está autenticado
+        const token = localStorage.getItem('iamAuthToken');
+        
+        if (token && isAdminAuthenticated) {
+            const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    applicantsData = result.data;
+                }
+            }
+        }
+        
+        // Si no hay datos del backend o no está autenticado, usar locales
+        if (applicantsData.length === 0) {
+            applicantsData = applicants;
+        }
+        
+    } catch (error) {
+        console.warn("Error cargando datos del backend:", error);
+        applicantsData = applicants;
+    }
+    
+    const applicantsHTML = applicantsData.map((app, index) => `
         <tr>
             <td style="text-align: center;">${index + 1}</td>
-            <td><strong>${app.fullName}</strong></td>
+            <td><strong>${app.full_name || app.fullName}</strong></td>
             <td style="text-align: center;">${app.age}</td>
             <td>${app.phone || '-'}</td>
             <td>${app.parish || '-'}</td>
-            <td>${app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-'}</td>
-            <td>${app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : '-'}</td>
-            <td><code>${app.registrationNumber}</code></td>
-            <td>${app.registrationDate.split(' ')[0]}</td>
+            <td>
+                ${app.health_conditions ? 
+                    (Array.isArray(app.health_conditions) ? 
+                        app.health_conditions.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' :
+                        JSON.parse(app.health_conditions || '[]').filter(h => h !== 'Ninguna').join(', ') || 'Ninguna'
+                    ) : 
+                    (app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-')
+                }
+            </td>
+            <td>
+                ${app.dietary_restrictions ? 
+                    (Array.isArray(app.dietary_restrictions) ? 
+                        app.dietary_restrictions.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' :
+                        JSON.parse(app.dietary_restrictions || '[]').filter(d => d !== 'Ninguna').join(', ') || 'Ninguna'
+                    ) : 
+                    (app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : '-')
+                }
+            </td>
+            <td><code>${app.registration_number || app.registrationNumber}</code></td>
+            <td>${new Date(app.created_at || app.registrationDate).toLocaleDateString('es-ES')}</td>
         </tr>
     `).join('');
     
@@ -1510,12 +1617,12 @@ function showAllApplicantsData() {
         <div class="modal-content" style="max-width: 1200px; max-height: 80vh; overflow-y: auto; padding: 30px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <h3 style="color: var(--primary); display: flex; align-items: center; gap: 10px;">
-                    <i class="fas fa-users"></i> Todos los Aventureros (${applicants.length})
+                    <i class="fas fa-users"></i> Todos los Aventureros (${applicantsData.length})
                 </h3>
                 <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
             </div>
             
-            ${applicants.length === 0 ? 
+            ${applicantsData.length === 0 ? 
                 '<p style="text-align: center; padding: 40px; color: var(--text-light); font-size: 1.1rem;">¡Todavía no hay aventureros en la misión!</p>' : 
                 `
                 <div style="overflow-x: auto; margin-bottom: 30px;">
@@ -1555,29 +1662,6 @@ function showAllApplicantsData() {
         </div>
     `;
     
-    const style = document.createElement('style');
-    style.textContent = `
-        .modal table tbody tr:nth-child(even) {
-            background-color: var(--bg-light);
-        }
-        .modal table tbody tr:hover {
-            background-color: #E6FFFA;
-        }
-        .modal table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #E2E8F0;
-        }
-        .modal code {
-            background-color: #EDF2F7;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            color: var(--primary);
-        }
-    `;
-    
-    document.head.appendChild(style);
     document.body.appendChild(modal);
     
     modal.addEventListener('click', function(e) {
@@ -1588,12 +1672,35 @@ function showAllApplicantsData() {
 }
 
 async function exportToPDF() {
-    if (applicants.length === 0) {
-        showNotification('No hay datos de aventureros para exportar', 'warning');
-        return;
-    }
-    
     try {
+        let exportData = [];
+        
+        // Intentar cargar desde backend si está autenticado
+        const token = localStorage.getItem('iamAuthToken');
+        
+        if (token && isAdminAuthenticated) {
+            const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    exportData = result.data;
+                }
+            }
+        }
+        
+        // Si no hay datos del backend, usar locales
+        if (exportData.length === 0) {
+            exportData = applicants;
+        }
+        
+        if (exportData.length === 0) {
+            showNotification('No hay datos de aventureros para exportar', 'warning');
+            return;
+        }
+        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('landscape');
         
@@ -1621,8 +1728,8 @@ async function exportToPDF() {
         
         doc.setFontSize(12);
         doc.setTextColor(255, 255, 255);
-        doc.text(`Total de aventureros: ${applicantCount}`, pageWidth / 2, 150, { align: 'center' });
-        doc.text(`Plazas disponibles: ${MAX_SPOTS - applicantCount}`, pageWidth / 2, 160, { align: 'center' });
+        doc.text(`Total de aventureros: ${exportData.length}`, pageWidth / 2, 150, { align: 'center' });
+        doc.text(`Plazas disponibles: ${Math.max(0, MAX_SPOTS - exportData.length)}`, pageWidth / 2, 160, { align: 'center' });
         doc.text(`Fecha del reporte: ${new Date().toLocaleDateString('es-ES')}`, pageWidth / 2, 170, { align: 'center' });
         
         doc.setDrawColor(...PDF_COLORS.accent);
@@ -1649,16 +1756,26 @@ async function exportToPDF() {
             ['#', 'Aventurero', 'Edad', 'Teléfono', 'Base', 'Notas Médicas', 'Preferencias', 'Código', 'Fecha']
         ];
         
-        const data = applicants.map((app, index) => [
+        const data = exportData.map((app, index) => [
             index + 1,
-            app.fullName,
+            app.full_name || app.fullName,
             app.age,
             app.phone || '-',
             app.parish || '-',
-            app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-',
-            app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : '-',
-            app.registrationNumber,
-            app.registrationDate.split(' ')[0]
+            app.health_conditions ? 
+                (Array.isArray(app.health_conditions) ? 
+                    app.health_conditions.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' :
+                    JSON.parse(app.health_conditions || '[]').filter(h => h !== 'Ninguna').join(', ') || 'Ninguna'
+                ) : 
+                (app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-'),
+            app.dietary_restrictions ? 
+                (Array.isArray(app.dietary_restrictions) ? 
+                    app.dietary_restrictions.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' :
+                    JSON.parse(app.dietary_restrictions || '[]').filter(d => d !== 'Ninguna').join(', ') || 'Ninguna'
+                ) : 
+                (app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : '-'),
+            app.registration_number || app.registrationNumber,
+            new Date(app.created_at || app.registrationDate).toLocaleDateString('es-ES')
         ]);
         
         doc.autoTable({
@@ -1713,25 +1830,58 @@ async function exportToPDF() {
     }
 }
 
-function exportToExcel() {
-    if (applicants.length === 0) {
-        showNotification('No hay datos de aventureros para exportar', 'warning');
-        return;
-    }
-    
+async function exportToExcel() {
     try {
-        const data = applicants.map((app, index) => ({
+        let exportData = [];
+        
+        // Intentar cargar desde backend si está autenticado
+        const token = localStorage.getItem('iamAuthToken');
+        
+        if (token && isAdminAuthenticated) {
+            const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            
+            if (response.ok) {
+                const result = await response.json();
+                if (result.success) {
+                    exportData = result.data;
+                }
+            }
+        }
+        
+        // Si no hay datos del backend, usar locales
+        if (exportData.length === 0) {
+            exportData = applicants;
+        }
+        
+        if (exportData.length === 0) {
+            showNotification('No hay datos de aventureros para exportar', 'warning');
+            return;
+        }
+        
+        const data = exportData.map((app, index) => ({
             'N°': index + 1,
-            'Aventurero': app.fullName,
+            'Aventurero': app.full_name || app.fullName,
             'Edad': app.age,
             'Correo': app.email || '',
             'Teléfono': app.phone || '',
             'Base (Parroquia)': app.parish || '',
-            'Notas Médicas': app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '',
-            'Preferencias Alimentarias': app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : '',
-            'Contacto Emergencia': app.emergencyContact || '',
-            'Código de Aventurero': app.registrationNumber,
-            'Fecha de Inscripción': app.registrationDate,
+            'Notas Médicas': app.health_conditions ? 
+                (Array.isArray(app.health_conditions) ? 
+                    app.health_conditions.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' :
+                    JSON.parse(app.health_conditions || '[]').filter(h => h !== 'Ninguna').join(', ') || 'Ninguna'
+                ) : 
+                (app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : ''),
+            'Preferencias Alimentarias': app.dietary_restrictions ? 
+                (Array.isArray(app.dietary_restrictions) ? 
+                    app.dietary_restrictions.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' :
+                    JSON.parse(app.dietary_restrictions || '[]').filter(d => d !== 'Ninguna').join(', ') || 'Ninguna'
+                ) : 
+                (app.diet ? app.diet.filter(d => d !== 'Ninguna').join(', ') || 'Ninguna' : ''),
+            'Contacto Emergencia': app.emergency_contact || app.emergencyContact || '',
+            'Código de Aventurero': app.registration_number || app.registrationNumber,
+            'Fecha de Inscripción': new Date(app.created_at || app.registrationDate).toLocaleString('es-ES'),
             'Estado': app.status || 'Pendiente'
         }));
         
@@ -1739,7 +1889,7 @@ function exportToExcel() {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Aventureros IAM");
         
-        const maxWidths = {};
+                const maxWidths = {};
         data.forEach(row => {
             Object.keys(row).forEach(key => {
                 const length = String(row[key]).length;
@@ -1763,11 +1913,181 @@ function exportToExcel() {
     }
 }
 
+// ===== FUNCIONES PARA MODAL DE DUPLICADOS =====
+function showDuplicateModal() {
+    // Primero buscar duplicados
+    const duplicates = findDuplicates();
+    
+    if (duplicates.length === 0) {
+        showNotification('✅ No se encontraron duplicados', 'success');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '2001';
+    
+    const duplicatesHTML = duplicates.map((group, groupIndex) => `
+        <div class="duplicate-group">
+            <h4>Duplicado ${groupIndex + 1} (${group.length} registros)</h4>
+            ${group.map((app, appIndex) => `
+                <div class="duplicate-item ${appIndex === 0 ? 'keep' : 'remove'}">
+                    <input type="radio" name="duplicate_${groupIndex}" value="${app.id || app.registrationNumber}" 
+                           ${appIndex === 0 ? 'checked' : ''}>
+                    <div class="duplicate-info">
+                        <strong>${app.fullName}</strong>
+                        <p>${app.age} años • Tel: ${app.phone} • Código: ${app.registrationNumber}</p>
+                        <small>Registrado: ${app.registrationDate}</small>
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    `).join('');
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 800px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h3 style="color: var(--primary); display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-broom"></i> Limpiar Duplicados (${duplicates.length} grupos)
+                </h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            
+            <p style="margin-bottom: 20px; color: var(--text);">
+                <i class="fas fa-info-circle"></i> Se han encontrado ${duplicates.length} grupos de duplicados.
+                Selecciona qué registro mantener en cada grupo (el primero está marcado como recomendado).
+            </p>
+            
+            <div style="max-height: 400px; overflow-y: auto; margin-bottom: 25px;">
+                ${duplicatesHTML}
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 20px; border-top: 2px solid var(--bg-light);">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 15px; height: 15px; background: #38B2AC; border-radius: 3px;"></div>
+                        <small>Mantener</small>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 15px; height: 15px; background: #F56565; border-radius: 3px;"></div>
+                        <small>Eliminar</small>
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px;">
+                    <button class="btn" style="background: var(--text-light); color: white;" onclick="this.closest('.modal').remove()">
+                        Cancelar
+                    </button>
+                    <button class="btn" style="background: var(--primary); color: white;" onclick="cleanSelectedDuplicates(this.closest('.modal'))">
+                        <i class="fas fa-broom"></i> Limpiar Duplicados Seleccionados
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+function findDuplicates() {
+    const groups = {};
+    
+    applicants.forEach(applicant => {
+        const key = `${applicant.fullName || ''}-${applicant.phone || ''}-${applicant.age || ''}`.toLowerCase();
+        
+        if (!groups[key]) {
+            groups[key] = [];
+        }
+        groups[key].push(applicant);
+    });
+    
+    // Solo devolver grupos con más de un registro
+    return Object.values(groups).filter(group => group.length > 1);
+}
+
+function cleanSelectedDuplicates(modal) {
+    try {
+        const groups = modal.querySelectorAll('.duplicate-group');
+        const toRemove = [];
+        
+        groups.forEach((group, groupIndex) => {
+            const keepRadio = group.querySelector(`input[name="duplicate_${groupIndex}"]:checked`);
+            const keepId = keepRadio.value;
+            
+            // Encontrar todos los registros en este grupo excepto el que se mantiene
+            const groupItems = group.querySelectorAll('.duplicate-item');
+            groupItems.forEach(item => {
+                const radio = item.querySelector('input[type="radio"]');
+                if (radio.value !== keepId) {
+                    toRemove.push(radio.value);
+                }
+            });
+        });
+        
+        // Eliminar duplicados del array applicants
+        applicants = applicants.filter(app => 
+            !toRemove.includes(app.id?.toString()) && 
+            !toRemove.includes(app.registrationNumber)
+        );
+        
+        applicantCount = applicants.length;
+        
+        // Guardar cambios
+        saveApplicantsToStorage();
+        updateApplicantCounter();
+        updateAvailableSpots();
+        
+        if (isAdminAuthenticated) {
+            updateAdminStats();
+            updateRecentApplicants();
+        }
+        
+        modal.remove();
+        
+        showNotification(`✅ Se eliminaron ${toRemove.length} registros duplicados`, 'success');
+        
+    } catch (error) {
+        console.error('Error limpiando duplicados:', error);
+        showNotification('Error al limpiar duplicados', 'error');
+    }
+}
+
+// ===== FUNCIONES DE ANIMACIÓN DE SCROLL =====
+function initScrollAnimations() {
+    const animatedElements = document.querySelectorAll('.feature-card, .countdown-unit, .gallery-item');
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animated');
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    animatedElements.forEach(element => {
+        observer.observe(element);
+    });
+}
+
 // ===== FUNCIONES GLOBALES =====
 window.openGamesGallery = openGamesGallery;
 window.openFaithGallery = openFaithGallery;
 window.openWorkshopsGallery = openWorkshopsGallery;
 window.openCommunityGallery = openCommunityGallery;
 window.changeGalleryPhoto = changeGalleryPhoto;
+window.showAllApplicantsData = showAllApplicantsData;
+window.exportToPDF = exportToPDF;
+window.exportToExcel = exportToExcel;
+window.cleanSelectedDuplicates = cleanSelectedDuplicates;
 
 console.log("✅ Script de Campamento Misionero IAM cargado correctamente");
