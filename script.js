@@ -38,6 +38,10 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Cargar datos
     await loadApplicantsFromStorage();
+    
+    // LIMPIAR DUPLICADOS AUTOMÁTICAMENTE
+    removeDuplicateApplicants();
+    
     updateApplicantCounter();
     updateAvailableSpots();
     
@@ -455,6 +459,18 @@ async function handleFormSubmit(e) {
             applicant.status = 'Pendiente';
             applicant.registrationNumber = registrationNumber;
             
+            // Verificar que no sea duplicado antes de guardar
+            const isDuplicate = applicants.some(existing => 
+                existing.fullName === applicant.fullName && 
+                existing.phone === applicant.phone &&
+                existing.age === applicant.age
+            );
+            
+            if (isDuplicate) {
+                showNotification('⚠️ Ya existe una inscripción con estos datos', 'warning');
+                return;
+            }
+            
             // Guardar
             applicants.push(applicant);
             applicantCount++;
@@ -475,7 +491,43 @@ async function handleFormSubmit(e) {
         }
     } catch (error) {
         console.error('Error al guardar inscripción:', error);
-        showNotification('Hubo un error al enviar tu inscripción', 'error');
+        
+        // Si es error de Firebase, usar solo localStorage
+        if (error.message && (error.message.includes('quota') || error.message.includes('Quota'))) {
+            showNotification('⚠️ Modo offline activado. Tu inscripción se guardó localmente.', 'warning');
+            
+            // Guardar localmente
+            const applicantId = Date.now();
+            const registrationNumber = `AVENT-${String(applicantId).slice(-6)}`;
+            
+            applicant.id = applicantId;
+            applicant.registrationDate = new Date().toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            applicant.status = 'Pendiente';
+            applicant.registrationNumber = registrationNumber;
+            
+            applicants.push(applicant);
+            applicantCount++;
+            
+            saveApplicantsToStorage();
+            updateApplicantCounter();
+            updateAvailableSpots();
+            
+            showConfirmationModal(applicant);
+            form.reset();
+            
+            if (isAdminAuthenticated) {
+                updateAdminStats();
+                updateRecentApplicants();
+            }
+        } else {
+            showNotification('Hubo un error al enviar tu inscripción', 'error');
+        }
     } finally {
         // RESTAURAR BOTÓN
         submitBtn.innerHTML = originalBtnText;
@@ -485,53 +537,100 @@ async function handleFormSubmit(e) {
 
 // ===== ALMACENAMIENTO LOCAL =====
 async function loadApplicantsFromStorage() {
-    // Primero cargar desde localStorage (para rapidez)
+    // Limpiar datos al inicio
+    applicants = [];
+    applicantCount = 0;
+    
+    // 1. Primero cargar desde localStorage
     const storedApplicants = localStorage.getItem('iamApplicants');
+    let localData = [];
+    
     if (storedApplicants) {
         try {
-            applicants = JSON.parse(storedApplicants);
-            applicantCount = applicants.length;
-            console.log(`📊 Cargados ${applicantCount} aventureros desde localStorage`);
+            localData = JSON.parse(storedApplicants);
+            console.log(`📊 Cargados ${localData.length} aventureros desde localStorage`);
         } catch (error) {
             console.error('Error cargando datos locales:', error);
-            applicants = [];
-            applicantCount = 0;
         }
     }
     
-    // Luego intentar sincronizar con Firebase si backend está disponible
-    if (window.backendManager && window.backendManager.isInitialized && window.backendManager.getAllApplicants) {
+    // 2. Verificar con Firebase pero manejar errores de cuota
+    if (window.backendManager && window.backendManager.getAllApplicants) {
         try {
-            console.log("🔄 Sincronizando con Firebase...");
+            console.log("🔄 Intentando sincronizar con Firebase...");
             const firebaseResult = await window.backendManager.getAllApplicants();
             
-            if (firebaseResult.success && firebaseResult.data.length > 0) {
-                // Si hay más datos en Firebase, actualizar
-                if (firebaseResult.data.length > applicantCount) {
-                    applicants = firebaseResult.data;
-                    applicantCount = applicants.length;
-                    
-                    // Guardar en localStorage para offline
-                    localStorage.setItem('iamApplicants', JSON.stringify(applicants));
-                    
-                    console.log(`✅ Sincronizado con Firebase: ${applicantCount} aventureros`);
-                    
-                    // Si hay admin autenticado, actualizar estadísticas
-                    if (isAdminAuthenticated) {
-                        updateAdminStats();
-                        updateRecentApplicants();
+            if (firebaseResult.success && firebaseResult.data && firebaseResult.data.length > 0) {
+                // EVITAR DUPLICADOS: Usar un Set para IDs únicos
+                const uniqueApplicants = new Map();
+                
+                // Primero agregar de Firebase
+                firebaseResult.data.forEach(app => {
+                    if (app.id) {
+                        uniqueApplicants.set(app.id, app);
                     }
-                }
+                });
+                
+                // Luego agregar locales (no duplicar)
+                localData.forEach(app => {
+                    if (app.id && !uniqueApplicants.has(app.id)) {
+                        uniqueApplicants.set(app.id, app);
+                    } else if (!app.id && app.registrationNumber) {
+                        // Usar registrationNumber como fallback
+                        const key = `local-${app.registrationNumber}`;
+                        if (!uniqueApplicants.has(key)) {
+                            uniqueApplicants.set(key, app);
+                        }
+                    }
+                });
+                
+                // Convertir de vuelta a array
+                applicants = Array.from(uniqueApplicants.values());
+                applicantCount = applicants.length;
+                
+                console.log(`✅ Datos combinados: ${applicantCount} aventureros únicos`);
+                
+                // Guardar en localStorage
+                localStorage.setItem('iamApplicants', JSON.stringify(applicants));
+            } else {
+                // Si Firebase falla, usar solo localStorage
+                applicants = localData;
+                applicantCount = applicants.length;
+                console.log("⚠️ Usando solo datos locales");
             }
         } catch (error) {
-            console.warn("⚠️ No se pudo sincronizar con Firebase:", error.message);
+            console.warn("⚠️ Error de Firebase, usando localStorage:", error.message);
+            
+            // Usar solo localStorage si Firebase falla
+            applicants = localData;
+            applicantCount = applicants.length;
+            
+            // Mostrar advertencia solo si es error de cuota
+            if (error.message && (error.message.includes('quota') || error.message.includes('Quota'))) {
+                console.warn("⚠️ Firebase superó la cuota. Usando modo offline.");
+            }
         }
+    } else {
+        // Fallback completo a localStorage
+        applicants = localData;
+        applicantCount = applicants.length;
     }
 }
 
 function saveApplicantsToStorage() {
+    // Remover duplicados antes de guardar
+    const uniqueApplicants = applicants.filter((app, index, self) =>
+        index === self.findIndex(a => 
+            a.id === app.id || 
+            (a.registrationNumber === app.registrationNumber && a.registrationNumber)
+        )
+    );
+    
+    applicants = uniqueApplicants;
+    applicantCount = applicants.length;
+    
     localStorage.setItem('iamApplicants', JSON.stringify(applicants));
-    console.log(`💾 Guardados ${applicants.length} aventureros`);
+    console.log(`💾 Guardados ${applicants.length} aventureros únicos`);
 }
 
 function updateApplicantCounter() {
@@ -577,6 +676,50 @@ function updateAvailableSpots() {
             progressBar.style.background = 'linear-gradient(to right, #38B2AC, #4FD1C5)';
         }
     }
+}
+
+// ===== FUNCIÓN PARA LIMPIAR DUPLICADOS =====
+function removeDuplicateApplicants() {
+    if (applicants.length === 0) return;
+    
+    const uniqueMap = new Map();
+    const duplicates = [];
+    
+    applicants.forEach(applicant => {
+        // Crear una clave única combinando varios campos
+        const key = `${applicant.fullName || ''}-${applicant.phone || ''}-${applicant.age || ''}-${applicant.registrationNumber || ''}`;
+        
+        if (!uniqueMap.has(key)) {
+            uniqueMap.set(key, applicant);
+        } else {
+            duplicates.push(applicant);
+        }
+    });
+    
+    if (duplicates.length > 0) {
+        console.log(`🔄 Eliminando ${duplicates.length} duplicados...`);
+        const beforeCount = applicantCount;
+        applicants = Array.from(uniqueMap.values());
+        applicantCount = applicants.length;
+        
+        // Guardar en localStorage
+        localStorage.setItem('iamApplicants', JSON.stringify(applicants));
+        
+        // Actualizar UI
+        updateApplicantCounter();
+        updateAvailableSpots();
+        
+        if (isAdminAuthenticated) {
+            updateAdminStats();
+            updateRecentApplicants();
+        }
+        
+        console.log(`✅ Quedan ${applicantCount} aventureros únicos (eliminados ${beforeCount - applicantCount})`);
+        
+        return duplicates.length;
+    }
+    
+    return 0;
 }
 
 // ===== GALERÍA INTERACTIVA =====
@@ -1386,6 +1529,27 @@ function initAdminButtons() {
             }
         });
     }
+    
+    // Botón: Limpiar Duplicados
+    const cleanDuplicatesBtn = document.getElementById('cleanDuplicates');
+    if (cleanDuplicatesBtn) {
+        cleanDuplicatesBtn.addEventListener('click', function() {
+            if (!isAdminAuthenticated) {
+                showNotification('Acceso no autorizado al Cuartel General', 'error');
+                return;
+            }
+            
+            const beforeCount = applicantCount;
+            const duplicatesRemoved = removeDuplicateApplicants();
+            const afterCount = applicantCount;
+            
+            if (duplicatesRemoved > 0) {
+                showNotification(`✅ Limpiados ${duplicatesRemoved} registros duplicados. Quedan ${afterCount} inscripciones.`, 'success');
+            } else {
+                showNotification('✅ No se encontraron duplicados', 'info');
+            }
+        });
+    }
 }
 
 // ===== FUNCIONES DE VISUALIZACIÓN Y EXPORTACIÓN =====
@@ -1832,40 +1996,42 @@ function generateSummaryReport() {
         if (age >= 8 && age <= 10) ageGroups['8-10']++;
         else if (age >= 11 && age <= 13) ageGroups['11-13']++;
         else if (age >= 14 && age <= 17) ageGroups['14-17']++;
+        // Continuación desde donde se cortó en la función generateSummaryReport()
+
+            // Agrupar por parroquia
+            const parish = app.parish || 'No especificada';
+            parishes[parish] = (parishes[parish] || 0) + 1;
+            
+            // Agrupar por condiciones de salud
+            if (app.health) {
+                app.health.forEach(cond => {
+                    if (cond !== 'Ninguna') {
+                        healthConditions[cond] = (healthConditions[cond] || 0) + 1;
+                    }
+                });
+            }
+            
+            // Agrupar por restricciones alimentarias
+            if (app.diet) {
+                app.diet.forEach(diet => {
+                    if (diet !== 'Ninguna') {
+                        diets[diet] = (diets[diet] || 0) + 1;
+                    }
+                });
+            }
+        });
         
-        // Agrupar por parroquia
-        const parish = app.parish || 'No especificada';
-        parishes[parish] = (parishes[parish] || 0) + 1;
-        
-        // Agrupar por condiciones de salud
-        if (app.health) {
-            app.health.forEach(cond => {
-                if (cond !== 'Ninguna') {
-                    healthConditions[cond] = (healthConditions[cond] || 0) + 1;
-                }
-            });
-        }
-        
-        // Agrupar por restricciones alimentarias
-        if (app.diet) {
-            app.diet.forEach(diet => {
-                if (diet !== 'Ninguna') {
-                    diets[diet] = (diets[diet] || 0) + 1;
-                }
-            });
-        }
-    });
-    
-    return {
-        total: applicantCount,
-        ageGroups,
-        parishes,
-        healthConditions,
-        diets,
-        availableSpots: MAX_SPOTS - applicantCount,
-        filledPercentage: ((applicantCount / MAX_SPOTS) * 100).toFixed(1)
-    };
-}
+        return {
+            total: applicantCount,
+            ageGroups,
+            parishes,
+            healthConditions,
+            diets,
+            availableSpots: MAX_SPOTS - applicantCount,
+            filledPercentage: ((applicantCount / MAX_SPOTS) * 100).toFixed(1)
+        };
+    }
+
 
 console.log("✅ Script de Campamento Misionero IAM cargado correctamente");
 
@@ -1969,6 +2135,12 @@ function initMobileEnhancements() {
     }
 }
 
+function optimizeImagesForMobile() {
+    // Esta función podría optimizar imágenes para móvil
+    // Por ahora solo es un placeholder
+    console.log("📸 Optimizando imágenes para móvil");
+}
+
 // Forzar recarga si hay problemas
 setTimeout(() => {
     if (document.readyState !== 'complete') {
@@ -1976,3 +2148,15 @@ setTimeout(() => {
         window.location.reload();
     }
 }, 3000);
+
+// Inicializar mejoras para móvil después de la carga
+if (window.innerWidth <= 768) {
+    window.addEventListener('load', initMobileEnhancements);
+}
+
+// ===== FUNCIONES GLOBALES PARA ACCESO DESDE HTML =====
+window.openGamesGallery = openGamesGallery;
+window.openFaithGallery = openFaithGallery;
+window.openWorkshopsGallery = openWorkshopsGallery;
+window.openCommunityGallery = openCommunityGallery;
+window.changeGalleryPhoto = changeGalleryPhoto;

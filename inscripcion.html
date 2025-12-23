@@ -13,7 +13,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <link rel="manifest" href="manifest.json">
     <meta name="msapplication-TileColor" content="#2a6ebb">
     <meta name="theme-color" content="#2a6ebb">
 </head>
@@ -108,6 +108,11 @@
                         <i class="fas fa-file-excel"></i>
                         <span>Crear Reporte Excel</span>
                     </button>
+                    <!-- BOTÓN NUEVO PARA LIMPIAR DUPLICADOS -->
+                    <button class="action-btn" id="cleanDuplicates" style="background: #FF9800; color: white;">
+                        <i class="fas fa-broom"></i>
+                        <span>Limpiar Duplicados</span>
+                    </button>
                     <button class="action-btn danger" id="clearData">
                         <i class="fas fa-trash"></i>
                         <span>Reiniciar Misión</span>
@@ -183,7 +188,7 @@
                     <div class="info-item">
                         <i class="fas fa-users"></i>
                         <div>
-                            <h4>Comunidad Cristiana</h4>
+                            <h4>Familia misionera</h4>
                             <p>Amistad y convivencia fraterna</p>
                         </div>
                     </div>
@@ -218,7 +223,7 @@
                         <i class="fas fa-church"></i>
                     </div>
                     <h3>Vida Sacramental</h3>
-                    <p>Celebramos la Santa Misa diaria, Adoración Eucarística y rezamos el Rosario en comunidad.</p>
+                    <p>Celebramos la Santa Misa diaria, Adoración Eucarística y rezamos el Rosario por las calles.</p>
                 </div>
 
                 <!-- Segundo: Formación Misionera -->
@@ -227,7 +232,7 @@
                         <i class="fas fa-hands-praying"></i>
                     </div>
                     <h3>Formación Misionera</h3>
-                    <p>Charlas y dinámicas para conocer más a Jesús y aprender a ser misioneros en nuestra vida diaria.</p>
+                    <p>Charlas y talleres para conocer más a Jesús y perseverar siendo misioneros en nuestra vida diaria.</p>
                 </div>
 
                 <!-- Tercero: Convivencia Cristiana -->
@@ -236,78 +241,15 @@
                         <i class="fas fa-users"></i>
                     </div>
                     <h3>Convivencia Cristiana</h3>
-                    <p>Juegos, fogatas y actividades que fortalecen la amistad y el espíritu de comunidad.</p>
+                    <p>Juegos, fogatas, excursiones y actividades que fortalecen la amistad y el espíritu misionero.</p>
                 </div>
 
-                <!-- Cuarto: Talleres y Charlas -->
-                <div class="feature-card">
-                    <div class="feature-icon workshop-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>Talleres y Charlas</h3>
-                    <p>Espacios para crecer en virtudes, descubrir talentos y profundizar en la fe católica.</p>
-                </div>
+                
             </div>
         </div>
     </section>
 
-    <!-- Programación -->
-    <section class="section bg-light" id="dates">
-        <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Itinerario Espiritual y Misionero</h2>
-                <p class="section-subtitle">10 días para crecer en la fe y la amistad con Jesús</p>
-            </div>
-            
-            <div class="timeline">
-                <!-- Día 1 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 1</div>
-                    <div class="timeline-content">
-                        <h3>Llegada y Envío Misionero</h3>
-                        <p><i class="fas fa-church"></i> <strong>9:00 AM</strong> - Registro y bienvenida</p>
-                        <p><i class="fas fa-cross"></i> <strong>11:00 AM</strong> - Misa de apertura y envío misionero</p>
-                        <p><i class="fas fa-users"></i> <strong>2:00 PM</strong> - Formación de grupos y presentaciones</p>
-                    </div>
-                </div>
-                
-                <!-- Días 2-8 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Días 2-8</div>
-                    <div class="timeline-content">
-                        <h3>Rutina de Crecimiento</h3>
-                        <p><i class="fas fa-pray"></i> <strong>7:00 AM</strong> - Oración matutina y Laudes</p>
-                        <p><i class="fas fa-bible"></i> <strong>9:00 AM</strong> - Charlas formativas y talleres</p>
-                        <p><i class="fas fa-bread-slice"></i> <strong>12:00 PM</strong> - Santa Misa y acción de gracias</p>
-                        <p><i class="fas fa-gamepad"></i> <strong>3:00 PM</strong> - Juegos y actividades recreativas</p>
-                        <p><i class="fas fa-campfire"></i> <strong>7:00 PM</strong> - Rosario comunitario y fogata</p>
-                    </div>
-                </div>
-                
-                <!-- Día 9 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 9</div>
-                    <div class="timeline-content">
-                        <h3>Jornada Misionera</h3>
-                        <p><i class="fas fa-hands-helping"></i> <strong>Todo el día</strong> - Salida misionera a comunidades cercanas</p>
-                        <p><i class="fas fa-heart"></i> <strong>Tarde</strong> - Adoración Eucarística y confesiones</p>
-                        <p><i class="fas fa-music"></i> <strong>Noche</strong> - Velada cultural y testimonios</p>
-                    </div>
-                </div>
-                
-                <!-- Día 10 -->
-                <div class="timeline-item">
-                    <div class="timeline-date">Día 10</div>
-                    <div class="timeline-content">
-                        <h3>Enviados en Misión</h3>
-                        <p><i class="fas fa-award"></i> <strong>9:00 AM</strong> - Misa de clausura y compromiso misionero</p>
-                        <p><i class="fas fa-certificate"></i> <strong>11:00 AM</strong> - Entrega de crucifijos y despedida</p>
-                        <p><i class="fas fa-car-side"></i> <strong>1:00 PM</strong> - ¡Hasta el próximo campamento!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+
 
     <!-- Countdown -->
     <section class="section countdown-section" id="countdown">
@@ -380,7 +322,7 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="fullName">
-                                <i class="fas fa-user-astronaut form-icon"></i> Nombre del Misionero *
+                                <i class="fas fa-user-astronaut form-icon"></i> Nombre y Apellido del Misionero *
                             </label>
                             <input type="text" id="fullName" name="fullName" required placeholder="Ej: Ana 'Exploradora' López">
                         </div>
@@ -392,12 +334,7 @@
                             <input type="number" id="age" name="age" min="8" max="17" required placeholder="Entre 8 y 17 años">
                         </div>
                         
-                        <div class="form-group">
-                            <label for="email">
-                                <i class="fas fa-envelope form-icon"></i> Mensajero Electrónico *
-                            </label>
-                            <input type="email" id="email" name="email" required placeholder="aventurero@correo.com">
-                        </div>
+                        
                         
                         <div class="form-group">
                             <label for="phone">
@@ -408,15 +345,15 @@
                         
                         <div class="form-group">
                             <label for="parish">
-                                <i class="fas fa-church form-icon"></i> Nombre de la Parroquia
+                                <i class="fas fa-church form-icon"></i> Nombre de la Parroquia a la que Perteneces *
                             </label>
-                            <input type="text" id="parish" name="parish" placeholder="Tu parroquia o comunidad">
+                            <input type="text" id="parish" name="parish" placeholder="Tu parroquia">
                         </div>
                     </div>
                     
                     <div class="form-section">
                         <h4><i class="fas fa-heartbeat form-icon"></i> Notas para el Botiquín</h4>
-                        <p class="form-hint">Marca todo lo que el equipo médico debe conocer para cuidarte mejor.</p>
+                        <p class="form-hint">Marca todo lo que debemos conocer para cuidarte mejor.</p>
                         <div class="checkbox-group">
                             <label class="checkbox-item">
                                 <input type="checkbox" name="health" value="Ninguna">
@@ -434,11 +371,6 @@
                                 Alergias alimentarias
                             </label>
                             <label class="checkbox-item">
-                                <input type="checkbox" name="health" value="Diabetes">
-                                <span class="checkbox-custom"></span>
-                                Diabetes
-                            </label>
-                            <label class="checkbox-item">
                                 <input type="checkbox" name="health" value="Otra">
                                 <span class="checkbox-custom"></span>
                                 Otra condición (especificar en comentarios)
@@ -447,19 +379,15 @@
                     </div>
                     
                     <div class="form-section">
-                        <h4><i class="fas fa-utensils form-icon"></i> Preferencias del Explorador</h4>
-                        <p class="form-hint">Selecciona si tienes alguna preferencia especial para nuestras comidas de campamento.</p>
+                        <h4><i class="fas fa-utensils form-icon"></i> Restricciones del Misionero</h4>
+                        <p class="form-hint">Selecciona si tienes alguna restricción alimentaria para tener en cuenta.</p>
                         <div class="checkbox-group">
                             <label class="checkbox-item">
                                 <input type="checkbox" name="diet" value="Ninguna">
                                 <span class="checkbox-custom"></span>
                                 ¡Como de todo! Sin restricciones
                             </label>
-                            <label class="checkbox-item">
-                                <input type="checkbox" name="diet" value="Vegetariano">
-                                <span class="checkbox-custom"></span>
-                                Vegetariano
-                            </label>
+                            
                             <label class="checkbox-item">
                                 <input type="checkbox" name="diet" value="Celíaco">
                                 <span class="checkbox-custom"></span>
@@ -480,16 +408,23 @@
                     
                     <div class="form-group">
                         <label for="emergencyContact">
-                            <i class="fas fa-phone-alt form-icon"></i> Contacto del Cuartel General *
+                            <i class="fas fa-phone-alt form-icon"></i> Contacto de emergencia *
                         </label>
                         <textarea id="emergencyContact" name="emergencyContact" rows="2" required placeholder="Nombre y teléfono de mamá, papá o tutor para emergencias"></textarea>
                     </div>
                     
                     <div class="form-group">
                         <label for="comments">
-                            <i class="fas fa-comment-dots form-icon"></i> Mensaje Secreto para los Líderes
+                            <i class="fas fa-comment-dots form-icon"></i> Aqui podes contarnos tus condiciones respecto a tu salud o alimentación, o cualquier otra cosa que quieras compartir con nosotros.
                         </label>
                         <textarea id="comments" name="comments" rows="4" placeholder="Cuéntanos algo importante sobre ti, tus talentos, miedos o lo que más esperas de esta aventura..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="comments">
+                            <i class="fas fa-comment-dots form-icon"></i> ¿Dispones de alguna movilidad para llegar al campamento? Si tu respuesta es si, ¿Tenes lugar para llevar a otros?
+                        </label>
+                        <textarea id="comments" name="comments" rows="4" placeholder="Especifica tu respuesta y a cuantos podrias llevar"></textarea>
                     </div>
                     
                     <div class="form-actions">
@@ -560,7 +495,7 @@
                         <div class="portada-overlay">
                             <div class="portada-content">
                                 <h4><i class="fas fa-users"></i> Convivencia Misionera</h4>
-                                <p>Comunidad, fogatas y amistad</p>
+                                <p>Recreación, fogatas y amistad</p>
                                 <span class="portada-badge">6 fotos</span>
                             </div>
                         </div>
