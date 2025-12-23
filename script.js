@@ -1530,24 +1530,27 @@ function initAdminButtons() {
         });
     }
     
-    // Botón: Limpiar Duplicados
+    // Botón: Limpiar Todos los Duplicados (en la sección de Nuevos Reclutas)
+    const cleanAllDuplicatesBtn = document.getElementById('cleanAllDuplicates');
+    if (cleanAllDuplicatesBtn) {
+        cleanAllDuplicatesBtn.addEventListener('click', function() {
+            if (!isAdminAuthenticated) {
+                showNotification('Acceso no autorizado', 'error');
+                return;
+            }
+            showDuplicateModal();
+        });
+    }
+    
+    // Botón: Limpiar Duplicados (en action-grid - el que añadimos antes)
     const cleanDuplicatesBtn = document.getElementById('cleanDuplicates');
     if (cleanDuplicatesBtn) {
         cleanDuplicatesBtn.addEventListener('click', function() {
             if (!isAdminAuthenticated) {
-                showNotification('Acceso no autorizado al Cuartel General', 'error');
+                showNotification('Acceso no autorizado', 'error');
                 return;
             }
-            
-            const beforeCount = applicantCount;
-            const duplicatesRemoved = removeDuplicateApplicants();
-            const afterCount = applicantCount;
-            
-            if (duplicatesRemoved > 0) {
-                showNotification(`✅ Limpiados ${duplicatesRemoved} registros duplicados. Quedan ${afterCount} inscripciones.`, 'success');
-            } else {
-                showNotification('✅ No se encontraron duplicados', 'info');
-            }
+            showDuplicateModal();
         });
     }
 }
@@ -2032,6 +2035,346 @@ function generateSummaryReport() {
         };
     }
 
+    // ===== FUNCIÓN PARA ELIMINAR INSCRIPCIÓN INDIVIDUAL =====
+function deleteApplicant(applicantId) {
+    if (!isAdminAuthenticated) {
+        showNotification('Acceso no autorizado', 'error');
+        return;
+    }
+    
+    if (!confirm('⚠️ ¿Eliminar esta inscripción? Esta acción no se puede deshacer.')) {
+        return;
+    }
+    
+    const index = applicants.findIndex(app => app.id == applicantId);
+    if (index !== -1) {
+        // Eliminar de Firebase si está disponible
+        if (window.backendManager && window.backendManager.firebaseAvailable) {
+            // Aquí iría el código para eliminar de Firebase
+            console.log(`🗑️ Intentando eliminar de Firebase: ${applicantId}`);
+        }
+        
+        // Eliminar del array local
+        applicants.splice(index, 1);
+        applicantCount = applicants.length;
+        
+        // Actualizar localStorage
+        localStorage.setItem('iamApplicants', JSON.stringify(applicants));
+        
+        // Actualizar UI
+        updateApplicantCounter();
+        updateAvailableSpots();
+        updateRecentApplicants();
+        updateAdminStats();
+        
+        showNotification('✅ Inscripción eliminada correctamente', 'success');
+    }
+}
+
+// ===== FUNCIÓN PARA BUSCAR DUPLICADOS =====
+function findDuplicateApplicants() {
+    if (!applicants || applicants.length === 0) return [];
+    
+    const duplicates = [];
+    const seen = {};
+    
+    applicants.forEach(applicant => {
+        // Crear clave única combinando nombre y teléfono
+        const key = `${applicant.fullName?.toLowerCase().trim()}_${applicant.phone?.replace(/\D/g, '')}`;
+        
+        if (key && key !== '_') { // Ignorar si no tiene datos
+            if (seen[key]) {
+                // Es duplicado
+                if (!seen[key].marked) {
+                    seen[key].marked = true;
+                    duplicates.push(seen[key].applicant); // El primero también es duplicado
+                }
+                duplicates.push(applicant);
+            } else {
+                seen[key] = { applicant, marked: false };
+            }
+        }
+    });
+    
+    return duplicates;
+}
+
+// ===== FUNCIÓN MEJORADA PARA ACTUALIZAR RECLUTAS =====
+async function updateRecentApplicants() {
+    const container = document.getElementById('recentApplicants');
+    if (!container) return;
+    
+    try {
+        // Obtener últimos 10 inscritos
+        const recentApplicants = [...applicants]
+            .sort((a, b) => (b.id || 0) - (a.id || 0)) // Ordenar por ID descendente
+            .slice(0, 10);
+        
+        if (recentApplicants.length === 0) {
+            container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 30px; font-style: italic;">No hay nuevos reclutas todavía</p>';
+            return;
+        }
+        
+        // Crear HTML con botón de eliminar
+        container.innerHTML = recentApplicants.map(applicant => {
+            // Verificar si es duplicado
+            const isDuplicate = isApplicantDuplicate(applicant);
+            
+            return `
+                <div class="applicant-item ${isDuplicate ? 'duplicate-warning' : ''}" data-id="${applicant.id}">
+                    <div class="applicant-info">
+                        <h5>${applicant.fullName || 'Sin nombre'} 
+                            ${isDuplicate ? '<span class="duplicate-badge">DUPLICADO</span>' : ''}
+                        </h5>
+                        <p>${applicant.age || '?'} años • ${applicant.parish || 'Sin parroquia'}</p>
+                        <p style="font-size: 0.8rem; color: var(--text-light); margin-top: 5px;">
+                            <i class="fas fa-phone"></i> ${applicant.phone || 'Sin teléfono'}
+                        </p>
+                    </div>
+                    <div class="applicant-actions">
+                        <div class="applicant-date">
+                            ${applicant.registrationDate || 'Sin fecha'}
+                        </div>
+                        <button class="btn-delete-applicant" onclick="deleteApplicant(${applicant.id})" 
+                                title="Eliminar inscripción">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        // Agregar estilos CSS si no existen
+        addApplicantListStyles();
+        
+    } catch (error) {
+        console.warn("Error actualizando reclutas:", error);
+        container.innerHTML = '<p style="text-align: center; color: var(--text-light); padding: 30px; font-style: italic;">Error cargando los datos</p>';
+    }
+}
+
+// ===== FUNCIÓN PARA VERIFICAR SI ES DUPLICADO =====
+function isApplicantDuplicate(applicant) {
+    if (!applicant || !applicants) return false;
+    
+    const sameNamePhone = applicants.filter(app => 
+        app.id !== applicant.id && 
+        app.fullName === applicant.fullName && 
+        app.phone === applicant.phone
+    );
+    
+    return sameNamePhone.length > 0;
+}
+
+// ===== AGREGAR ESTILOS CSS =====
+function addApplicantListStyles() {
+    if (!document.getElementById('applicant-list-styles')) {
+        const style = document.createElement('style');
+        style.id = 'applicant-list-styles';
+        style.textContent = `
+            .applicant-item {
+                background-color: var(--bg-light);
+                border-radius: 8px;
+                padding: 15px;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                border-left: 4px solid var(--secondary);
+                transition: all 0.3s ease;
+            }
+            
+            .applicant-item:hover {
+                background-color: #E6FFFA;
+                transform: translateX(5px);
+            }
+            
+            .applicant-info {
+                flex: 1;
+            }
+            
+            .applicant-info h5 {
+                margin-bottom: 5px;
+                color: var(--text-dark);
+                font-size: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .applicant-info p {
+                color: var(--text-light);
+                font-size: 0.9rem;
+                margin: 2px 0;
+            }
+            
+            .applicant-actions {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
+                min-width: 120px;
+            }
+            
+            .applicant-date {
+                color: var(--text-light);
+                font-size: 0.8rem;
+                white-space: nowrap;
+            }
+            
+            .btn-delete-applicant {
+                background: #F56565;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+            }
+            
+            .btn-delete-applicant:hover {
+                background: #C53030;
+                transform: scale(1.05);
+            }
+            
+            .duplicate-warning {
+                background: #FFF5F5;
+                border-left-color: #F56565 !important;
+            }
+            
+            .duplicate-badge {
+                background: #F56565;
+                color: white;
+                font-size: 0.7rem;
+                padding: 2px 8px;
+                border-radius: 10px;
+                font-weight: bold;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// ===== MODAL PARA VER DUPLICADOS =====
+function showDuplicateModal() {
+    const duplicates = findDuplicateApplicants();
+    
+    if (duplicates.length === 0) {
+        showNotification('✅ No se encontraron duplicados', 'info');
+        return;
+    }
+    
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+    modal.style.display = 'flex';
+    modal.style.zIndex = '2002';
+    
+    const duplicatesHTML = duplicates.map((app, index) => `
+        <div class="applicant-item duplicate-warning">
+            <div class="applicant-info">
+                <h5>${app.fullName} <span class="duplicate-badge">DUPLICADO</span></h5>
+                <p>${app.age} años • Tel: ${app.phone || 'No tiene'}</p>
+                <p style="font-size: 0.8rem; color: var(--text-light);">
+                    ${app.registrationNumber} • ${app.registrationDate}
+                </p>
+            </div>
+            <div class="applicant-actions">
+                <button class="btn-delete-applicant" onclick="deleteApplicant(${app.id})">
+                    <i class="fas fa-trash"></i> Eliminar
+                </button>
+            </div>
+        </div>
+    `).join('');
+    
+    modal.innerHTML = `
+        <div class="modal-content" style="max-width: 700px; max-height: 80vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: var(--warning); display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-exclamation-triangle"></i> Duplicados Encontrados (${duplicates.length})
+                </h3>
+                <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
+            </div>
+            
+            <div style="margin-bottom: 20px; padding: 15px; background: #FFF5F5; border-radius: 8px;">
+                <p style="margin: 0; color: var(--text-dark);">
+                    <i class="fas fa-info-circle"></i> Se encontraron ${duplicates.length} inscripciones duplicadas.
+                    Puedes eliminarlas individualmente o todas juntas.
+                </p>
+            </div>
+            
+            <div style="margin-bottom: 30px;">
+                ${duplicatesHTML}
+            </div>
+            
+            <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                <button onclick="removeAllDuplicates()" class="btn" style="background: var(--warning); color: white; padding: 10px 20px;">
+                    <i class="fas fa-broom"></i> Eliminar Todos los Duplicados
+                </button>
+                <button onclick="this.closest('.modal').remove()" class="btn" style="background: var(--text-light); color: white; padding: 10px 20px;">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            modal.remove();
+        }
+    });
+}
+
+// ===== ELIMINAR TODOS LOS DUPLICADOS =====
+function removeAllDuplicates() {
+    if (!isAdminAuthenticated) {
+        showNotification('Acceso no autorizado', 'error');
+        return;
+    }
+    
+    if (!confirm('⚠️ ¿Eliminar TODAS las inscripciones duplicadas?\n\nEsta acción eliminará todas las inscripciones que tengan el mismo nombre y teléfono. No se puede deshacer.')) {
+        return;
+    }
+    
+    const duplicates = findDuplicateApplicants();
+    const uniqueIds = [...new Set(duplicates.map(d => d.id))];
+    
+    if (uniqueIds.length === 0) {
+        showNotification('✅ No hay duplicados para eliminar', 'info');
+        return;
+    }
+    
+    // Eliminar cada duplicado
+    uniqueIds.forEach(id => {
+        const index = applicants.findIndex(app => app.id == id);
+        if (index !== -1) {
+            applicants.splice(index, 1);
+        }
+    });
+    
+    // Actualizar contador
+    applicantCount = applicants.length;
+    
+    // Guardar cambios
+    localStorage.setItem('iamApplicants', JSON.stringify(applicants));
+    
+    // Actualizar UI
+    updateApplicantCounter();
+    updateAvailableSpots();
+    updateRecentApplicants();
+    updateAdminStats();
+    
+    showNotification(`✅ Eliminados ${uniqueIds.length} inscripciones duplicadas`, 'success');
+    
+    // Cerrar modal
+    const modal = document.querySelector('.modal');
+    if (modal) modal.remove();
+}
 
 console.log("✅ Script de Campamento Misionero IAM cargado correctamente");
 
@@ -2160,3 +2503,9 @@ window.openFaithGallery = openFaithGallery;
 window.openWorkshopsGallery = openWorkshopsGallery;
 window.openCommunityGallery = openCommunityGallery;
 window.changeGalleryPhoto = changeGalleryPhoto;
+window.deleteApplicant = deleteApplicant;
+window.removeAllDuplicates = removeAllDuplicates;
+window.showDuplicateModal = showDuplicateModal;
+window.isApplicantDuplicate = isApplicantDuplicate;
+
+console.log("✅ Sistema de gestión de duplicados cargado");

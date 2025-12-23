@@ -121,7 +121,12 @@
             </div>
             
             <div class="recent-applicants">
-                <h4>Nuevos Reclutas</h4>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h4>Nuevos Reclutas</h4>
+                    <button class="btn" id="cleanAllDuplicates" style="background: #FF9800; color: white; padding: 8px 15px; font-size: 0.9rem;">
+                        <i class="fas fa-broom"></i> Limpiar Duplicados
+                    </button>
+                </div>
                 <div class="applicants-list" id="recentApplicants">
                     <!-- Se llenará con JavaScript -->
                 </div>
