@@ -1,11 +1,10 @@
 {
   "name": "iam-backend-sqlite",
   "version": "2.0.0",
-  "description": "Backend IAM con SQLite y sistema admin centralizado",
+  "description": "Backend IAM con SQLite",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.18.2",
@@ -14,9 +13,6 @@
     "jsonwebtoken": "^9.0.2",
     "sqlite3": "^5.1.6",
     "sqlite": "^5.1.1"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
   },
   "engines": {
     "node": "18.x"
