@@ -6,6 +6,8 @@ console.log("- LocalStorage disponible:", typeof localStorage !== 'undefined' ? 
 console.log("- Navegador:", navigator.userAgent);
 console.log("- Online:", navigator.onLine);
 
+const RENDER_BACKEND_URL = 'https://iaminmaculada.onrender.com';
+
 // ===== VARIABLES GLOBALES =====
 let applicantCount = 0;
 let applicants = [];
@@ -383,69 +385,126 @@ async function handleFormSubmit(e) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     
+    // 1. DESHABILITAR BOTÓN
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     submitBtn.disabled = true;
     
-    try {
-        // Recoger datos
-        const formData = new FormData(form);
-        const applicant = {};
-        
-        for (let [key, value] of formData.entries()) {
-            if (key === 'health' || key === 'diet') {
-                if (!applicant[key]) applicant[key] = [];
-                applicant[key].push(value);
-            } else {
-                applicant[key] = value.trim();
-            }
+    // 2. RECOGER DATOS (hacerlo ANTES del try para que esté disponible en catch)
+    const formData = new FormData(form);
+    const applicant = {};
+    
+    for (let [key, value] of formData.entries()) {
+        if (key === 'health' || key === 'diet') {
+            if (!applicant[key]) applicant[key] = [];
+            applicant[key].push(value);
+        } else {
+            applicant[key] = value.trim();
         }
+    }
+    
+    // 3. VALIDAR DATOS BÁSICOS
+    if (!applicant.fullName || applicant.fullName.length < 3) {
+        showNotification('⚠️ El nombre debe tener al menos 3 caracteres', 'error');
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    if (!applicant.phone || applicant.phone.length < 8) {
+        showNotification('⚠️ Teléfono inválido', 'error');
+        submitBtn.innerHTML = originalBtnText;
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    try {
+        console.log('📤 Enviando a Render...', applicant);
         
-        // ENVIAR A RENDER
-        const response = await fetch('https://tu-backend.onrender.com/api/inscribir', {
+        // 4. ENVIAR A RENDER
+        const response = await fetch(`${RENDER_BACKEND_URL}/api/inscribir`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(applicant)
+            body: JSON.stringify(applicant),
+            timeout: 10000 // 10 segundos máximo
         });
+        
+        // 5. VERIFICAR SI LA RESPUESTA ES OK
+        if (!response.ok) {
+            throw new Error(`Error HTTP: ${response.status}`);
+        }
         
         const result = await response.json();
         
+        // 6. MANEJAR RESPUESTA DE RENDER
         if (result.success) {
-            // También guardar localmente como backup
-            applicants.push(result.data);
+            console.log('✅ Respuesta de Render:', result);
+            
+            // Crear objeto completo para guardar
+            const applicantToSave = {
+                ...result.data,
+                localBackup: true,
+                syncedAt: new Date().toISOString()
+            };
+            
+            // Guardar localmente como backup
+            applicants.push(applicantToSave);
             applicantCount = applicants.length;
             saveApplicantsToStorage();
             
+            // Actualizar UI
             updateApplicantCounter();
             updateAvailableSpots();
             
-            showConfirmationModal(result.data);
+            // Mostrar confirmación
+            showConfirmationModal(applicantToSave);
             form.reset();
             
-            showNotification('✅ ¡Inscripción exitosa!', 'success');
+            // Notificación
+            showNotification('✅ ¡Inscripción guardada en el servidor!', 'success');
+            
         } else {
-            showNotification('Error: ' + result.error, 'error');
+            // Error específico de Render (duplicado, validación, etc.)
+            console.warn('⚠️ Error de Render:', result.error);
+            showNotification(`⚠️ ${result.error}`, 'warning');
+            
+            // Intentar guardar localmente como fallback
+            await saveLocally(applicant, form);
         }
         
     } catch (error) {
-        console.error('Error:', error);
-        // Fallback a localStorage
-        saveLocally(applicant, form, submitBtn, originalBtnText);
+        console.error('❌ Error de conexión:', error);
+        
+        // Diferentes tipos de errores
+        let errorMessage = 'Error al enviar la inscripción';
+        
+        if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+            errorMessage = '⚠️ Sin conexión a internet';
+        } else if (error.name === 'AbortError') {
+            errorMessage = '⚠️ Tiempo de espera agotado';
+        }
+        
+        showNotification(`${errorMessage} - Guardando localmente`, 'warning');
+        
+        // Guardar localmente como último recurso
+        await saveLocally(applicant, form);
+        
     } finally {
+        // 7. SIEMPRE RESTAURAR BOTÓN
         submitBtn.innerHTML = originalBtnText;
         submitBtn.disabled = false;
     }
 }
-// ===== FUNCIÓN AUXILIAR PARA GUARDAR LOCALMENTE =====
-function saveLocally(applicant, form, submitBtn, originalBtnText) {
+
+// ===== FUNCIÓN saveLocally MEJORADA =====
+async function saveLocally(applicantData, formElement) {
     try {
-        // Generar datos para guardado local
         const applicantId = Date.now();
         const registrationNumber = `AVENT-${String(applicantId).slice(-6)}`;
         
         const applicantToSave = {
-            ...applicant,
+            ...applicantData,
             id: applicantId,
             registrationDate: new Date().toLocaleString('es-ES', {
                 day: '2-digit',
@@ -454,21 +513,21 @@ function saveLocally(applicant, form, submitBtn, originalBtnText) {
                 hour: '2-digit',
                 minute: '2-digit'
             }),
-            status: 'Pendiente',
-            registrationNumber: registrationNumber
+            status: 'Pendiente (local)',
+            registrationNumber: registrationNumber,
+            savedLocally: true,
+            savedAt: new Date().toISOString()
         };
         
-        // Verificar duplicado simple
+        // Verificar duplicado local
         const isDuplicate = applicants.some(existing => 
             existing.fullName === applicantToSave.fullName && 
             existing.phone === applicantToSave.phone
         );
         
         if (isDuplicate) {
-            showNotification('⚠️ Ya existe una inscripción con estos datos', 'warning');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            return;
+            showNotification('⚠️ Ya existe una inscripción local con estos datos', 'warning');
+            return false;
         }
         
         // Guardar
@@ -479,23 +538,27 @@ function saveLocally(applicant, form, submitBtn, originalBtnText) {
         updateApplicantCounter();
         updateAvailableSpots();
         
-        showConfirmationModal(applicantToSave);
-        form.reset();
+        // Mostrar confirmación si no hay una activa
+        setTimeout(() => {
+            showConfirmationModal(applicantToSave);
+        }, 500);
+        
+        // Resetear formulario
+        if (formElement) formElement.reset();
+        
+        showNotification('✅ Inscripción guardada localmente', 'success');
         
         if (isAdminAuthenticated) {
             updateAdminStats();
             updateRecentApplicants();
         }
         
-        showNotification('✅ ¡Inscripción guardada localmente!', 'success');
+        return true;
         
-    } catch (localError) {
-        console.error('❌ Error guardando localmente:', localError);
-        showNotification('Error al guardar la inscripción', 'error');
-    } finally {
-        // Siempre restaurar el botón
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+    } catch (error) {
+        console.error('❌ Error guardando localmente:', error);
+        showNotification('Error al guardar localmente', 'error');
+        return false;
     }
 }
 
