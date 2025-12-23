@@ -225,7 +225,7 @@ class BackendManager {
             localApplicants.push(applicantToSave);
             localStorage.setItem('iamApplicants', JSON.stringify(localApplicants));
             
-            // 3. Intentar guardar en Firebase (solo si está disponible)
+            // 3. Intentar guardar en Firebase (solo si está disponible y NO supera la cuota)
             if (this.firebaseAvailable && this.db && this.isInitialized) {
                 try {
                     const { collection, addDoc } = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
@@ -233,11 +233,20 @@ class BackendManager {
                     console.log("✅ Guardado en Firebase");
                 } catch (firebaseError) {
                     console.warn("⚠️ Error guardando en Firebase:", firebaseError.message);
-                    
+
                     // Marcar Firebase como no disponible si es error de cuota
-                    if (firebaseError.code === 'resource-exhausted' || firebaseError.message.includes('quota')) {
+                    if (firebaseError.code === 'resource-exhausted' || 
+                        firebaseError.message.includes('quota') ||
+                        firebaseError.message.includes('Quota')) {
                         this.firebaseAvailable = false;
-                        this.firebaseError = "Cuota excedida";
+                        this.firebaseError = "Cuota excedida - Modo offline activado";
+                        
+                        // Mostrar notificación al usuario
+                        setTimeout(() => {
+                            if (typeof window.showNotification === 'function') {
+                                window.showNotification('⚠️ Modo offline: Datos guardados localmente', 'warning');
+                            }
+                        }, 100);
                     }
                 }
             }
@@ -246,7 +255,8 @@ class BackendManager {
                 success: true, 
                 id: applicantId,
                 registrationNumber: registrationNumber,
-                data: applicantToSave 
+                data: applicantToSave,
+                mode: this.firebaseAvailable ? 'firebase' : 'local'
             };
         } catch (error) {
             console.error("❌ Error crítico guardando inscripción:", error);

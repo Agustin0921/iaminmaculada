@@ -1,3 +1,11 @@
+// ===== DIAGNÓSTICO INICIAL =====
+console.log("🔍 DIAGNÓSTICO - Estado del sistema:");
+console.log("- Firebase config:", window.firebaseConfig ? "Presente" : "Ausente");
+console.log("- Backend Manager:", window.backendManager ? "Presente" : "Ausente");
+console.log("- LocalStorage disponible:", typeof localStorage !== 'undefined' ? "Sí" : "No");
+console.log("- Navegador:", navigator.userAgent);
+console.log("- Online:", navigator.onLine);
+
 // ===== VARIABLES GLOBALES =====
 let applicantCount = 0;
 let applicants = [];
@@ -372,91 +380,125 @@ async function handleFormSubmit(e) {
     e.preventDefault();
     
     const form = e.target;
-    const requiredFields = form.querySelectorAll('input[required], textarea[required]');
-    let isValid = true;
-    
-    // Validar campos requeridos
-    requiredFields.forEach(field => {
-        if (!validateField({ target: field })) {
-            isValid = false;
-        }
-    });
-    
-    if (!isValid) {
-        showNotification('¡Oh no! Revisa los campos marcados en rojo', 'error');
-        return;
-    }
-    
-    if (applicantCount >= MAX_SPOTS) {
-        showNotification('¡Misión llena! Lo sentimos, no hay más plazas disponibles', 'error');
-        return;
-    }
-    
-    const formData = new FormData(form);
-    const applicant = {};
-    
-    // Procesar datos del formulario
-    for (let [key, value] of formData.entries()) {
-        if (key === 'health' || key === 'diet') {
-            if (!applicant[key]) applicant[key] = [];
-            applicant[key].push(value);
-        } else {
-            applicant[key] = value.trim();
-        }
-    }
-    
-    // Eliminar duplicados en arrays
-    if (applicant.health) {
-        applicant.health = [...new Set(applicant.health)];
-    }
-    if (applicant.diet) {
-        applicant.diet = [...new Set(applicant.diet)];
-    }
-    
-    // MOSTRAR SPINNER DE CARGA
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
+    
+    // MOSTRAR SPINNER DE CARGA
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     submitBtn.disabled = true;
     
     try {
-        // 1. Primero intentar con backendManager (Firebase)
+        // Validación de campos
+        const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!validateField({ target: field })) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            showNotification('¡Oh no! Revisa los campos marcados en rojo', 'error');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        if (applicantCount >= MAX_SPOTS) {
+            showNotification('¡Misión llena! Lo sentimos, no hay más plazas disponibles', 'error');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // Recoger datos del formulario
+        const formData = new FormData(form);
+        const applicant = {};
+        
+        for (let [key, value] of formData.entries()) {
+            if (key === 'health' || key === 'diet') {
+                if (!applicant[key]) applicant[key] = [];
+                applicant[key].push(value);
+            } else {
+                applicant[key] = value.trim();
+            }
+        }
+        
+        // Eliminar duplicados en arrays
+        if (applicant.health) {
+            applicant.health = [...new Set(applicant.health)];
+        }
+        if (applicant.diet) {
+            applicant.diet = [...new Set(applicant.diet)];
+        }
+        
+        // Verificar duplicados locales ANTES de enviar
+        const isDuplicate = applicants.some(existing => 
+            existing.fullName === applicant.fullName && 
+            existing.phone === applicant.phone
+        );
+        
+        if (isDuplicate) {
+            showNotification('⚠️ Ya existe una inscripción con estos datos', 'warning');
+            submitBtn.innerHTML = originalBtnText;
+            submitBtn.disabled = false;
+            return;
+        }
+        
+        // INTENTAR GUARDAR CON BACKEND MANAGER
         if (window.backendManager && window.backendManager.saveApplicant) {
             console.log("📡 Intentando guardar con backendManager...");
             const saveResult = await window.backendManager.saveApplicant(applicant);
             
             if (saveResult.success) {
-                // Actualizar datos locales desde el resultado
-                if (saveResult.data) {
-                    applicants.push(saveResult.data);
-                    applicantCount = applicants.length;
-                    
-                    saveApplicantsToStorage();
-                    updateApplicantCounter();
-                    updateAvailableSpots();
-                    
-                    showConfirmationModal(saveResult.data);
-                    form.reset();
-                    
-                    if (isAdminAuthenticated) {
-                        updateAdminStats();
-                        updateRecentApplicants();
-                    }
-                    
-                    showNotification('¡Misión aceptada! Ya formas parte de la aventura', 'success');
-                } else {
-                    showNotification('Error: No se recibieron datos de confirmación', 'error');
+                // Éxito - manejar respuesta
+                applicants.push(saveResult.data);
+                applicantCount = applicants.length;
+                
+                saveApplicantsToStorage();
+                updateApplicantCounter();
+                updateAvailableSpots();
+                
+                showConfirmationModal(saveResult.data);
+                form.reset();
+                
+                if (isAdminAuthenticated) {
+                    updateAdminStats();
+                    updateRecentApplicants();
                 }
+                
+                // Mostrar mensaje según modo
+                const modeMessage = saveResult.mode === 'firebase' ? 
+                    '¡Misión aceptada! Datos guardados en la nube' : 
+                    '¡Misión aceptada! Datos guardados localmente (modo offline)';
+                
+                showNotification(modeMessage, 'success');
+                
             } else {
-                // Si backendManager falla, usar sistema local
-                console.warn("⚠️ Falló backendManager, usando sistema local:", saveResult.error);
-                saveLocally(applicant, form, submitBtn, originalBtnText);
+                // Error del backend
+                console.warn("❌ Error del backend:", saveResult.error);
+                
+                // Intentar guardar localmente como fallback
+                if (saveResult.error && 
+                   (saveResult.error.includes('cuota') || 
+                    saveResult.error.includes('Quota') ||
+                    saveResult.error.includes('offline'))) {
+                    
+                    showNotification('⚠️ Modo offline activado: Guardando localmente', 'warning');
+                    saveLocally(applicant, form, submitBtn, originalBtnText);
+                } else {
+                    showNotification('Error: ' + saveResult.error, 'error');
+                    submitBtn.innerHTML = originalBtnText;
+                    submitBtn.disabled = false;
+                }
             }
         } else {
-            // 2. Si no hay backendManager, usar sistema local
+            // No hay backendManager - usar sistema local
             console.log("📝 Usando sistema local (sin backendManager)");
             saveLocally(applicant, form, submitBtn, originalBtnText);
         }
+        
     } catch (error) {
         console.error('❌ Error crítico en handleFormSubmit:', error);
         
@@ -466,16 +508,26 @@ async function handleFormSubmit(e) {
         
         // Mostrar error apropiado
         if (error.message && (error.message.includes('quota') || error.message.includes('Quota'))) {
-            showNotification('⚠️ Servidor sobrecargado. Tu inscripción se guardó localmente.', 'warning');
+            showNotification('⚠️ Servidor sobrecargado. Tu inscripción se guardará localmente.', 'warning');
             
-            // Intentar guardar localmente como última opción
+            // Recoger datos para guardar localmente
+            const formData = new FormData(form);
+            const applicant = {};
+            for (let [key, value] of formData.entries()) {
+                if (key === 'health' || key === 'diet') {
+                    if (!applicant[key]) applicant[key] = [];
+                    applicant[key].push(value);
+                } else {
+                    applicant[key] = value.trim();
+                }
+            }
+            
             saveLocally(applicant, form, submitBtn, originalBtnText);
         } else {
             showNotification('Hubo un error al enviar tu inscripción. Intenta de nuevo.', 'error');
         }
     }
 }
-
 // ===== FUNCIÓN AUXILIAR PARA GUARDAR LOCALMENTE =====
 function saveLocally(applicant, form, submitBtn, originalBtnText) {
     try {
