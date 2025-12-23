@@ -581,27 +581,6 @@
     </div>
 
     <!-- Scripts -->
-    <!-- Scripts de Firebase Backend (AGREGAR ESTOS) -->
-    <script src="firebase-config.js"></script>
-    <script src="backend-manager.js"></script>
-
-    <!-- Script de inicialización (AGREGAR ESTE) -->
-    <script>
-        // Inicializar backend cuando la página cargue
-        document.addEventListener('DOMContentLoaded', function() {
-            if (window.backendManager) {
-                window.backendManager.initialize().then(result => {
-                    console.log("Backend inicializado en modo:", result.mode);
-
-                    // Sincronizar datos locales con Firebase si es necesario
-                    if (result.mode === 'firebase') {
-                        window.backendManager.syncLocalToFirebase();
-                    }
-                });
-            }
-        });
-    </script>
-
     <!-- Tus scripts existentes (DEJAR COMO ESTÁN) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
