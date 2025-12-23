@@ -383,36 +383,11 @@ async function handleFormSubmit(e) {
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalBtnText = submitBtn.innerHTML;
     
-    // MOSTRAR SPINNER DE CARGA
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
     submitBtn.disabled = true;
     
     try {
-        // Validación de campos
-        const requiredFields = form.querySelectorAll('input[required], textarea[required]');
-        let isValid = true;
-        
-        requiredFields.forEach(field => {
-            if (!validateField({ target: field })) {
-                isValid = false;
-            }
-        });
-        
-        if (!isValid) {
-            showNotification('¡Oh no! Revisa los campos marcados en rojo', 'error');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            return;
-        }
-        
-        if (applicantCount >= MAX_SPOTS) {
-            showNotification('¡Misión llena! Lo sentimos, no hay más plazas disponibles', 'error');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            return;
-        }
-        
-        // Recoger datos del formulario
+        // Recoger datos
         const formData = new FormData(form);
         const applicant = {};
         
@@ -425,107 +400,41 @@ async function handleFormSubmit(e) {
             }
         }
         
-        // Eliminar duplicados en arrays
-        if (applicant.health) {
-            applicant.health = [...new Set(applicant.health)];
-        }
-        if (applicant.diet) {
-            applicant.diet = [...new Set(applicant.diet)];
-        }
+        // ENVIAR A RENDER
+        const response = await fetch('https://tu-backend.onrender.com/api/inscribir', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(applicant)
+        });
         
-        // Verificar duplicados locales ANTES de enviar
-        const isDuplicate = applicants.some(existing => 
-            existing.fullName === applicant.fullName && 
-            existing.phone === applicant.phone
-        );
+        const result = await response.json();
         
-        if (isDuplicate) {
-            showNotification('⚠️ Ya existe una inscripción con estos datos', 'warning');
-            submitBtn.innerHTML = originalBtnText;
-            submitBtn.disabled = false;
-            return;
-        }
-        
-        // INTENTAR GUARDAR CON BACKEND MANAGER
-        if (window.backendManager && window.backendManager.saveApplicant) {
-            console.log("📡 Intentando guardar con backendManager...");
-            const saveResult = await window.backendManager.saveApplicant(applicant);
+        if (result.success) {
+            // También guardar localmente como backup
+            applicants.push(result.data);
+            applicantCount = applicants.length;
+            saveApplicantsToStorage();
             
-            if (saveResult.success) {
-                // Éxito - manejar respuesta
-                applicants.push(saveResult.data);
-                applicantCount = applicants.length;
-                
-                saveApplicantsToStorage();
-                updateApplicantCounter();
-                updateAvailableSpots();
-                
-                showConfirmationModal(saveResult.data);
-                form.reset();
-                
-                if (isAdminAuthenticated) {
-                    updateAdminStats();
-                    updateRecentApplicants();
-                }
-                
-                // Mostrar mensaje según modo
-                const modeMessage = saveResult.mode === 'firebase' ? 
-                    '¡Misión aceptada! Datos guardados en la nube' : 
-                    '¡Misión aceptada! Datos guardados localmente (modo offline)';
-                
-                showNotification(modeMessage, 'success');
-                
-            } else {
-                // Error del backend
-                console.warn("❌ Error del backend:", saveResult.error);
-                
-                // Intentar guardar localmente como fallback
-                if (saveResult.error && 
-                   (saveResult.error.includes('cuota') || 
-                    saveResult.error.includes('Quota') ||
-                    saveResult.error.includes('offline'))) {
-                    
-                    showNotification('⚠️ Modo offline activado: Guardando localmente', 'warning');
-                    saveLocally(applicant, form, submitBtn, originalBtnText);
-                } else {
-                    showNotification('Error: ' + saveResult.error, 'error');
-                    submitBtn.innerHTML = originalBtnText;
-                    submitBtn.disabled = false;
-                }
-            }
+            updateApplicantCounter();
+            updateAvailableSpots();
+            
+            showConfirmationModal(result.data);
+            form.reset();
+            
+            showNotification('✅ ¡Inscripción exitosa!', 'success');
         } else {
-            // No hay backendManager - usar sistema local
-            console.log("📝 Usando sistema local (sin backendManager)");
-            saveLocally(applicant, form, submitBtn, originalBtnText);
+            showNotification('Error: ' + result.error, 'error');
         }
         
     } catch (error) {
-        console.error('❌ Error crítico en handleFormSubmit:', error);
-        
-        // Restaurar botón
+        console.error('Error:', error);
+        // Fallback a localStorage
+        saveLocally(applicant, form, submitBtn, originalBtnText);
+    } finally {
         submitBtn.innerHTML = originalBtnText;
         submitBtn.disabled = false;
-        
-        // Mostrar error apropiado
-        if (error.message && (error.message.includes('quota') || error.message.includes('Quota'))) {
-            showNotification('⚠️ Servidor sobrecargado. Tu inscripción se guardará localmente.', 'warning');
-            
-            // Recoger datos para guardar localmente
-            const formData = new FormData(form);
-            const applicant = {};
-            for (let [key, value] of formData.entries()) {
-                if (key === 'health' || key === 'diet') {
-                    if (!applicant[key]) applicant[key] = [];
-                    applicant[key].push(value);
-                } else {
-                    applicant[key] = value.trim();
-                }
-            }
-            
-            saveLocally(applicant, form, submitBtn, originalBtnText);
-        } else {
-            showNotification('Hubo un error al enviar tu inscripción. Intenta de nuevo.', 'error');
-        }
     }
 }
 // ===== FUNCIÓN AUXILIAR PARA GUARDAR LOCALMENTE =====
