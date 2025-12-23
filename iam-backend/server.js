@@ -889,6 +889,69 @@ app.get('/api/admin/audit-logs', authenticateToken, async (req, res) => {
 });
 
 // ======================
+// 11. LIMPIAR TODOS LOS DATOS (SUPERADMIN)
+// ======================
+app.delete('/api/admin/clear-all', authenticateToken, requireSuperAdmin, async (req, res) => {
+    try {
+        const { confirm, adminKey } = req.query;
+        
+        // Validaciones de seguridad
+        if (!confirm || confirm !== 'true') {
+            return res.status(400).json({ 
+                success: false, 
+                error: 'Se requiere confirmación explícita (confirm=true)' 
+            });
+        }
+        
+        if (!adminKey || adminKey !== 'IAM2026') {
+            return res.status(401).json({ 
+                success: false, 
+                error: 'Clave de administración incorrecta' 
+            });
+        }
+        
+        console.warn(`⚠️ ATENCIÓN: ${req.admin.username} está eliminando TODOS los datos`);
+        
+        // Eliminar todos los registros de applicants
+        const deleteResult = await db.run('DELETE FROM applicants');
+        
+        // Reiniciar los autoincrements (opcional, para SQLite)
+        await db.run('DELETE FROM sqlite_sequence WHERE name="applicants"');
+        
+        // Registrar en audit log
+        await db.run(
+            `INSERT INTO audit_log (admin_id, action, details, ip_address, user_agent) 
+             VALUES (?, ?, ?, ?, ?)`,
+            [
+                req.admin.id, 
+                'clear_all_data', 
+                `Eliminó TODOS los datos (${deleteResult.changes} registros eliminados)`,
+                req.ip,
+                req.get('User-Agent')
+            ]
+        );
+        
+        console.log(`✅ Todos los datos eliminados: ${deleteResult.changes} registros`);
+        
+        res.json({
+            success: true,
+            message: `✅ Misión reiniciada. Se eliminaron ${deleteResult.changes} registros.`,
+            deleted: deleteResult.changes,
+            timestamp: new Date().toISOString(),
+            admin: req.admin.username
+        });
+        
+    } catch (error) {
+        console.error('❌ Error eliminando datos:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error eliminando datos',
+            details: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+// ======================
 // MANEJO DE ERRORES 404
 // ======================
 app.use((req, res) => {

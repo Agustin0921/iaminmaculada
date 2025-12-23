@@ -1322,6 +1322,151 @@ async function updateRecentApplicants() {
     }
 }
 
+// Función para mostrar diálogo de confirmación con validación
+function showConfirmationDialog(title, message, requiredText) {
+    return new Promise((resolve) => {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.style.zIndex = '9999';
+        
+        modal.innerHTML = `
+            <div class="modal-content" style="max-width: 500px; background: #FFF5F5; border: 3px solid #F56565;">
+                <h3 style="color: #C53030; margin-bottom: 15px;">
+                    <i class="fas fa-exclamation-triangle"></i> ${title}
+                </h3>
+                <div style="white-space: pre-line; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; border: 1px solid #E2E8F0;">
+                    ${message}
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #4A5568;">
+                        <i class="fas fa-keyboard"></i> Escribe "<strong style="color: #C53030;">${requiredText}</strong>" para confirmar:
+                    </label>
+                    <input type="text" id="confirmTextInput" style="width: 100%; padding: 12px; border: 2px solid #E2E8F0; border-radius: 6px; font-size: 16px;" 
+                           placeholder="${requiredText}">
+                    <div id="confirmError" style="color: #F56565; font-size: 0.9rem; margin-top: 5px; display: none;">
+                        <i class="fas fa-exclamation-circle"></i> El texto no coincide
+                    </div>
+                </div>
+                
+                <div style="display: flex; gap: 15px; justify-content: flex-end;">
+                    <button id="confirmCancel" class="btn" style="background: #A0AEC0; color: white; padding: 10px 20px;">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button id="confirmDelete" class="btn" style="background: #C53030; color: white; padding: 10px 20px; opacity: 0.5;" disabled>
+                        <i class="fas fa-trash"></i> Reiniciar Misión
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        const input = modal.querySelector('#confirmTextInput');
+        const errorDiv = modal.querySelector('#confirmError');
+        const deleteBtn = modal.querySelector('#confirmDelete');
+        const cancelBtn = modal.querySelector('#confirmCancel');
+        
+        input.focus();
+        
+        input.addEventListener('input', function() {
+            const matches = this.value.trim() === requiredText;
+            deleteBtn.disabled = !matches;
+            deleteBtn.style.opacity = matches ? '1' : '0.5';
+            errorDiv.style.display = matches ? 'none' : 'block';
+        });
+        
+        input.addEventListener('keyup', function(e) {
+            if (e.key === 'Enter' && !deleteBtn.disabled) {
+                modal.remove();
+                resolve(true);
+            }
+        });
+        
+        deleteBtn.addEventListener('click', function() {
+            if (!this.disabled) {
+                modal.remove();
+                resolve(true);
+            }
+        });
+        
+        cancelBtn.addEventListener('click', function() {
+            modal.remove();
+            resolve(false);
+        });
+        
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+                resolve(false);
+            }
+        });
+    });
+}
+
+// Función para mostrar notificación persistente
+function showNotification(message, type = 'success', duration = 5000) {
+    const notification = document.createElement('div');
+    notification.className = 'notification';
+    
+    const icon = type === 'success' ? 'fa-check-circle' : 
+                 type === 'error' ? 'fa-exclamation-circle' : 
+                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
+    
+    const backgroundColor = type === 'success' ? '#38B2AC' : 
+                          type === 'error' ? '#F56565' : 
+                          type === 'warning' ? '#ED8936' : '#2A6EBB';
+    
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas ${icon}"></i>
+            <span>${message}</span>
+        </div>
+        ${duration > 0 ? '<button class="notification-close">&times;</button>' : ''}
+    `;
+    
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${backgroundColor};
+        color: white;
+        padding: 16px 20px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 300px;
+        max-width: 400px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        z-index: 9999;
+        animation: slideIn 0.3s ease;
+        border: 2px solid ${backgroundColor}88;
+        font-family: 'Nunito', sans-serif;
+    `;
+    
+    if (duration > 0) {
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => {
+            notification.style.animation = 'slideOut 0.3s ease';
+            setTimeout(() => notification.remove(), 300);
+        });
+        
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }
+        }, duration);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Retornar referencia para poder eliminarla manualmente
+    return notification;
+}
+
 function initAdminButtons() {
     // Botón: Gestionar Inscritos
     const manageAllBtn = document.getElementById('manageAll');
@@ -1371,7 +1516,7 @@ function initAdminButtons() {
         });
     }
     
-    // Botón: Limpiar Datos
+    // Botón: Reiniciar Misión (ELIMINA TODO - BACKEND + LOCAL)
     const clearDataBtn = document.getElementById('clearData');
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', async function() {
@@ -1379,39 +1524,77 @@ function initAdminButtons() {
                 showNotification('Acceso no autorizado al Cuartel General', 'error');
                 return;
             }
-            
-            if (!confirm('⚠️ ¿Reiniciar toda la misión? Esto eliminará TODOS los datos de aventureros. ¡Esta acción no se puede deshacer!')) {
-                return;
-            }
-            
+
+            // Confirmación MÁS FUERTE
+            const confirmed = await showConfirmationDialog(
+                '⚠️ ¡ALERTA CRÍTICA! ⚠️',
+                `¿REINICIAR TODA LA MISIÓN?\n\n` +
+                `Esta acción ELIMINARÁ PERMANENTEMENTE:\n` +
+                `✅ TODOS los aventureros inscritos (${applicantCount})\n` +
+                `✅ TODOS los datos del servidor\n` +
+                `✅ TODOS los datos locales\n\n` +
+                `¡ESTO NO SE PUEDE DESHACER!\n\n` +
+                `Escribe "REINICIAR" para confirmar:`,
+                'REINICIAR'
+            );
+
+            if (!confirmed) return;
+
+            const loadingNotification = showNotification('🔄 Reiniciando misión... Esto puede tomar unos segundos', 'warning', 0);
+
             try {
-                // Limpiar localStorage
+                // 1. Limpiar datos LOCALES primero
                 applicants = [];
                 applicantCount = 0;
                 localStorage.removeItem('iamApplicants');
-                
-                // Intentar limpiar en backend si hay token
+                localStorage.removeItem('iamSyncQueue'); // Si existe
+
+                // 2. Limpiar datos del BACKEND (Render)
                 const token = localStorage.getItem('iamAuthToken');
                 if (token) {
                     try {
-                        await fetch(`${RENDER_BACKEND_URL}/api/admin/clear?adminKey=IAM2026&confirm=true`, {
+                        const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/clear-all?confirm=true&adminKey=IAM2026`, {
                             method: 'DELETE',
-                            headers: { 'Authorization': `Bearer ${token}` }
+                            headers: { 
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            }
                         });
+
+                        if (response.ok) {
+                            const result = await response.json();
+                            console.log('✅ Backend limpiado:', result);
+                        } else {
+                            console.warn('⚠️ No se pudo limpiar backend completamente');
+                        }
                     } catch (error) {
-                        console.warn("No se pudo limpiar en backend:", error);
+                        console.warn("⚠️ Error conectando al backend:", error);
                     }
                 }
-                
+
+                // 3. Forzar recarga de estadísticas
+                await updateStatsFromBackend();
+
+                // 4. Actualizar toda la UI
                 updateApplicantCounter();
                 updateAvailableSpots();
                 updateAdminStats();
                 updateRecentApplicants();
-                
-                showNotification('¡Misión reiniciada! Todos los datos han sido eliminados', 'warning');
-                
+
+                // 5. Notificación de éxito
+                if (loadingNotification) loadingNotification.remove();
+                showNotification('✅ ¡Misión reiniciada completamente! Todos los datos eliminados.', 'success');
+
+                // 6. Recargar dashboard admin
+                if (isAdminAuthenticated) {
+                    setTimeout(() => {
+                        loadAdminDataFromBackend();
+                    }, 1000);
+                }
+
             } catch (error) {
-                showNotification('Error al limpiar datos', 'error');
+                console.error('❌ Error reiniciando misión:', error);
+                showNotification('❌ Error al reiniciar la misión', 'error');
             }
         });
     }
