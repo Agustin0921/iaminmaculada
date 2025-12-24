@@ -463,6 +463,2576 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Estilos para la sección destino hero */
+        .destino-hero-card {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin-bottom: 60px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .destino-hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(0.8);
+            transition: transform 0.5s ease;
+        }
+
+        .destino-hero-card:hover .destino-hero-image {
+            transform: scale(1.05);
+        }
+
+        .destino-hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, 
+                rgba(0,0,0,0.7) 0%,
+                rgba(0,0,0,0.5) 30%,
+                rgba(0,0,0,0.3) 60%,
+                rgba(0,0,0,0.1) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .destino-hero-content {
+            max-width: 800px;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.2);
+        }
+
+        .destino-hero-title {
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                2px 2px 4px rgba(0,0,0,0.5),
+                0 0 20px rgba(255,255,255,0.3);
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .destino-hero-subtitle {
+            color: white;
+            font-size: 1.5rem;
+            text-shadow: 
+                1px 1px 3px rgba(0,0,0,0.5),
+                0 0 10px rgba(255,255,255,0.2);
+            line-height: 1.6;
+            opacity: 0.95;
+        }
+
+        /* Estilos para la tarjeta de información */
+        .destino-info-card {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 2px solid #e2e8f0;
+        }
+
+        .actividades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+            margin: 50px 0;
+        }
+
+        .actividad-item {
+            text-align: center;
+            padding: 30px 25px;
+            background: #f8fafc;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .actividad-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2a6ebb, #4a8fd9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .actividad-item:hover {
+            transform: translateY(-10px);
+            background: white;
+            border-color: #e2e8f0;
+            box-shadow: 0 15px 30px rgba(42, 110, 187, 0.1);
+        }
+
+        .actividad-item:hover::before {
+            opacity: 1;
+        }
+
+        .actividad-item:hover .actividad-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .actividad-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a6ebb, #4a8fd9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(42, 110, 187, 0.2);
+        }
+
+        .actividad-item h4 {
+            color: #2a6ebb;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .actividad-item p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Sección de actividades extra */
+        .actividades-extra {
+            background: linear-gradient(135deg, #f8fafc, #edf2f7);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 50px;
+            border-left: 5px solid #2a6ebb;
+        }
+
+        .actividades-extra h4 {
+            color: #2a6ebb;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .extra-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .extra-items span {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: #4a5568;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .extra-items span:hover {
+            transform: translateY(-3px);
+            background: #2a6ebb;
+            color: white;
+            box-shadow: 0 8px 20px rgba(42, 110, 187, 0.2);
+        }
+
+        .extra-items span i {
+            color: #2a6ebb;
+            transition: color 0.3s ease;
+        }
+
+        .extra-items span:hover i {
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .destino-hero-card {
+                height: 400px;
+                border-radius: 15px;
+            }
+
+            .destino-hero-content {
+                padding: 25px;
+                margin: 20px;
+            }
+
+            .destino-hero-title {
+                font-size: 2rem;
+            }
+
+            .destino-hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .destino-info-card {
+                padding: 30px;
+            }
+
+            .actividades-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .actividad-item {
+                padding: 25px 20px;
+            }
+
+            .actividades-extra {
+                padding: 25px;
+            }
+
+            .extra-items {
+                gap: 15px;
+            }
+
+            .extra-items span {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .destino-hero-card {
+                height: 300px;
+            }
+
+            .destino-hero-title {
+                font-size: 1.6rem;
+            }
+
+            .destino-hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .actividad-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Estilos para el hero a pantalla completa */
+        .destino-fullscreen-hero {
+            position: relative;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            height: 85vh;
+            min-height: 600px;
+            max-height: 800px;
+            overflow: hidden;
+            margin-bottom: 60px;
+        }
+
+        .destino-fullscreen-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.85);
+            transition: transform 0.8s ease;
+        }
+
+        .destino-fullscreen-hero:hover .destino-fullscreen-image {
+            transform: scale(1.05);
+        }
+
+        .destino-fullscreen-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, 
+                rgba(0, 0, 0, 0.8) 0%,
+                rgba(0, 0, 0, 0.6) 30%,
+                rgba(0, 0, 0, 0.4) 60%,
+                rgba(0, 0, 0, 0.2) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .destino-fullscreen-content {
+            max-width: 1000px;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 60px 50px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                0 0 40px rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .destino-fullscreen-title {
+            color: white;
+            font-size: 3.5rem;
+            margin-bottom: 25px;
+            text-shadow: 
+                3px 3px 6px rgba(0, 0, 0, 0.7),
+                0 0 30px rgba(255, 255, 255, 0.4);
+            font-weight: 900;
+            letter-spacing: 1px;
+            line-height: 1.2;
+        }
+
+        .destino-fullscreen-title i {
+            color: #4a8fd9;
+            margin-right: 15px;
+            text-shadow: 0 0 20px rgba(74, 143, 217, 0.7);
+        }
+
+        .destino-fullscreen-subtitle {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.8rem;
+            text-shadow: 
+                2px 2px 4px rgba(0, 0, 0, 0.6),
+                0 0 15px rgba(255, 255, 255, 0.3);
+            line-height: 1.5;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .destino-fullscreen-badge {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .destino-fullscreen-badge span {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 10px 20px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .destino-fullscreen-badge span:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-5px);
+            box-shadow: 
+                0 15px 30px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .destino-fullscreen-badge i {
+            color: #4a8fd9;
+            font-size: 1.2rem;
+        }
+
+        /* Efecto de partículas o destellos (opcional) */
+        .destino-fullscreen-overlay::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(74, 143, 217, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 107, 139, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(56, 178, 172, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            animation: sparkle 8s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* Estilos para la tarjeta de información (mantener igual) */
+        .destino-info-card {
+            background: white;
+            border-radius: 25px;
+            padding: 50px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border: 2px solid #e2e8f0;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .actividades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 35px;
+            margin: 50px 0;
+        }
+
+        .actividad-item {
+            text-align: center;
+            padding: 30px 25px;
+            background: #f8fafc;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .actividad-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2a6ebb, #4a8fd9);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .actividad-item:hover {
+            transform: translateY(-10px);
+            background: white;
+            border-color: #e2e8f0;
+            box-shadow: 0 15px 30px rgba(42, 110, 187, 0.1);
+        }
+
+        .actividad-item:hover::before {
+            opacity: 1;
+        }
+
+        .actividad-item:hover .actividad-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .actividad-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2a6ebb, #4a8fd9);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            font-size: 2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(42, 110, 187, 0.2);
+        }
+
+        .actividad-item h4 {
+            color: #2a6ebb;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .actividad-item p {
+            color: #4a5568;
+            line-height: 1.6;
+            font-size: 1rem;
+        }
+
+        /* Sección de actividades extra */
+        .actividades-extra {
+            background: linear-gradient(135deg, #f8fafc, #edf2f7);
+            border-radius: 20px;
+            padding: 35px;
+            margin-top: 50px;
+            border-left: 5px solid #2a6ebb;
+        }
+
+        .actividades-extra h4 {
+            color: #2a6ebb;
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .extra-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .extra-items span {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            color: #4a5568;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .extra-items span:hover {
+            transform: translateY(-3px);
+            background: #2a6ebb;
+            color: white;
+            box-shadow: 0 8px 20px rgba(42, 110, 187, 0.2);
+        }
+
+        .extra-items span i {
+            color: #2a6ebb;
+            transition: color 0.3s ease;
+        }
+
+        .extra-items span:hover i {
+            color: white;
+        }
+
+        /* Responsive para pantalla completa */
+        @media (max-width: 768px) {
+            .destino-fullscreen-hero {
+                height: 70vh;
+                min-height: 500px;
+            }
+
+            .destino-fullscreen-content {
+                padding: 40px 30px;
+                margin: 20px;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+            }
+
+            .destino-fullscreen-title {
+                font-size: 2.2rem;
+            }
+
+            .destino-fullscreen-subtitle {
+                font-size: 1.3rem;
+            }
+
+            .destino-fullscreen-badge {
+                gap: 15px;
+            }
+
+            .destino-fullscreen-badge span {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+
+            .destino-info-card {
+                padding: 30px;
+                margin-top: -30px;
+            }
+
+            .actividades-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .actividad-item {
+                padding: 25px 20px;
+            }
+
+            .actividades-extra {
+                padding: 25px;
+            }
+
+            .extra-items {
+                gap: 15px;
+            }
+
+            .extra-items span {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .destino-fullscreen-hero {
+                height: 60vh;
+                min-height: 400px;
+            }
+
+            .destino-fullscreen-title {
+                font-size: 1.8rem;
+            }
+
+            .destino-fullscreen-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .destino-fullscreen-badge {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .destino-fullscreen-badge span {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
+
+            .actividad-icon {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Para evitar problemas de scroll horizontal */
+        html, body {
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* Estilos para las cards de experiencias a pantalla completa */
+        .experiencia-card-fullwidth {
+            position: relative;
+            width: 100vw;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-bottom: 60px;
+            border-radius: 0;
+            overflow: hidden;
+            min-height: 600px;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .experiencia-card-fullwidth.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .experiencia-card-image {
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+            position: relative;
+        }
+
+        .experiencia-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            filter: brightness(0.9);
+            transition: transform 0.6s ease;
+        }
+
+        .experiencia-card-fullwidth:hover .experiencia-card-image img {
+            transform: scale(1.05);
+        }
+
+        .experiencia-card-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                135deg,
+                rgba(0, 0, 0, 0.85) 0%,
+                rgba(0, 0, 0, 0.7) 30%,
+                rgba(0, 0, 0, 0.4) 60%,
+                rgba(0, 0, 0, 0.1) 100%
+            );
+            clip-path: polygon(0 0, 60% 0, 40% 100%, 0% 100%);
+            display: flex;
+            align-items: center;
+            padding: 60px;
+        }
+
+        .experiencia-card-overlay.reverse {
+            background: linear-gradient(
+                -135deg,
+                rgba(0, 0, 0, 0.85) 0%,
+                rgba(0, 0, 0, 0.7) 30%,
+                rgba(0, 0, 0, 0.4) 60%,
+                rgba(0, 0, 0, 0.1) 100%
+            );
+            clip-path: polygon(40% 0, 100% 0, 100% 100%, 60% 100%);
+            justify-content: flex-end;
+        }
+
+        .experiencia-card-content {
+            max-width: 500px;
+            color: white;
+            position: relative;
+            z-index: 2;
+        }
+
+        .experiencia-card-overlay .experiencia-icono {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            color: white;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 
+                0 15px 35px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+        }
+
+        .experiencia-1 .experiencia-icono {
+            background: linear-gradient(135deg, rgba(42, 110, 187, 0.8), rgba(74, 143, 217, 0.8));
+        }
+
+        .experiencia-2 .experiencia-icono {
+            background: linear-gradient(135deg, rgba(255, 107, 139, 0.8), rgba(255, 158, 181, 0.8));
+        }
+
+        .experiencia-3 .experiencia-icono {
+            background: linear-gradient(135deg, rgba(56, 178, 172, 0.8), rgba(79, 209, 197, 0.8));
+        }
+
+        .experiencia-card-content h3 {
+            font-size: 2.8rem;
+            margin-bottom: 20px;
+            text-shadow: 
+                2px 2px 6px rgba(0, 0, 0, 0.8),
+                0 0 20px rgba(255, 255, 255, 0.3);
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .experiencia-card-content p {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            text-shadow: 
+                1px 1px 3px rgba(0, 0, 0, 0.7),
+                0 0 10px rgba(255, 255, 255, 0.2);
+            opacity: 0.95;
+        }
+
+        .experiencia-lista {
+            list-style: none;
+            padding: 0;
+            margin-top: 25px;
+        }
+
+        .experiencia-lista li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .experiencia-lista li i {
+            color: #4a8fd9;
+            margin-right: 12px;
+            font-size: 1.3rem;
+            text-shadow: 0 0 10px rgba(74, 143, 217, 0.7);
+        }
+
+        /* Efecto de brillo en los bordes del overlay */
+        .experiencia-card-overlay::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                transparent 40%,
+                rgba(255, 255, 255, 0.1) 50%,
+                transparent 60%
+            );
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .experiencia-card-fullwidth:hover .experiencia-card-overlay::after {
+            opacity: 1;
+        }
+
+        /* Efecto de partículas para el overlay */
+        .experiencia-card-overlay::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            background: 
+                radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 70% 70%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            animation: particle-float 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes particle-float {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+            100% {
+                transform: translate(100px, 100px) rotate(360deg);
+            }
+        }
+
+        /* Efecto de recorte en las esquinas opuestas */
+        .experiencia-card-image::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                rgba(0, 0, 0, 0.1) 0%,
+                transparent 10%,
+                transparent 90%,
+                rgba(0, 0, 0, 0.1) 100%
+            );
+            pointer-events: none;
+        }
+
+        /* Responsive para las cards */
+        @media (max-width: 1200px) {
+            .experiencia-card-overlay {
+                clip-path: polygon(0 0, 70% 0, 50% 100%, 0% 100%);
+            }
+
+            .experiencia-card-overlay.reverse {
+                clip-path: polygon(30% 0, 100% 0, 100% 100%, 50% 100%);
+            }
+
+            .experiencia-card-content {
+                max-width: 400px;
+            }
+
+            .experiencia-card-content h3 {
+                font-size: 2.3rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .experiencia-card-fullwidth {
+                min-height: 500px;
+            }
+
+            .experiencia-card-image {
+                min-height: 500px;
+            }
+
+            .experiencia-card-overlay {
+                clip-path: polygon(0 0, 80% 0, 60% 100%, 0% 100%);
+                padding: 40px 30px;
+            }
+
+            .experiencia-card-overlay.reverse {
+                clip-path: polygon(20% 0, 100% 0, 100% 100%, 40% 100%);
+                justify-content: flex-start;
+            }
+
+            .experiencia-card-content {
+                max-width: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(10px);
+                padding: 30px;
+                border-radius: 15px;
+            }
+
+            .experiencia-card-content h3 {
+                font-size: 1.8rem;
+            }
+
+            .experiencia-card-content p {
+                font-size: 1.1rem;
+            }
+
+            .experiencia-icono {
+                width: 80px !important;
+                height: 80px !important;
+                font-size: 2rem !important;
+            }
+
+            .experiencia-lista li {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .experiencia-card-fullwidth {
+                min-height: 400px;
+            }
+
+            .experiencia-card-image {
+                min-height: 400px;
+            }
+
+            .experiencia-card-overlay {
+                padding: 20px;
+                clip-path: none;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(0, 0, 0, 0.9) 0%,
+                    rgba(0, 0, 0, 0.7) 50%,
+                    rgba(0, 0, 0, 0.5) 100%
+                ) !important;
+            }
+
+            .experiencia-card-overlay.reverse {
+                clip-path: none;
+                justify-content: center;
+            }
+
+            .experiencia-card-content {
+                padding: 25px 20px;
+            }
+
+            .experiencia-card-content h3 {
+                font-size: 1.6rem;
+            }
+
+            .experiencia-card-content p {
+                font-size: 1rem;
+            }
+
+            .experiencia-icono {
+                width: 70px !important;
+                height: 70px !important;
+                font-size: 1.8rem !important;
+            }
+        }
+
+/* RESPONSIVE PARA EXPERIENCIAS - Diseño simple superpuesto */
+@media (max-width: 768px) {
+    .experiencia-card-fullwidth {
+        min-height: 400px; /* Un poco más bajo para móvil */
+        margin-bottom: 30px;
+        
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .experiencia-card-image {
+        min-height: 400px;
+    }
+    
+    .experiencia-card-overlay {
+        padding: 30px 25px;
+        clip-path: none !important; /* Eliminar diagonal */
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.85) 0%,
+            rgba(0, 0, 0, 0.7) 50%,
+            rgba(0, 0, 0, 0.6) 100%
+        ) !important; /* Fondo oscuro uniforme */
+        justify-content: center; /* Centrar contenido */
+        align-items: center;
+        text-align: center;
+    }
+    
+    .experiencia-card-overlay.reverse {
+        clip-path: none !important;
+        justify-content: center;
+        padding: 30px 25px;
+    }
+    
+    .experiencia-card-content {
+        padding: 25px;
+        background: rgba(0, 0, 0, 0.6); /* Fondo semitransparente */
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        max-width: 95%;
+        margin: 0 auto;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        line-height: 1.3;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    }
+    
+    .experiencia-card-content p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+    
+    .experiencia-icono {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 1.8rem !important;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    
+    .experiencia-1 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(42, 110, 187, 0.9), rgba(74, 143, 217, 0.9)) !important;
+    }
+    
+    .experiencia-2 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(255, 107, 139, 0.9), rgba(255, 158, 181, 0.9)) !important;
+    }
+    
+    .experiencia-3 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(56, 178, 172, 0.9), rgba(79, 209, 197, 0.9)) !important;
+    }
+    
+    .experiencia-lista {
+        margin-top: 15px;
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+        max-height: none;
+        overflow: visible;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        text-align: left;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        border-left: 3px solid;
+    }
+    
+    .experiencia-1 .experiencia-lista li {
+        border-left-color: #2a6ebb;
+    }
+    
+    .experiencia-2 .experiencia-lista li {
+        border-left-color: #FF6B8B;
+    }
+    
+    .experiencia-3 .experiencia-lista li {
+        border-left-color: #38B2AC;
+    }
+    
+    .experiencia-lista li i {
+        font-size: 1rem;
+        margin-right: 8px;
+        color: inherit;
+    }
+}
+
+/* Para móviles más pequeños */
+@media (max-width: 480px) {
+    .experiencia-card-fullwidth {
+        height: 450px;
+
+        margin-bottom: 25px;
+    }
+
+    .experiencia-card-image {
+        min-height: 350px;
+    }
+    
+    .experiencia-card-overlay {
+        padding: 20px 15px;
+    }
+    
+    .experiencia-card-content {
+        padding: 20px 15px;
+
+        max-width: 100%;
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.4rem;
+        margin-bottom: 12px;
+    }
+    
+    .experiencia-card-content p {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .experiencia-icono {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5rem !important;
+        margin-bottom: 15px;
+    }
+    
+    .experiencia-lista {
+        gap: 8px;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.85rem;
+        padding: 6px 10px;
+    }
+    
+    .experiencia-lista li i {
+        font-size: 0.9rem;
+        margin-right: 6px;
+    }
+}
+
+/* Para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .experiencia-card-overlay {
+        clip-path: polygon(0 0, 65% 0, 45% 100%, 0% 100%);
+        padding: 40px 30px;
+    }
+    
+    .experiencia-card-overlay.reverse {
+        clip-path: polygon(35% 0, 100% 0, 100% 100%, 55% 100%);
+        padding-left: 30px;
+    }
+    
+    .experiencia-card-content {
+        max-width: 350px;
+        padding: 25px;
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.9rem;
+    }
+    
+    .experiencia-card-content p {
+        font-size: 1.1rem;
+    }
+}
+
+/* Desactivar efectos hover en móvil para mejor rendimiento */
+@media (hover: none) and (pointer: coarse) {
+    .experiencia-card-fullwidth:hover .experiencia-card-image img {
+        transform: none;
+    }
+    
+    .experiencia-card-overlay::before,
+    .experiencia-card-overlay::after {
+        display: none;
+    }
+    
+    .experiencia-card-image::after {
+        display: none;
+    }
+}
+
+/* También necesitamos ajustar el CSS base para que la transición sea suave */
+.experiencia-card-fullwidth {
+    transition: all 0.3s ease;
+}
+
+.experiencia-card-image img {
+    transition: transform 0.6s ease;
+}
+
+/* Asegurar que las imágenes se vean bien en móvil */
+@media (max-width: 768px) {
+    .experiencia-card-image img {
+        filter: brightness(0.8);
+        object-position: center 30%; /* Ajustar posición para mejor composición */
+    }
+}
+
+/* Estilos para el hero simplificado SIN rectángulo flotante */
+.destino-simple-hero {
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    height: 70vh;
+    min-height: 500px;
+    max-height: 700px;
+    overflow: hidden;
+    margin-bottom: 60px;
+}
+
+.destino-simple-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    filter: brightness(0.5); /* Imagen más oscura por defecto */
+}
+
+.destino-simple-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, 
+        rgba(0, 0, 0, 0.8) 0%,
+        rgba(0, 0, 0, 0.6) 40%,
+        rgba(0, 0, 0, 0.4) 70%,
+        rgba(0, 0, 0, 0.2) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.destino-simple-content {
+    max-width: 900px;
+    z-index: 2;
+    color: white;
+}
+
+.destino-simple-title {
+    font-size: 3rem;
+    margin-bottom: 25px;
+    text-shadow: 
+        2px 2px 8px rgba(0, 0, 0, 0.9),
+        0 0 20px rgba(255, 255, 255, 0.2);
+    font-weight: 800;
+    letter-spacing: 1px;
+    line-height: 1.2;
+}
+
+.destino-simple-title i {
+    color: #4a8fd9;
+    margin-right: 15px;
+    text-shadow: 0 0 15px rgba(74, 143, 217, 0.8);
+}
+
+.destino-simple-subtitle {
+    font-size: 1.6rem;
+    text-shadow: 
+        1px 1px 5px rgba(0, 0, 0, 0.8),
+        0 0 10px rgba(255, 255, 255, 0.2);
+    line-height: 1.5;
+    margin-bottom: 40px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.95;
+}
+
+.destino-simple-info {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.destino-simple-info span {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        0 8px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.destino-simple-info i {
+    color: #4a8fd9;
+    font-size: 1.2rem;
+}
+
+/* Responsive para el hero simplificado */
+@media (max-width: 768px) {
+    .destino-simple-hero {
+        height: 60vh;
+        min-height: 400px;
+        margin-bottom: 40px;
+    }
+    
+    .destino-simple-overlay {
+        padding: 30px 20px;
+    }
+    
+    .destino-simple-title {
+        font-size: 1.8rem; /* Más pequeño para móvil */
+        margin-bottom: 15px;
+        line-height: 1.3;
+    }
+    
+    .destino-simple-subtitle {
+        font-size: 1.1rem; /* Más pequeño para móvil */
+        margin-bottom: 25px;
+        line-height: 1.4;
+    }
+    
+    .destino-simple-info {
+        gap: 15px;
+        margin-top: 25px;
+    }
+    
+    .destino-simple-info span {
+        padding: 10px 18px;
+        font-size: 0.9rem; /* Más pequeño para móvil */
+        flex: 1;
+        min-width: 140px;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .destino-simple-hero {
+        height: 50vh;
+        min-height: 350px;
+    }
+    
+    .destino-simple-title {
+        font-size: 1.5rem; /* Aún más pequeño para móviles pequeños */
+    }
+    
+    .destino-simple-subtitle {
+        font-size: 0.95rem; /* Aún más pequeño para móviles pequeños */
+    }
+    
+    .destino-simple-info {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .destino-simple-info span {
+        width: 100%;
+        max-width: 200px;
+        font-size: 0.85rem;
+        padding: 8px 15px;
+    }
+}
+
+/* Para tablets */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .destino-simple-title {
+        font-size: 2.3rem;
+    }
+    
+    .destino-simple-subtitle {
+        font-size: 1.3rem;
+    }
+}
+
+/* ===== RESPONSIVE COMPLETO PARA TODAS LAS SECCIONES ===== */
+
+/* 1. DISPOSITIVOS MÓVILES PEQUEÑOS (≤ 480px) */
+@media (max-width: 480px) {
+    /* Sección IMPORTANTE */
+    .importante-section {
+        padding: 40px 0;
+    }
+    
+    .importante-container {
+        padding: 0 15px;
+    }
+    
+    .importante-card {
+        padding: 25px 20px;
+        border-radius: 15px;
+    }
+    
+    .importante-header h2 {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+        line-height: 1.3;
+    }
+    
+    .importante-header p {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+    
+    .edad-destacada {
+        font-size: 1.4rem;
+        padding: 12px 20px;
+        margin: 20px auto;
+        display: block;
+        width: fit-content;
+    }
+    
+    .importante-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 25px 0;
+    }
+    
+    .importante-item {
+        padding: 18px;
+        border-radius: 12px;
+    }
+    
+    .importante-item h4 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+    
+    .importante-item ul {
+        padding-left: 5px;
+    }
+    
+    .importante-item li {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    
+    .importante-item li i {
+        font-size: 0.9rem;
+        margin-right: 8px;
+        margin-top: 3px;
+    }
+    
+    /* Compromiso */
+    .importante-card > div:last-child {
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 25px;
+    }
+    
+    .importante-card > div:last-child h4 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .importante-card > div:last-child p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    /* Sección INSCRIPCIÓN */
+    .inscripcion-section {
+        padding: 40px 0;
+    }
+    
+    .formulario-container {
+        padding: 0 15px;
+    }
+    
+    .formulario-card {
+        padding: 25px 20px;
+        border-radius: 15px;
+    }
+    
+    .formulario-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+    
+    .formulario-card p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+    }
+    
+    .formulario-boton {
+        padding: 14px 20px;
+        font-size: 1rem;
+        border-radius: 30px;
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    .formulario-boton i {
+        font-size: 1.2rem;
+    }
+    
+    .formulario-card > p:last-child {
+        font-size: 0.85rem;
+        margin-top: 15px;
+    }
+    
+    .contacto-info {
+        padding: 20px 15px;
+        margin-top: 25px;
+        border-radius: 12px;
+    }
+    
+    .contacto-info h4 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+    
+    .contacto-info p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .contacto-info p:last-child {
+        font-size: 0.85rem;
+        margin-top: 10px;
+    }
+    
+    /* Sección GALERÍA */
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .gallery-item {
+        height: 180px;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .portada-content {
+        padding: 15px;
+    }
+    
+    .portada-content h4 {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+    
+    .portada-content p {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+    }
+    
+    .portada-badge {
+        padding: 4px 10px;
+        font-size: 0.8rem;
+    }
+    
+    .gallery-nota {
+        padding: 15px;
+        margin-top: 20px;
+        border-radius: 10px;
+    }
+    
+    .gallery-nota p {
+        font-size: 0.9rem;
+    }
+    
+    /* FOOTER */
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .footer-section {
+        text-align: center;
+    }
+    
+    .footer-logo {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .logo-footer {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .footer-logo h3 {
+        font-size: 1.3rem;
+    }
+    
+    .footer-logo p {
+        font-size: 0.9rem;
+    }
+    
+    .footer-description {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+    
+    .social-links {
+        gap: 10px;
+        justify-content: center;
+    }
+    
+    .social-link {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+    
+    .contact-list {
+        gap: 10px;
+    }
+    
+    .contact-list li {
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+    
+    .contact-list i {
+        font-size: 1rem;
+        min-width: 25px;
+    }
+    
+    .footer-links {
+        gap: 10px;
+    }
+    
+    .footer-links li a {
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+    
+    .footer-links i {
+        font-size: 0.8rem;
+        margin-right: 8px;
+    }
+    
+    .footer-bottom {
+        padding: 15px 0;
+        text-align: center;
+    }
+    
+    .footer-bottom p {
+        font-size: 0.8rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    
+    /* MODALES */
+    .modal-content {
+        width: 95%;
+        max-height: 85vh;
+        margin: 10px;
+        padding: 20px;
+        border-radius: 15px;
+    }
+    
+    .login-modal .modal-icon {
+        width: 70px;
+        height: 70px;
+        font-size: 1.8rem;
+        margin-bottom: 15px;
+    }
+    
+    .login-modal h3 {
+        font-size: 1.4rem;
+        margin-bottom: 8px;
+    }
+    
+    .login-modal p {
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 15px;
+    }
+    
+    .form-group label {
+        font-size: 0.9rem;
+        margin-bottom: 6px;
+    }
+    
+    .form-group input {
+        padding: 12px 15px;
+        font-size: 1rem;
+        border-radius: 8px;
+    }
+    
+    .btn-block {
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    /* Modal Admin */
+    .admin-modal {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    .admin-stats {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-card {
+        padding: 15px;
+        border-radius: 12px;
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+    
+    .stat-info h4 {
+        font-size: 0.9rem;
+    }
+    
+    .stat-info p {
+        font-size: 1.4rem;
+    }
+    
+    .admin-actions h4 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .action-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    
+    .action-btn {
+        padding: 14px;
+        border-radius: 10px;
+        font-size: 0.9rem;
+        text-align: left;
+    }
+    
+    .action-btn i {
+        font-size: 1.2rem;
+        min-width: 30px;
+    }
+    
+    .recent-applicants {
+        margin-top: 20px;
+        max-height: 150px;
+    }
+    
+    .recent-applicants h4 {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+    
+    .applicant-item {
+        padding: 12px 15px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .applicant-info h5 {
+        font-size: 0.95rem;
+    }
+    
+    .applicant-info p {
+        font-size: 0.85rem;
+    }
+    
+    .applicant-date {
+        font-size: 0.8rem;
+    }
+    
+    /* Modal de Confirmación */
+    .confirmation-modal .modal-icon {
+        width: 80px;
+        height: 80px;
+        font-size: 3rem;
+        margin-bottom: 15px;
+    }
+    
+    .confirmation-modal h3 {
+        font-size: 1.4rem;
+        margin-bottom: 10px;
+    }
+    
+    .confirmation-modal #confirmationMessage {
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+    
+    .confirmation-details {
+        margin: 20px 0;
+    }
+    
+    .confirmation-details p {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+    }
+    
+    .confirmation-details i {
+        font-size: 1rem;
+        min-width: 25px;
+    }
+    
+    #closeConfirmation {
+        padding: 12px 25px;
+        font-size: 1rem;
+        width: 100%;
+    }
+}
+
+/* 2. DISPOSITIVOS MÓVILES GRANDES (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+    /* Sección IMPORTANTE */
+    .importante-section {
+        padding: 50px 0;
+    }
+    
+    .importante-card {
+        padding: 30px 25px;
+    }
+    
+    .importante-header h2 {
+        font-size: 1.8rem;
+    }
+    
+    .importante-header p {
+        font-size: 1.1rem;
+    }
+    
+    .edad-destacada {
+        font-size: 1.6rem;
+        padding: 15px 30px;
+    }
+    
+    .importante-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .importante-item {
+        padding: 20px;
+    }
+    
+    .importante-item h4 {
+        font-size: 1.3rem;
+    }
+    
+    /* Sección INSCRIPCIÓN */
+    .inscripcion-section {
+        padding: 50px 0;
+    }
+    
+    .formulario-card {
+        padding: 30px 25px;
+    }
+    
+    .formulario-card h3 {
+        font-size: 1.8rem;
+    }
+    
+    .formulario-card p {
+        font-size: 1.1rem;
+    }
+    
+    .formulario-boton {
+        padding: 16px 30px;
+        font-size: 1.1rem;
+    }
+    
+    /* Sección GALERÍA */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .gallery-item {
+        height: 200px;
+    }
+    
+    /* FOOTER */
+    .footer-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+    }
+    
+    .footer-section:nth-child(3) {
+        grid-column: span 2;
+        text-align: center;
+    }
+}
+
+/* 3. TABLETS (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    /* Sección IMPORTANTE */
+    .importante-card {
+        padding: 40px 35px;
+    }
+    
+    .importante-header h2 {
+        font-size: 2.2rem;
+    }
+    
+    .edad-destacada {
+        font-size: 1.8rem;
+    }
+    
+    .importante-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    /* Sección INSCRIPCIÓN */
+    .formulario-container {
+        max-width: 90%;
+    }
+    
+    .formulario-card {
+        padding: 40px 35px;
+    }
+    
+    .formulario-card h3 {
+        font-size: 2rem;
+    }
+    
+    /* Sección GALERÍA */
+    .gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 25px;
+    }
+    
+    .gallery-item {
+        height: 250px;
+    }
+    
+    /* FOOTER */
+    .footer-content {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+}
+
+/* 4. MEJORAS DE USABILIDAD PARA TÁCTIL */
+@media (hover: none) and (pointer: coarse) {
+    /* Aumentar áreas táctiles */
+    .formulario-boton,
+    .btn,
+    .action-btn,
+    .gallery-item,
+    .nav-link,
+    .modal-close,
+    .notification-close {
+        min-height: 44px;
+        min-width: 44px;
+    }
+    
+    /* Mejorar espaciado para dedos */
+    .experiencia-lista li,
+    .importante-item li,
+    .footer-links li a,
+    .contact-list li {
+        padding: 10px 0;
+    }
+    
+    /* Aumentar tamaño de inputs */
+    input, textarea, select {
+        font-size: 16px; /* Prevenir zoom en iOS */
+        min-height: 44px;
+    }
+}
+
+/* 5. ORIENTACIÓN HORIZONTAL EN MÓVIL */
+@media (max-height: 600px) and (orientation: landscape) {
+    /* Ajustar alturas para pantallas cortas */
+    .experiencia-card-fullwidth {
+        min-height: 300px;
+    }
+    
+    .destino-simple-hero {
+        height: 80vh;
+        min-height: 350px;
+    }
+    
+    .importante-section,
+    .inscripcion-section {
+        padding: 30px 0;
+    }
+    
+    /* Reducir márgenes verticales */
+    .section-header {
+        margin-bottom: 25px;
+    }
+    
+    .importante-grid {
+        margin: 20px 0;
+    }
+    
+    .formulario-card {
+        margin-top: 20px;
+    }
+}
+
+/* 6. PREVENIR PROBLEMAS COMUNES EN MÓVIL */
+/* Prevenir zoom en inputs en iOS */
+input, select, textarea {
+    font-size: 16px;
+}
+
+/* Mejorar scroll en iOS */
+.modal-content,
+.recent-applicants,
+.gallery-modal-content {
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Asegurar que los botones sean táctiles */
+button, 
+a.btn, 
+.action-btn,
+.gallery-item,
+.nav-link {
+    touch-action: manipulation;
+}
+
+/* Mejorar legibilidad */
+p, li, span, .formulario-card p, .importante-item p {
+    line-height: 1.6;
+    letter-spacing: 0.01em;
+}
+
+/* Optimizar fuentes para móvil */
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 7. ANIMACIONES OPTIMIZADAS PARA MÓVIL */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 8. MEJORAS DE RENDIMIENTO PARA MÓVIL */
+@media (max-width: 768px) {
+    /* Reducir efectos que pueden afectar rendimiento */
+    .destino-simple-overlay::before,
+    .experiencia-card-overlay::before,
+    .experiencia-card-overlay::after {
+        display: none;
+    }
+    
+    /* Reducir sombras complejas */
+    .destino-simple-content,
+    .experiencia-card-content,
+    .formulario-card,
+    .importante-card {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    /* Optimizar imágenes */
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}
+
+/* 9. AJUSTES ESPECÍFICOS PARA SAFARI iOS */
+@supports (-webkit-touch-callout: none) {
+    .destino-simple-hero {
+        height: -webkit-fill-available;
+    }
+    
+    .modal-content {
+        max-height: -webkit-fill-available;
+    }
+}
+
+/* 10. CONTRASTE MEJORADO PARA EXTERIORES */
+@media (max-width: 768px) {
+    .destino-simple-title,
+    .experiencia-card-content h3,
+    .importante-header h2,
+    .formulario-card h3 {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+    }
+    
+    .destino-simple-subtitle,
+    .experiencia-card-content p,
+    .importante-item p,
+    .formulario-card p {
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+}
+
+/* Contenedores específicos para responsive */
+.edad-destacada-container {
+    text-align: center;
+    margin: 25px 0;
+}
+
+.formulario-boton-container {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Ajustes para texto dentro de botones en móvil */
+@media (max-width: 480px) {
+    .formulario-boton span {
+        font-size: 0.95rem;
+    }
+    
+    .footer-links span {
+        font-size: 0.9rem;
+    }
+    
+    /* Asegurar que los enlaces sean fáciles de tocar */
+    .footer-links li a {
+        display: flex;
+        align-items: center;
+        padding: 12px 15px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        margin-bottom: 8px;
+    }
+    
+    .footer-links li a:hover {
+        background: rgba(255,255,255,0.1);
+    }
+}
+
+/* Mejorar visualización de lista en móvil */
+@media (max-width: 768px) {
+    .experiencia-lista,
+    .importante-item ul {
+        padding-left: 0;
+    }
+    
+    .experiencia-lista li,
+    .importante-item li {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+/* Ajustes para imágenes de fondo en móvil */
+@media (max-width: 768px) {
+    .experiencia-card-image img,
+    .destino-simple-image {
+        object-position: center;
+    }
+    
+    /* Para orientación horizontal */
+    @media (orientation: landscape) {
+        .experiencia-card-image img {
+            object-position: center 25%;
+        }
+        
+        .destino-simple-image {
+            object-position: center 30%;
+        }
+    }
+}
+
+/* MODIFICACIÓN SOLO PARA LAS CARDS DE EXPERIENCIAS EN RESPONSIVE */
+@media (max-width: 768px) {
+    .experiencia-card-fullwidth {
+        min-height: 400px;
+        margin-bottom: 30px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    }
+    
+    .experiencia-card-image {
+        min-height: 400px;
+    }
+    
+    .experiencia-card-overlay {
+        padding: 30px 25px;
+        clip-path: none !important;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.4) 0%,  /* REDUCIDO de 0.85 a 0.4 */
+            rgba(0, 0, 0, 0.3) 50%,  /* REDUCIDO de 0.7 a 0.3 */
+            rgba(0, 0, 0, 0.2) 100%  /* REDUCIDO de 0.6 a 0.2 */
+        ) !important;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .experiencia-card-overlay.reverse {
+        clip-path: none !important;
+        justify-content: center;
+        padding: 30px 25px;
+    }
+    
+    .experiencia-card-content {
+        padding: 25px;
+        background: rgba(0, 0, 0, 0.3); /* REDUCIDO de 0.6 a 0.3 */
+        backdrop-filter: blur(8px);
+        -webkit-backdropfilter: blur(8px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        width: 100%;
+        max-width: 95%;
+        margin: 0 auto;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.6rem;
+        margin-bottom: 15px;
+        line-height: 1.3;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.8);
+    }
+    
+    .experiencia-card-content p {
+        font-size: 1rem;
+        margin-bottom: 20px;
+        line-height: 1.5;
+        text-shadow: 1px 1px 3px rgba(0,0,0,0.7);
+    }
+    
+    .experiencia-icono {
+        width: 70px !important;
+        height: 70px !important;
+        font-size: 1.8rem !important;
+        margin-bottom: 20px;
+        background: rgba(255, 255, 255, 0.25) !important; /* AUMENTADO de 0.2 a 0.25 */
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    }
+    
+    .experiencia-1 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(42, 110, 187, 0.9), rgba(74, 143, 217, 0.9)) !important;
+    }
+    
+    .experiencia-2 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(255, 107, 139, 0.9), rgba(255, 158, 181, 0.9)) !important;
+    }
+    
+    .experiencia-3 .experiencia-icono {
+        background: linear-gradient(135deg, rgba(56, 178, 172, 0.9), rgba(79, 209, 197, 0.9)) !important;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.9rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        text-align: left;
+        padding: 8px 12px;
+        background: rgba(255, 255, 255, 0.15); /* AUMENTADO de 0.1 a 0.15 */
+        border-radius: 8px;
+        border-left: 3px solid;
+    }
+}
+
+/* Para móviles más pequeños - también ajustar aquí */
+@media (max-width: 480px) {
+    .experiencia-card-fullwidth {
+        min-height: 350px;
+        margin-bottom: 25px;
+    }
+
+    .experiencia-card-image {
+        min-height: 350px;
+    }
+
+    .experiencia-card-overlay {
+        padding: 20px 15px;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.35) 0%,    /* Aún más claro */
+            rgba(0, 0, 0, 0.25) 50%,
+            rgba(0, 0, 0, 0.15) 100%
+        ) !important;
+    }
+
+    .experiencia-card-content {
+        margin: 10px auto;
+        background: rgba(0, 0, 0, 0.25); /* REDUCIDO de 0.3 a 0.25 */
+        max-width: 100%;
+        height: 400px;
+    }
+    
+    .experiencia-lista li {
+        background: rgba(255, 255, 255, 0.2); /* Aumentado para mejor contraste */
+    }
+}
+
+/* También ajustar la imagen para que sea más oscura por defecto en móvil */
+@media (max-width: 768px) {
+    .experiencia-card-image img {
+        filter: brightness(0.7); /* MÁS OSCURO para compensar overlay más claro */
+        object-position: center 30%;
+    }
+}
+
+/* MODIFICACIÓN PARA LAS CARDS DE EXPERIENCIAS - Eliminar fondo oscuro */
+@media (max-width: 768px) {
+    .experiencia-card-overlay {
+        background: none !important; /* ELIMINAR el fondo oscuro */
+    }
+    
+    .experiencia-card-content {
+        background: none !important; /* ELIMINAR el fondo del contenido */
+        backdrop-filter: none !important; /* ELIMINAR el desenfoque */
+        -webkit-backdrop-filter: none !important;
+        border: none !important; /* ELIMINAR el borde */
+        box-shadow: none !important; /* ELIMINAR la sombra */
+    }
+    
+    /* También quitar el borde del ícono */
+    .experiencia-icono {
+        background: rgba(255, 255, 255, 0.2) !important;
+        backdrop-filter: none !important;
+        border: none !important;
+    }
+    
+    /* Ajustar color del texto para mejor contraste */
+    .experiencia-card-content h3 {
+        color: white;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.9);
+    }
+    
+    .experiencia-card-content p {
+        color: rgba(255, 255, 255, 0.95);
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    }
+    
+    .experiencia-lista li {
+        color: white;
+        background: rgba(0, 0, 0, 0.3); /* Fondo sutil solo para los items de lista */
+        border-left: none !important;
+    }
+    
+    .experiencia-lista li i {
+        color: #4a8fd9;
+    }
+}
+
+/* Para móviles más pequeños */
+@media (max-width: 480px) {
+    .experiencia-card-overlay {
+        background: none !important;
+        padding: 20px 15px;
+    }
+    
+    .experiencia-card-content {
+        padding: 20px 15px;
+        background: none !important;
+    }
+    
+    /* Asegurar que las imágenes estén suficientemente oscuras */
+    .experiencia-card-image img {
+        filter: brightness(0.5) !important; /* Más oscuro */
+    }
+}
+
+/* Para tablets (opcional) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .experiencia-card-overlay {
+        background: none !important;
+    }
+    
+    .experiencia-card-content {
+        background: none !important;
+        backdrop-filter: none !important;
+        border: none !important;
+    }
+}
+
+/* AJUSTES ESPECÍFICOS PARA LOS UL EN EXPERIENCIAS */
+@media (max-width: 768px) {
+    .experiencia-card-content {
+        padding: 25px 15px !important; /* Menos padding lateral */
+    }
+    
+    .experiencia-lista {
+        margin-top: 10px !important;
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.85rem !important; /* Tamaño de fuente más pequeño */
+        margin-bottom: 6px !important;
+        line-height: 1.3 !important;
+        text-align: left !important;
+        padding: 8px 10px !important; /* Menos padding */
+        background: rgba(0, 0, 0, 0.25) !important; /* Fondo más sutil */
+        border-radius: 6px !important;
+        border-left: none !important;
+        display: flex !important;
+        align-items: flex-start !important;
+    }
+    
+    .experiencia-lista li i {
+        font-size: 0.9rem !important;
+        margin-right: 8px !important;
+        margin-top: 2px !important; /* Alineación vertical */
+        flex-shrink: 0 !important; /* Evitar que se encoja */
+    }
+    
+    /* Reducir el tamaño del contenido general */
+    .experiencia-card-content h3 {
+        font-size: 1.4rem !important; /* Título más pequeño */
+        margin-bottom: 12px !important;
+    }
+    
+    .experiencia-card-content p {
+        font-size: 0.9rem !important; /* Párrafo más pequeño */
+        margin-bottom: 15px !important;
+        line-height: 1.4 !important;
+    }
+    
+    .experiencia-icono {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5rem !important;
+        margin-bottom: 15px !important;
+    }
+}
+
+/* Para móviles muy pequeños */
+@media (max-width: 480px) {
+    .experiencia-card-fullwidth {
+        min-height: 350px !important;
+    }
+    
+    .experiencia-card-image {
+        min-height: 350px !important;
+    }
+    
+    .experiencia-card-overlay {
+        padding: 15px 10px !important;
+    }
+    
+    .experiencia-card-content {
+        padding: 15px 10px !important;
+        width: 100% !important;
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.3rem !important;
+        margin-bottom: 10px !important;
+    }
+    
+    .experiencia-card-content p {
+        font-size: 0.85rem !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .experiencia-lista {
+        gap: 6px !important;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.8rem !important; /* Aún más pequeño para móviles pequeños */
+        padding: 6px 8px !important;
+        line-height: 1.2 !important;
+    }
+    
+    .experiencia-lista li i {
+        font-size: 0.85rem !important;
+        margin-right: 6px !important;
+    }
+    
+    .experiencia-icono {
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 1.3rem !important;
+        margin-bottom: 12px !important;
+    }
+}
+
+/* Para tablets - también ajustar */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .experiencia-card-content {
+        max-width: 400px !important;
+        padding: 20px !important;
+    }
+    
+    .experiencia-card-content h3 {
+        font-size: 1.6rem !important;
+    }
+    
+    .experiencia-card-content p {
+        font-size: 1rem !important;
+    }
+    
+    .experiencia-lista li {
+        font-size: 0.9rem !important;
+        padding: 8px 10px !important;
+    }
+}
     </style>
 </head>
 <body>
@@ -667,63 +3237,69 @@
                 <p class="section-subtitle">Experiencias transformadoras que marcarán tu vida</p>
             </div>
 
-            <!-- Experiencia 1 - Izquierda -->
-            <div class="experiencia-card experiencia-1">
-                <div class="experiencia-imagen">
-                    <img src="img/formacion-campamento.jpg" alt="Formación en el Campamento" loading="lazy">
-                </div>
-                <div class="experiencia-contenido">
-                    <div class="experiencia-icono">
-                        <i class="fas fa-graduation-cap"></i>
+            <!-- Experiencia 1 - Formación Integral -->
+            <div class="experiencia-card-fullwidth experiencia-1">
+                <div class="experiencia-card-image">
+                    <img src="img/Formacion-1.jpg" alt="Formación en el Campamento" loading="lazy">
+                    <div class="experiencia-card-overlay">
+                        <div class="experiencia-card-content">
+                            <div class="experiencia-icono">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h3>Formación Integral</h3>
+                            <p>Desarrolla tus talentos y crece como persona a través de talleres y actividades diseñadas especialmente para ti.</p>
+                            <ul class="experiencia-lista">
+                                <li style="color: rgb(188, 216, 247); font-size: 13px;"><i class="fas fa-check-circle"></i> Talleres de crecimiento personal</li>
+                                <li style="color: rgb(188, 216, 247); font-size: 13px;"><i class="fas fa-check-circle"></i> Charlas formativas con expertos</li>
+                                <li style="color: rgb(188, 216, 247); font-size: 13px;"><i class="fas fa-check-circle"></i> Desarrollo de habilidades sociales</li>
+                                <li style="color: rgb(188, 216, 247); font-size: 13px;"><i class="fas fa-check-circle"></i> Aprendizaje vivencial</li>
+                            </ul>
+                        </div>
                     </div>
-                    <h3>Formación Integral</h3>
-                    <p>Desarrolla tus talentos y crece como persona a través de talleres y actividades diseñadas especialmente para ti.</p>
-                    <ul class="experiencia-lista">
-                        <li><i class="fas fa-check-circle"></i> Talleres de crecimiento personal</li>
-                        <li><i class="fas fa-check-circle"></i> Charlas formativas con expertos</li>
-                        <li><i class="fas fa-check-circle"></i> Desarrollo de habilidades sociales</li>
-                        <li><i class="fas fa-check-circle"></i> Aprendizaje vivencial</li>
-                    </ul>
                 </div>
             </div>
 
-            <!-- Experiencia 2 - Derecha -->
-            <div class="experiencia-card experiencia-2 reverse">
-                <div class="experiencia-imagen">
-                    <img src="img/juegos-campamento.jpg" alt="Juegos y Diversión" loading="lazy">
-                </div>
-                <div class="experiencia-contenido">
-                    <div class="experiencia-icono">
-                        <i class="fas fa-gamepad"></i>
+            <!-- Experiencia 2 - Juegos y Aventura -->
+            <div class="experiencia-card-fullwidth experiencia-2">
+                <div class="experiencia-card-image">
+                    <img src="img/Juegos.png" alt="Juegos y Diversión" loading="lazy">
+                    <div class="experiencia-card-overlay reverse">
+                        <div class="experiencia-card-content">
+                            <div class="experiencia-icono">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h3>Juegos y Aventura</h3>
+                            <p>Diviértete al máximo con actividades recreativas, deportes y juegos que fomentan el trabajo en equipo y la amistad.</p>
+                            <ul class="experiencia-lista">
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Juegos de equipo y cooperación</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Actividades al aire libre</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Competencias saludables</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Fogatas y veladas nocturnas</li>
+                            </ul>
+                        </div>
                     </div>
-                    <h3>Juegos y Aventura</h3>
-                    <p>Diviértete al máximo con actividades recreativas, deportes y juegos que fomentan el trabajo en equipo y la amistad.</p>
-                    <ul class="experiencia-lista">
-                        <li><i class="fas fa-check-circle"></i> Juegos de equipo y cooperación</li>
-                        <li><i class="fas fa-check-circle"></i> Actividades al aire libre</li>
-                        <li><i class="fas fa-check-circle"></i> Competencias saludables</li>
-                        <li><i class="fas fa-check-circle"></i> Fogatas y veladas nocturnas</li>
-                    </ul>
                 </div>
             </div>
 
-            <!-- Experiencia 3 - Izquierda -->
-            <div class="experiencia-card experiencia-3">
-                <div class="experiencia-imagen">
-                    <img src="img/fe-campamento.jpg" alt="Crecimiento en la Fe" loading="lazy">
-                </div>
-                <div class="experiencia-contenido">
-                    <div class="experiencia-icono">
-                        <i class="fas fa-hands-praying"></i>
+            <!-- Experiencia 3 - Crecer en la Fe -->
+            <div class="experiencia-card-fullwidth experiencia-3">
+                <div class="experiencia-card-image">
+                    <img src="img/SantaMisa.png" alt="Crecimiento en la Fe" loading="lazy">
+                    <div class="experiencia-card-overlay">
+                        <div class="experiencia-card-content">
+                            <div class="experiencia-icono">
+                                <i class="fas fa-hands-praying"></i>
+                            </div>
+                            <h3>Crecer en la Fe</h3>
+                            <p>Fortalece tu relación con Dios a través de momentos de oración, sacramentos y formación cristiana.</p>
+                            <ul class="experiencia-lista">
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Santa Misa diaria</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Adoración Eucarística</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Rosario comunitario</li>
+                                <li style="color: rgb(188, 216, 247);"><i class="fas fa-check-circle"></i> Confesiones y dirección espiritual</li>
+                            </ul>
+                        </div>
                     </div>
-                    <h3>Crecer en la Fe</h3>
-                    <p>Fortalece tu relación con Dios a través de momentos de oración, sacramentos y formación cristiana.</p>
-                    <ul class="experiencia-lista">
-                        <li><i class="fas fa-check-circle"></i> Santa Misa diaria</li>
-                        <li><i class="fas fa-check-circle"></i> Adoración Eucarística</li>
-                        <li><i class="fas fa-check-circle"></i> Rosario comunitario</li>
-                        <li><i class="fas fa-check-circle"></i> Confesiones y dirección espiritual</li>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -732,100 +3308,114 @@
     <!-- Sección Destino -->
     <section class="destino-section" id="destino">
         <div class="container">
-            <div class="destino-card">
-                <div class="destino-imagen">
-                    <!-- Reemplaza esta imagen con la de Estancia Catamarca -->
-                    <img src="img/estancia-catamarca.jpg" alt="Estancia Catamarca, Argentina" loading="lazy">
+        <div class="section-header" style="margin-bottom: 40px;">
+            <h2 class="section-title">Nuestro Destino: Estancia Catamarca</h2>
+            <p class="section-subtitle">Un lugar privilegiado en medio de la naturaleza</p>
+        </div>
+    </div>
+    
+    <!-- Hero de imagen a pantalla completa - SIN RECTÁNGULO FLOTANTE -->
+    <div class="destino-simple-hero">
+        <div class="destino-simple-overlay">
+            <div class="destino-simple-content">
+                <h3 class="destino-simple-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Las Estancias Catamarca, Argentina
+                </h3>
+                <p class="destino-simple-subtitle">
+                    Un refugio natural perfecto para el encuentro con Dios, la comunidad y uno mismo
+                </p>
+                <div class="destino-simple-info">
+                    <span><i class="fas fa-calendar-alt"></i> 8-17 Enero 2026</span>
+                    <span><i class="fas fa-heart"></i> Edad: +8 años</span>
+                    <span><i class="fas fa-users"></i> Comunidad Misionera</span>
                 </div>
-                <div class="destino-info">
-                    <div class="destino-header">
-                        <h2 class="destino-titulo">
-                            <i class="fas fa-map-marker-alt"></i>
-                            Nuestro Destino: Estancia Catamarca
-                        </h2>
-                        <p class="destino-subtitulo">
-                            Un lugar privilegiado en medio de la naturaleza para vivir una experiencia transformadora
-                        </p>
+            </div>
+        </div>
+        <!-- Imagen de fondo - reemplaza con tu imagen -->
+        <img src="img/estancia-catamarca.jpg" alt="Estancia Catamarca" class="destino-simple-image" loading="lazy">
+    </div>
+
+        <div class="container">
+            <div class="destino-info-card">
+                <h3 style="color: #2a6ebb; text-align: center; margin-bottom: 40px; font-size: 2.2rem;">
+                    <i class="fas fa-gift"></i> Todo Incluido en el Campamento
+                </h3>
+
+                <div class="actividades-grid">
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-bed"></i>
+                        </div>
+                        <h4>Alojamiento</h4>
+                        <p>Cabañas cómodas y seguras con todas las comodidades necesarias para tu estadía</p>
                     </div>
 
-                    <h3 style="color: #2a6ebb; text-align: center; margin-bottom: 30px; font-size: 2rem;">
-                        <i class="fas fa-gift"></i> Actividades y Servicios Incluidos
-                    </h3>
-
-                    <div class="incluye-grid">
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-bed"></i>
-                            </div>
-                            <h4>Alojamiento</h4>
-                            <p>Niños en carpas y Niñas dentro de la casa</p>
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-utensils"></i>
                         </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-utensils"></i>
-                            </div>
-                            <h4>Alimentación Completa</h4>
-                            <p>4 comidas diarias</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-church"></i>
-                            </div>
-                            <h4>Misa Diaria</h4>
-                            <p>Celebración eucarística todos los días</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-pray"></i>
-                            </div>
-                            <h4>Rosario</h4>
-                            <p>Rezamos el rosario por las calles</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-gamepad"></i>
-                            </div>
-                            <h4>Juegos y Recreación</h4>
-                            <p>Actividades deportivas y recreativas</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-fire"></i>
-                            </div>
-                            <h4>Fogatas Nocturnas</h4>
-                            <p>Veladas alrededor del fuego con canciones</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-theater-masks"></i>
-                            </div>
-                            <h4>Teatro</h4>
-                            <p>Ya sea representar obras o lo que los niños imaginen</p>
-                        </div>
-
-                        <div class="incluye-item">
-                            <div class="incluye-icono">
-                                <i class="fas fa-graduation-cap"></i>
-                            </div>
-                            <h4>Formación Integral</h4>
-                            <p>Talleres y charlas para crecer en la fe</p>
-                        </div>
+                        <h4>Alimentación Completa</h4>
+                        <p>4 comidas diarias balanceadas, saludables y deliciosas preparadas especialmente</p>
                     </div>
 
-                    <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 15px;">
-                        <h4 style="color: #2a6ebb; margin-bottom: 15px;">
-                            <i class="fas fa-star"></i> ¡Y Mucho Más!
-                        </h4>
-                        <p style="color: #4a5568;">
-                            Adoración eucarística, caminatas, talleres creativos, momentos de oración, 
-                            trabajo en equipo y experiencias que recordarás para siempre.
-                        </p>
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-church"></i>
+                        </div>
+                        <h4>Misa Diaria</h4>
+                        <p>Celebración eucarística todos los días para fortalecer nuestra fe en comunidad</p>
+                    </div>
+
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-pray"></i>
+                        </div>
+                        <h4>Rosario Comunitario</h4>
+                        <p>Oración mariana que nos une como familia misionera alrededor de María</p>
+                    </div>
+
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-gamepad"></i>
+                        </div>
+                        <h4>Juegos y Deportes</h4>
+                        <p>Actividades recreativas, deportivas y de equipo para divertirnos juntos</p>
+                    </div>
+
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <h4>Fogatas Nocturnas</h4>
+                        <p>Veladas especiales alrededor del fuego con cantos, testimonios y reflexiones</p>
+                    </div>
+
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-theater-masks"></i>
+                        </div>
+                        <h4>Teatro y Expresión</h4>
+                        <p>Dramatizaciones, obras teatrales y expresión artística para desarrollar talentos</p>
+                    </div>
+
+                    <div class="actividad-item">
+                        <div class="actividad-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <h4>Formación Integral</h4>
+                        <p>Talleres, charlas y actividades formativas para crecer como personas y misioneros</p>
+                    </div>
+                </div>
+
+                <div class="actividades-extra">
+                    <h4><i class="fas fa-plus-circle"></i> También Incluye:</h4>
+                    <div class="extra-items">
+                        <span><i class="fas fa-heart"></i> Adoración Eucarística</span>
+                        <span><i class="fas fa-hiking"></i> Caminatas</span>
+                        <span><i class="fas fa-hands-helping"></i> Formación</span>
+                        <span><i class="fas fa-comments"></i> Juegos</span>
+                        <span><i class="fas fa-history"></i> Confesiones</span>
                     </div>
                 </div>
             </div>
@@ -838,13 +3428,15 @@
             <div class="importante-container">
                 <div class="importante-card">
                     <div class="importante-header">
-                        <h2><i class="fas fa-exclamation-circle"></i> ¡Información Importante!</h2>
+                        <h2 style="text-shadow: none;"><i class="fas fa-exclamation-circle"></i> ¡Información Importante!</h2>
                         <p>Todo lo que necesitas saber antes de participar</p>
                     </div>
                     
                     <div style="text-align: center;">
-                        <div class="edad-destacada">
-                            <i class="fas fa-child"></i> Edad: +8 Años <i class="fas fa-child"></i>
+                        <div class="edad-destacada-container">
+                            <div class="edad-destacada">
+                                <i class="fas fa-child"></i> Edad: +8 Años <i class="fas fa-child"></i>
+                            </div>
                         </div>
                         <p style="font-size: 1.2rem; color: #718096; margin-bottom: 40px;">
                             Para niños y adolescentes a partir de 8 años
@@ -857,8 +3449,8 @@
                             <ul>
                                 <li><i class="fas fa-check"></i> Del 8 al 17 de Enero 2026</li>
                                 <li><i class="fas fa-check"></i> 10 días completos de experiencia</li>
-                                <li><i class="fas fa-check"></i> Llegada: 8 de Enero - 9:00 AM</li>
-                                <li><i class="fas fa-check"></i> Salida: 17 de Enero - 5:00 PM</li>
+                                <li style="font-weight: bold;"><i class="fas fa-check"></i> Llegada: 8 de Enero</li>
+                                <li style="font-weight: bold;"><i class="fas fa-check"></i> Salida: 17 de Enero</li>
                             </ul>
                         </div>
                         
@@ -903,27 +3495,29 @@
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">¡Inscríbete Ahora!</h2>
-                <p class="section-subtitle">No te quedes fuera de esta experiencia transformadora</p>
+                <p class="section-subtitle">No te quedes fuera de esta experiencia misionera</p>
             </div>
             
             <div class="formulario-container">
                 <div class="formulario-card">
-                    <h3 style="color: #2a6ebb; font-size: 2rem; margin-bottom: 20px;">
+                    <h3 style="color: #2a6ebb; font-size: 2rem; margin-bottom: 20px; text-shadow: none;">
                         <i class="fas fa-clipboard-check"></i> Formulario de Inscripción
                     </h3>
-                    <p style="font-size: 1.2rem; color: #4a5568; margin-bottom: 30px; line-height: 1.8;">
+                    <p style="font-size: 1.2rem; color: #4a5568; margin-bottom: 30px; line-height: 1.8; text-shadow: none;">
                         Para reservar tu lugar en el Campamento Misionero IAM 2026, completa nuestro formulario oficial.
                         Allí podrás proporcionar toda la información necesaria y asegurar tu participación.
                     </p>
                     
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeTUAbC9bDm7jW5uY0l0NfGcG9HwZxYzQpLqRrS/edit" 
-                       target="_blank" 
-                       class="formulario-boton">
-                        <i class="fab fa-google"></i>
-                        Completa el Formulario de Inscripción
-                    </a>
+                    <div class="formulario-boton-container">
+                        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeTUAbC9bDm7jW5uY0l0NfGcG9HwZxYzQpLqRrS/edit" 
+                           target="_blank" 
+                           class="formulario-boton">
+                            <i class="fab fa-google"></i>
+                            <span>Completa el Formulario de Inscripción</span>
+                        </a>
+                    </div>
                     
-                    <p style="margin-top: 25px; color: #718096; font-size: 0.95rem;">
+                    <p style="margin-top: 25px; color: #718096; font-size: 0.95rem; text-shadow: none;">
                         <i class="fas fa-external-link-alt"></i> Se abrirá en una nueva ventana
                     </p>
                 </div>
@@ -1034,7 +3628,6 @@
                     <h4>Contacta a los Animadores</h4>
                     <ul class="contact-list">
                         <li><i class="fab fa-instagram"></i> iaminmaculada</li>
-                        <li><i class="fas fa-phone"></i> +54 3865-00000</li>
                         <li><i class="fas fa-map-marker-alt"></i> En Concepcion: Parroquia Nuestra Señora de Fátima</li>
                         <li><i class="fas fa-map-marker-alt"></i> En Alto Verde: Capilla San José Obrero</li>
                     </ul>
@@ -1043,10 +3636,10 @@
                 <div class="footer-section">
                     <h4>Navegación</h4>
                     <ul class="footer-links">
-                        <li><a href="#experiencias"><i class="fas fa-chevron-right"></i> Experiencias</a></li>
-                        <li><a href="#destino"><i class="fas fa-chevron-right"></i> Destino</a></li>
-                        <li><a href="#importante"><i class="fas fa-chevron-right"></i> ¡Importante!</a></li>
-                        <li><a href="#inscripcion"><i class="fas fa-chevron-right"></i> Inscripción</a></li>
+                        <li><a href="#experiencias"><i class="fas fa-chevron-right"></i> <span>Experiencias</span></a></li>
+                        <li><a href="#destino"><i class="fas fa-chevron-right"></i> <span>Destino</span></a></li>
+                        <li><a href="#importante"><i class="fas fa-chevron-right"></i> <span>¡Importante!</span></a></li>
+                        <li><a href="#inscripcion"><i class="fas fa-chevron-right"></i> <span>Inscripción</span></a></li>
                     </ul>
                 </div>
             </div>
@@ -1179,20 +3772,24 @@
         // ===== ANIMACIONES DE SCROLL =====
         function initScrollAnimations() {
             // Animación para las tarjetas de experiencia
-            const experienciaCards = document.querySelectorAll('.experiencia-card');
-            
+            const experienciaCards = document.querySelectorAll('.experiencia-card-fullwidth');
+
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
+                        // Añadir delay escalonado para cada card
+                        const index = Array.from(experienciaCards).indexOf(entry.target);
+                        entry.target.style.transitionDelay = `${index * 0.2}s`;
                     }
                 });
             }, {
-                threshold: 0.2,
+                threshold: 0.1,
                 rootMargin: '0px 0px -50px 0px'
             });
-            
-            experienciaCards.forEach(card => {
+
+            experienciaCards.forEach((card, index) => {
+                card.style.transitionDelay = `${index * 0.2}s`;
                 observer.observe(card);
             });
             
