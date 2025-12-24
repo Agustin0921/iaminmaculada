@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IAM | Información del Campamento IAM</title>
+    <title>IAM | Campamento Misionero IAM 2026</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,141 +18,449 @@
     <meta name="theme-color" content="#2a6ebb">
     
     <style>
-        /* Estilos específicos para la página de información */
-        .info-section {
-            padding: 60px 0;
+        /* Estilos específicos para esta página */
+        .experiencias-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
         }
         
-        .destination-card {
-            background: white;
+        .experiencia-card {
+            display: flex;
+            align-items: center;
+            margin-bottom: 100px;
+            opacity: 0;
+            transform: translateX(-100px);
+            transition: all 0.8s ease;
+        }
+        
+        .experiencia-card.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .experiencia-card.reverse {
+            flex-direction: row-reverse;
+            transform: translateX(100px);
+        }
+        
+        .experiencia-card.reverse.visible {
+            transform: translateX(0);
+        }
+        
+        .experiencia-imagen {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
             border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .experiencia-imagen img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .experiencia-imagen:hover img {
+            transform: scale(1.05);
+        }
+        
+        .experiencia-contenido {
+            flex: 1;
             padding: 40px;
+            position: relative;
+        }
+        
+        .experiencia-card .experiencia-contenido {
+            padding-right: 60px;
+        }
+        
+        .experiencia-card.reverse .experiencia-contenido {
+            padding-left: 60px;
+            padding-right: 0;
+        }
+        
+        .experiencia-contenido::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 200%;
+            background: white;
+            z-index: -1;
             box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-            margin-bottom: 40px;
-            border: 2px solid #e2e8f0;
+            border-radius: 15px;
         }
         
-        .destination-header {
-            text-align: center;
-            margin-bottom: 30px;
+        .experiencia-card .experiencia-contenido::before {
+            right: 0;
+            left: -100%;
+            transform: skewX(-15deg);
         }
         
-        .destination-icon {
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            color: white;
+        .experiencia-card.reverse .experiencia-contenido::before {
+            left: 0;
+            right: -100%;
+            transform: skewX(15deg);
+        }
+        
+        .experiencia-icono {
             width: 80px;
             height: 80px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 20px;
+            margin-bottom: 25px;
             font-size: 2rem;
+            color: white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
         }
         
-        .requirements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 25px;
-            margin: 40px 0;
-        }
-        
-        .requirement-card {
-            background: #f8fafc;
-            border-radius: 15px;
-            padding: 25px;
-            border-left: 4px solid var(--primary);
-            transition: transform 0.3s ease;
-        }
-        
-        .requirement-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .requirement-icon {
-            color: var(--primary);
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        
-        .important-notice {
-            background: linear-gradient(135deg, #fff5f5, #fed7d7);
-            border: 2px solid #f56565;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 40px 0;
-        }
-        
-        .google-form-container {
-            text-align: center;
-            padding: 40px;
+        .experiencia-1 .experiencia-icono {
             background: linear-gradient(135deg, #2a6ebb, #4a8fd9);
-            border-radius: 20px;
-            color: white;
-            margin-top: 40px;
         }
         
-        .form-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 15px;
-            background: white;
-            color: var(--primary);
-            padding: 18px 35px;
-            border-radius: 50px;
-            text-decoration: none;
+        .experiencia-2 .experiencia-icono {
+            background: linear-gradient(135deg, #FF6B8B, #FF9EB5);
+        }
+        
+        .experiencia-3 .experiencia-icono {
+            background: linear-gradient(135deg, #38B2AC, #4FD1C5);
+        }
+        
+        .experiencia-contenido h3 {
+            color: #2a6ebb;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
             font-weight: 700;
+        }
+        
+        .experiencia-contenido p {
+            color: #4a5568;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 25px;
+        }
+        
+        .experiencia-lista {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .experiencia-lista li {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: #4a5568;
+        }
+        
+        .experiencia-lista li i {
+            color: #2a6ebb;
+            margin-right: 10px;
             font-size: 1.2rem;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
         
-        .form-link-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            background: #f8fafc;
+        /* Sección Destino */
+        .destino-section {
+            padding: 80px 0;
+            background: #ffffff;
         }
         
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
+        .destino-card {
+            background: white;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+            margin-bottom: 50px;
         }
         
-        .schedule-day {
-            background: #f8fafc;
-            padding: 20px;
-            border-radius: 10px;
+        .destino-imagen {
+            width: 100%;
+            height: 400px;
+            overflow: hidden;
+        }
+        
+        .destino-imagen img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .destino-info {
+            padding: 50px;
+        }
+        
+        .destino-header {
             text-align: center;
+            margin-bottom: 40px;
         }
         
-        .day-number {
-            background: var(--primary);
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+        .destino-titulo {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
+            gap: 15px;
+            color: #2a6ebb;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+        
+        .destino-subtitulo {
+            color: #718096;
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .incluye-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .incluye-item {
+            text-align: center;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .incluye-item:hover {
+            transform: translateY(-5px);
+            background: #edf2f7;
+        }
+        
+        .incluye-icono {
+            font-size: 2.5rem;
+            color: #2a6ebb;
+            margin-bottom: 20px;
+        }
+        
+        /* Sección Importante */
+        .importante-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, #2a6ebb 0%, #4a8fd9 100%);
+            color: white;
+        }
+        
+        .importante-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .importante-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            padding: 60px;
+            color: #2d3748;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            border: 5px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .importante-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .importante-header h2 {
+            color: #2a6ebb;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .importante-header p {
+            color: #718096;
+            font-size: 1.3rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .importante-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        
+        .importante-item {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-left: 5px solid #2a6ebb;
+        }
+        
+        .importante-item h4 {
+            color: #2a6ebb;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .importante-item ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .importante-item li {
+            margin-bottom: 10px;
+            color: #4a5568;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .importante-item li i {
+            color: #38B2AC;
+            margin-right: 10px;
+            margin-top: 5px;
+        }
+        
+        .edad-destacada {
+            background: linear-gradient(135deg, #FF6B8B, #FF9EB5);
+            color: white;
+            padding: 20px 40px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(255, 107, 139, 0.3);
+        }
+        
+        /* Sección Inscripción */
+        .inscripcion-section {
+            padding: 100px 0;
+            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+            text-align: center;
+        }
+        
+        .formulario-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .formulario-card {
+            background: white;
+            padding: 60px;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+        
+        .formulario-boton {
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+            background: linear-gradient(135deg, #2a6ebb, #4a8fd9);
+            color: white;
+            padding: 25px 50px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-size: 1.5rem;
             font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(42, 110, 187, 0.3);
+        }
+        
+        .formulario-boton:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(42, 110, 187, 0.4);
+            background: linear-gradient(135deg, #1a5ca8, #3a7fc9);
+        }
+        
+        .formulario-boton i {
+            font-size: 2rem;
+        }
+        
+        .contacto-info {
+            margin-top: 40px;
+            padding: 30px;
+            background: #f8fafc;
+            border-radius: 15px;
+            display: inline-block;
+        }
+        
+        @media (max-width: 992px) {
+            .experiencia-card,
+            .experiencia-card.reverse {
+                flex-direction: column;
+                margin-bottom: 60px;
+                transform: translateY(50px);
+            }
+            
+            .experiencia-card.visible,
+            .experiencia-card.reverse.visible {
+                transform: translateY(0);
+            }
+            
+            .experiencia-contenido {
+                padding: 30px !important;
+                margin-top: -30px;
+            }
+            
+            .experiencia-contenido::before {
+                transform: none !important;
+                width: 100% !important;
+                left: 0 !important;
+                right: 0 !important;
+                border-radius: 0 0 15px 15px;
+            }
+            
+            .importante-card {
+                padding: 30px;
+            }
+            
+            .edad-destacada {
+                font-size: 2rem;
+                padding: 15px 30px;
+            }
         }
         
         @media (max-width: 768px) {
-            .requirements-grid {
+            .experiencia-contenido h3 {
+                font-size: 1.8rem;
+            }
+            
+            .destino-info {
+                padding: 30px;
+            }
+            
+            .importante-header h2 {
+                font-size: 2.2rem;
+            }
+            
+            .formulario-boton {
+                padding: 20px 30px;
+                font-size: 1.2rem;
+            }
+            
+            .formulario-card {
+                padding: 30px;
+            }
+        }
+        @media (min-width: 1200px) {
+            .incluye-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* Y ajusta los estilos para pantallas móviles */
+        @media (max-width: 768px) {
+            .incluye-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .incluye-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .destination-card {
-                padding: 25px;
-            }
-            
-            .form-link-btn {
-                padding: 15px 25px;
-                font-size: 1.1rem;
             }
         }
     </style>
@@ -295,12 +603,11 @@
                 <!-- Navegación Principal -->
                 <div class="nav-menu" id="mainNav">
                     <ul class="nav-links">
-                        <li><a href="index.html" class="nav-link">Inicio</a></li>
-                        <li><a href="#about" class="nav-link">La Aventura</a></li>
-                        <li><a href="#destination" class="nav-link">Destino</a></li>
-                        <li><a href="#requirements" class="nav-link">Requisitos</a></li>
-                        <li><a href="#inscription" class="nav-link active">Inscripción</a></li>
-                        <li><a href="#gallery" class="nav-link">Recuerdos</a></li>
+                        <li><a href="#experiencias" class="nav-link active">Experiencias</a></li>
+                        <li><a href="#destino" class="nav-link">Destino</a></li>
+                        <li><a href="#importante" class="nav-link">¡Importante!</a></li>
+                        <li><a href="#inscripcion" class="nav-link">Inscripción</a></li>
+                        <li><a href="#gallery" class="nav-link">Galería</a></li>
                     </ul>
                 </div>
 
@@ -316,162 +623,275 @@
         <div class="container">
             <div class="hero-content">
                 <div class="hero-badge">
-                    <span><i class="fas fa-cross"></i> 8 al 17 de Enero 2026</span>
+                    <span><i class="fas fa-calendar-star"></i> 8 al 17 de Enero 2026</span>
                 </div>
                 <h1 class="hero-title">Campamento Misionero IAM 2026</h1>
-                <p class="hero-subtitle">¡Conoce todo sobre esta increíble aventura de fe, amistad y crecimiento espiritual!</p>
+                <p class="hero-subtitle">Una aventura inolvidable de fe, amistad y crecimiento espiritual</p>
 
                 <div class="hero-info">
                     <div class="info-item">
-                        <i class="fas fa-map-marker-alt"></i>
+                        <i class="fas fa-mountain"></i>
                         <div>
-                            <h4>Destino Especial</h4>
-                            <p>Estancia Catamarca, Argentina</p>
+                            <h4>Estancia Catamarca</h4>
+                            <p>Nuestro destino misionero</p>
                         </div>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-calendar-alt"></i>
+                        <i class="fas fa-heart"></i>
                         <div>
-                            <h4>10 Días</h4>
-                            <p>De aventura y formación</p>
+                            <h4>+8 Años</h4>
+                            <p>Para niños y adolescentes</p>
                         </div>
                     </div>
                     <div class="info-item">
-                        <i class="fas fa-users"></i>
+                        <i class="fas fa-cross"></i>
                         <div>
-                            <h4>Comunidad</h4>
-                            <p>Niños y adolescentes misioneros</p>
+                            <h4>Vida Sacramental</h4>
+                            <p>Fe y formación cristiana</p>
                         </div>
                     </div>
                 </div>
 
-                <a href="#inscription" class="btn btn-primary btn-lg">
-                    <i class="fas fa-file-signature"></i> ¡Quiero Participar!
+                <a href="#inscripcion" class="btn btn-primary btn-lg">
+                    <i class="fas fa-file-signature"></i> ¡Quiero Vivir Esta Experiencia!
                 </a>
             </div>
         </div>
     </section>
 
-    <!-- Sección Destino -->
-    <section class="section info-section" id="destination">
+    <!-- Sección Experiencias -->
+    <section class="experiencias-section" id="experiencias">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Nuestro Destino Misionero</h2>
-                <p class="section-subtitle">Descubre el lugar donde viviremos esta gran aventura</p>
+            <div class="section-header" style="margin-bottom: 80px;">
+                <h2 class="section-title">¿Qué Vivirás en el Campamento?</h2>
+                <p class="section-subtitle">Experiencias transformadoras que marcarán tu vida</p>
             </div>
 
-            <div class="destination-card">
-                <div class="destination-header">
-                    <div class="destination-icon">
-                        <i class="fas fa-mountain"></i>
-                    </div>
-                    <h3>Estancia Catamarca, Argentina</h3>
-                    <p class="section-subtitle">Un lugar perfecto para el encuentro con Dios y la naturaleza</p>
+            <!-- Experiencia 1 - Izquierda -->
+            <div class="experiencia-card experiencia-1">
+                <div class="experiencia-imagen">
+                    <img src="img/formacion-campamento.jpg" alt="Formación en el Campamento" loading="lazy">
                 </div>
-
-                <div class="requirements-grid">
-                    <div class="requirement-card">
-                        <div class="requirement-icon">
-                            <i class="fas fa-tree"></i>
-                        </div>
-                        <h4>Entorno Natural</h4>
-                        <p>Rodeados de montañas y naturaleza para vivir una experiencia única de retiro espiritual y recreación.</p>
+                <div class="experiencia-contenido">
+                    <div class="experiencia-icono">
+                        <i class="fas fa-graduation-cap"></i>
                     </div>
-                    
-                    <div class="requirement-card">
-                        <div class="requirement-icon">
-                            <i class="fas fa-campground"></i>
-                        </div>
-                        <h4>Instalaciones</h4>
-                        <p>Contamos con cabañas, espacios para actividades, capilla y áreas de recreación completamente equipadas.</p>
-                    </div>
-                    
-                    <div class="requirement-card">
-                        <div class="requirement-icon">
-                            <i class="fas fa-utensils"></i>
-                        </div>
-                        <h4>Alimentación</h4>
-                        <p>Comida saludable y balanceada preparada especialmente para niños y adolescentes.</p>
-                    </div>
+                    <h3>Formación Integral</h3>
+                    <p>Desarrolla tus talentos y crece como persona a través de talleres y actividades diseñadas especialmente para ti.</p>
+                    <ul class="experiencia-lista">
+                        <li><i class="fas fa-check-circle"></i> Talleres de crecimiento personal</li>
+                        <li><i class="fas fa-check-circle"></i> Charlas formativas con expertos</li>
+                        <li><i class="fas fa-check-circle"></i> Desarrollo de habilidades sociales</li>
+                        <li><i class="fas fa-check-circle"></i> Aprendizaje vivencial</li>
+                    </ul>
                 </div>
+            </div>
 
-                <div class="important-notice">
-                    <h4><i class="fas fa-info-circle"></i> Información Importante</h4>
-                    <p><strong>Fecha:</strong> 8 al 17 de Enero 2026</p>
-                    <p><strong>Edad:</strong> 8 a 17 años</p>
-                    <p><strong>Incluye:</strong> Alojamiento, alimentación, materiales, seguro médico y transporte interno en el campamento.</p>
-                    <p><strong>Traer:</strong> Ropa cómoda, ropa de abrigo para la noche, elementos de higiene personal, Biblia, rosario y cuaderno.</p>
+            <!-- Experiencia 2 - Derecha -->
+            <div class="experiencia-card experiencia-2 reverse">
+                <div class="experiencia-imagen">
+                    <img src="img/juegos-campamento.jpg" alt="Juegos y Diversión" loading="lazy">
+                </div>
+                <div class="experiencia-contenido">
+                    <div class="experiencia-icono">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3>Juegos y Aventura</h3>
+                    <p>Diviértete al máximo con actividades recreativas, deportes y juegos que fomentan el trabajo en equipo y la amistad.</p>
+                    <ul class="experiencia-lista">
+                        <li><i class="fas fa-check-circle"></i> Juegos de equipo y cooperación</li>
+                        <li><i class="fas fa-check-circle"></i> Actividades al aire libre</li>
+                        <li><i class="fas fa-check-circle"></i> Competencias saludables</li>
+                        <li><i class="fas fa-check-circle"></i> Fogatas y veladas nocturnas</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Experiencia 3 - Izquierda -->
+            <div class="experiencia-card experiencia-3">
+                <div class="experiencia-imagen">
+                    <img src="img/fe-campamento.jpg" alt="Crecimiento en la Fe" loading="lazy">
+                </div>
+                <div class="experiencia-contenido">
+                    <div class="experiencia-icono">
+                        <i class="fas fa-hands-praying"></i>
+                    </div>
+                    <h3>Crecer en la Fe</h3>
+                    <p>Fortalece tu relación con Dios a través de momentos de oración, sacramentos y formación cristiana.</p>
+                    <ul class="experiencia-lista">
+                        <li><i class="fas fa-check-circle"></i> Santa Misa diaria</li>
+                        <li><i class="fas fa-check-circle"></i> Adoración Eucarística</li>
+                        <li><i class="fas fa-check-circle"></i> Rosario comunitario</li>
+                        <li><i class="fas fa-check-circle"></i> Confesiones y dirección espiritual</li>
+                    </ul>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sección Requisitos -->
-    <section class="section bg-light" id="requirements">
+    <!-- Sección Destino -->
+    <section class="destino-section" id="destino">
         <div class="container">
-            <div class="section-header">
-                <h2 class="section-title">Requisitos para Participar</h2>
-                <p class="section-subtitle">Todo lo que necesitas saber antes de inscribirte</p>
-            </div>
+            <div class="destino-card">
+                <div class="destino-imagen">
+                    <!-- Reemplaza esta imagen con la de Estancia Catamarca -->
+                    <img src="img/estancia-catamarca.jpg" alt="Estancia Catamarca, Argentina" loading="lazy">
+                </div>
+                <div class="destino-info">
+                    <div class="destino-header">
+                        <h2 class="destino-titulo">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Nuestro Destino: Estancia Catamarca
+                        </h2>
+                        <p class="destino-subtitulo">
+                            Un lugar privilegiado en medio de la naturaleza para vivir una experiencia transformadora
+                        </p>
+                    </div>
 
-            <div class="requirements-grid">
-                <div class="requirement-card">
-                    <div class="requirement-icon">
-                        <i class="fas fa-user-check"></i>
+                    <h3 style="color: #2a6ebb; text-align: center; margin-bottom: 30px; font-size: 2rem;">
+                        <i class="fas fa-gift"></i> Actividades y Servicios Incluidos
+                    </h3>
+
+                    <div class="incluye-grid">
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-bed"></i>
+                            </div>
+                            <h4>Alojamiento</h4>
+                            <p>Niños en carpas y Niñas dentro de la casa</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-utensils"></i>
+                            </div>
+                            <h4>Alimentación Completa</h4>
+                            <p>4 comidas diarias</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-church"></i>
+                            </div>
+                            <h4>Misa Diaria</h4>
+                            <p>Celebración eucarística todos los días</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-pray"></i>
+                            </div>
+                            <h4>Rosario</h4>
+                            <p>Rezamos el rosario por las calles</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <h4>Juegos y Recreación</h4>
+                            <p>Actividades deportivas y recreativas</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <h4>Fogatas Nocturnas</h4>
+                            <p>Veladas alrededor del fuego con canciones</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-theater-masks"></i>
+                            </div>
+                            <h4>Teatro</h4>
+                            <p>Ya sea representar obras o lo que los niños imaginen</p>
+                        </div>
+
+                        <div class="incluye-item">
+                            <div class="incluye-icono">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h4>Formación Integral</h4>
+                            <p>Talleres y charlas para crecer en la fe</p>
+                        </div>
                     </div>
-                    <h4>Edad y Salud</h4>
-                    <ul>
-                        <li>Tener entre 8 y 17 años</li>
-                        <li>Gozar de buena salud</li>
-                        <li>Informar condiciones médicas especiales</li>
-                        <li>Contar con seguro médico vigente</li>
-                    </ul>
-                </div>
-                
-                <div class="requirement-card">
-                    <div class="requirement-icon">
-                        <i class="fas fa-file-alt"></i>
+
+                    <div style="text-align: center; margin-top: 40px; padding: 20px; background: #f8fafc; border-radius: 15px;">
+                        <h4 style="color: #2a6ebb; margin-bottom: 15px;">
+                            <i class="fas fa-star"></i> ¡Y Mucho Más!
+                        </h4>
+                        <p style="color: #4a5568;">
+                            Adoración eucarística, caminatas, talleres creativos, momentos de oración, 
+                            trabajo en equipo y experiencias que recordarás para siempre.
+                        </p>
                     </div>
-                    <h4>Documentación</h4>
-                    <ul>
-                        <li>DNI o documento de identidad</li>
-                        <li>Autorización firmada por padres/tutores</li>
-                        <li>Formulario médico completo</li>
-                        <li>Contactos de emergencia</li>
-                    </ul>
-                </div>
-                
-                <div class="requirement-card">
-                    <div class="requirement-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h4>Actitud Misionera</h4>
-                    <ul>
-                        <li>Deseo de crecimiento espiritual</li>
-                        <li>Respeto por la comunidad</li>
-                        <li>Espíritu de colaboración</li>
-                        <li>Apertura a nuevas experiencias</li>
-                    </ul>
                 </div>
             </div>
+        </div>
+    </section>
 
-            <div class="destination-card" style="margin-top: 40px;">
-                <h4 style="text-align: center; margin-bottom: 20px;"><i class="fas fa-calendar-day"></i> Cronograma Diario (Ejemplo)</h4>
-                <div class="schedule-grid">
-                    <div class="schedule-day">
-                        <div class="day-number">1</div>
-                        <h5>Llegada e Integración</h5>
-                        <p>Conociéndonos y organizando equipos</p>
+    <!-- Sección Importante -->
+    <section class="importante-section" id="importante">
+        <div class="container">
+            <div class="importante-container">
+                <div class="importante-card">
+                    <div class="importante-header">
+                        <h2><i class="fas fa-exclamation-circle"></i> ¡Información Importante!</h2>
+                        <p>Todo lo que necesitas saber antes de participar</p>
                     </div>
-                    <div class="schedule-day">
-                        <div class="day-number">2-9</div>
-                        <h5>Días Completos</h5>
-                        <p>Misa, formación, juegos y actividades</p>
+                    
+                    <div style="text-align: center;">
+                        <div class="edad-destacada">
+                            <i class="fas fa-child"></i> Edad: +8 Años <i class="fas fa-child"></i>
+                        </div>
+                        <p style="font-size: 1.2rem; color: #718096; margin-bottom: 40px;">
+                            Para niños y adolescentes a partir de 8 años
+                        </p>
                     </div>
-                    <div class="schedule-day">
-                        <div class="day-number">10</div>
-                        <h5>Clausura y Despedida</h5>
-                        <p>Eucaristía final y compromiso misionero</p>
+                    
+                    <div class="importante-grid">
+                        <div class="importante-item">
+                            <h4><i class="fas fa-calendar-alt"></i> Fechas y Duración</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Del 8 al 17 de Enero 2026</li>
+                                <li><i class="fas fa-check"></i> 10 días completos de experiencia</li>
+                                <li><i class="fas fa-check"></i> Llegada: 8 de Enero - 9:00 AM</li>
+                                <li><i class="fas fa-check"></i> Salida: 17 de Enero - 5:00 PM</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="importante-item">
+                            <h4><i class="fas fa-suitcase"></i> ¿Qué Traer?</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Ropa cómoda y de abrigo</li>
+                                <li><i class="fas fa-check"></i> Elementos de higiene personal</li>
+                                <li><i class="fas fa-check"></i> Biblia y rosario</li>
+                                <li><i class="fas fa-check"></i> Toalla y sábanas</li>
+                                <li><i class="fas fa-check"></i> Linterna y repelente</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="importante-item">
+                            <h4><i class="fas fa-file-medical"></i> Salud y Seguridad</h4>
+                            <ul>
+                                <li><i class="fas fa-check"></i> Informar condiciones médicas</li>
+                                <li><i class="fas fa-check"></i> Traer medicamentos necesarios</li>
+                                <li><i class="fas fa-check"></i> Autorización de padres/tutores</li>
+                                <li><i class="fas fa-check"></i> Datos de contacto de emergencia</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #f8fafc; padding: 30px; border-radius: 15px; margin-top: 40px;">
+                        <h4 style="color: #2a6ebb; text-align: center; margin-bottom: 20px;">
+                            <i class="fas fa-shield-alt"></i> Nuestro Compromiso
+                        </h4>
+                        <p style="text-align: center; color: #4a5568; font-size: 1.1rem;">
+                            Garantizamos un ambiente seguro, familiar y enriquecedor donde cada participante 
+                            podrá desarrollarse integralmente bajo la supervisión de nuestro equipo capacitado.
+                        </p>
                     </div>
                 </div>
             </div>
@@ -479,40 +899,48 @@
     </section>
 
     <!-- Sección Inscripción -->
-    <section class="section" id="inscription">
+    <section class="inscripcion-section" id="inscripcion">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">¡Inscríbete Ahora!</h2>
-                <p class="section-subtitle">Sigue estos pasos para unirte a nuestra misión</p>
+                <p class="section-subtitle">No te quedes fuera de esta experiencia transformadora</p>
             </div>
-
-            <div class="google-form-container">
-                <h3 style="margin-bottom: 15px;"><i class="fas fa-clipboard-list"></i> Formulario de Inscripción</h3>
-                <p style="margin-bottom: 20px; font-size: 1.1rem;">
-                    Para formalizar tu participación, debes completar el formulario oficial de Google Forms.
-                    Allí encontrarás todas las preguntas necesarias para conocer mejor a nuestros futuros misioneros.
-                </p>
+            
+            <div class="formulario-container">
+                <div class="formulario-card">
+                    <h3 style="color: #2a6ebb; font-size: 2rem; margin-bottom: 20px;">
+                        <i class="fas fa-clipboard-check"></i> Formulario de Inscripción
+                    </h3>
+                    <p style="font-size: 1.2rem; color: #4a5568; margin-bottom: 30px; line-height: 1.8;">
+                        Para reservar tu lugar en el Campamento Misionero IAM 2026, completa nuestro formulario oficial.
+                        Allí podrás proporcionar toda la información necesaria y asegurar tu participación.
+                    </p>
+                    
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSeTUAbC9bDm7jW5uY0l0NfGcG9HwZxYzQpLqRrS/edit" 
+                       target="_blank" 
+                       class="formulario-boton">
+                        <i class="fab fa-google"></i>
+                        Completa el Formulario de Inscripción
+                    </a>
+                    
+                    <p style="margin-top: 25px; color: #718096; font-size: 0.95rem;">
+                        <i class="fas fa-external-link-alt"></i> Se abrirá en una nueva ventana
+                    </p>
+                </div>
                 
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeTUAbC9bDm7jW5uY0l0NfGcG9HwZxYzQpLqRrS/edit" 
-                   target="_blank" 
-                   class="form-link-btn">
-                    <i class="fab fa-google"></i>
-                    Ir al Formulario de Inscripción
-                </a>
-                
-                <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.9;">
-                    <i class="fas fa-external-link-alt"></i> El formulario se abrirá en una nueva ventana
-                </p>
-            </div>
-
-            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 10px;">
-                <h4><i class="fas fa-question-circle"></i> ¿Tienes preguntas?</h4>
-                <p>Contáctanos antes de completar el formulario:</p>
-                <p style="margin-top: 10px;">
-                    <i class="fab fa-instagram"></i> @iaminmaculada | 
-                    <i class="fab fa-whatsapp"></i> +54 3865-00000 | 
-                    <i class="fas fa-envelope"></i> iaminmaculada@gmail.com
-                </p>
+                <div class="contacto-info">
+                    <h4 style="color: #2a6ebb; margin-bottom: 15px;">
+                        <i class="fas fa-question-circle"></i> ¿Tienes dudas o preguntas?
+                    </h4>
+                    <p style="margin-bottom: 10px; color: #4a5568;">
+                        Contáctanos antes de completar el formulario:
+                    </p>
+                    <p style="color: #2a6ebb; font-weight: 600;">
+                        <i class="fab fa-instagram"></i> @iaminmaculada | 
+                        <i class="fab fa-whatsapp"></i> +54 3865-00000 | 
+                        <i class="fas fa-envelope"></i> iaminmaculada@gmail.com
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -521,58 +949,54 @@
     <section class="section bg-light" id="gallery">
         <div class="container">
             <div class="section-header">
-                <h2 class="section-title">Recuerdos de Campamentos Anteriores</h2>
+                <h2 class="section-title">Galería de Campamentos Anteriores</h2>
                 <p class="section-subtitle">Mira cómo han sido nuestras experiencias pasadas</p>
             </div>
 
             <div class="gallery-grid">
-                <!-- GALERÍA 1: Juegos y Actividades -->
-                <div class="gallery-item" onclick="openGamesGallery()">
+                <div class="gallery-item" onclick="openGalleryModal('juegos')">
                     <div class="gallery-portada portada-juegos">
                         <div class="portada-overlay">
                             <div class="portada-content">
                                 <h4><i class="fas fa-gamepad"></i> Juegos y Actividades</h4>
                                 <p>¡Diversión y energía en acción!</p>
-                                <span class="portada-badge">6 fotos</span>
+                                <span class="portada-badge">Ver fotos</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- GALERÍA 2: Vida Sacramental -->
-                <div class="gallery-item" onclick="openFaithGallery()">
+                <div class="gallery-item" onclick="openGalleryModal('fe')">
                     <div class="gallery-portada portada-sacramental">
                         <div class="portada-overlay">
                             <div class="portada-content">
                                 <h4><i class="fas fa-church"></i> Vida Sacramental</h4>
                                 <p>Misa, Adoración y Rosario</p>
-                                <span class="portada-badge">6 fotos</span>
+                                <span class="portada-badge">Ver fotos</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- GALERÍA 3: Talleres y Formación -->
-                <div class="gallery-item" onclick="openWorkshopsGallery()">
+                <div class="gallery-item" onclick="openGalleryModal('formacion')">
                     <div class="gallery-portada portada-talleres">
                         <div class="portada-overlay">
                             <div class="portada-content">
-                                <h4><i class="fas fa-comments"></i>Formación</h4>
+                                <h4><i class="fas fa-comments"></i> Formación</h4>
                                 <p>Charlas y crecimiento en la fe</p>
-                                <span class="portada-badge">6 fotos</span>
+                                <span class="portada-badge">Ver fotos</span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- GALERÍA 4: Convivencia Cristiana -->
-                <div class="gallery-item" onclick="openCommunityGallery()">
+                <div class="gallery-item" onclick="openGalleryModal('comunidad')">
                     <div class="gallery-portada portada-convivencia">
                         <div class="portada-overlay">
                             <div class="portada-content">
-                                <h4><i class="fas fa-users"></i> Convivencia Misionera</h4>
-                                <p>Recreación, fogatas y amistad</p>
-                                <span class="portada-badge">6 fotos</span>
+                                <h4><i class="fas fa-users"></i> Convivencia</h4>
+                                <p>Amistad y momentos compartidos</p>
+                                <span class="portada-badge">Ver fotos</span>
                             </div>
                         </div>
                     </div>
@@ -580,7 +1004,7 @@
             </div>
 
             <div class="gallery-nota">
-                <p><i class="fas fa-info-circle"></i> Haz clic en cada categoría para ver más fotos de experiencias anteriores</p>
+                <p><i class="fas fa-info-circle"></i> Haz clic en cada categoría para ver más fotos</p>
             </div>
         </div>
     </section>
@@ -619,35 +1043,28 @@
                 <div class="footer-section">
                     <h4>Navegación</h4>
                     <ul class="footer-links">
-                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Inicio</a></li>
-                        <li><a href="#destination"><i class="fas fa-chevron-right"></i> Destino</a></li>
-                        <li><a href="#requirements"><i class="fas fa-chevron-right"></i> Requisitos</a></li>
-                        <li><a href="#inscription"><i class="fas fa-chevron-right"></i> Inscripción</a></li>
+                        <li><a href="#experiencias"><i class="fas fa-chevron-right"></i> Experiencias</a></li>
+                        <li><a href="#destino"><i class="fas fa-chevron-right"></i> Destino</a></li>
+                        <li><a href="#importante"><i class="fas fa-chevron-right"></i> ¡Importante!</a></li>
+                        <li><a href="#inscripcion"><i class="fas fa-chevron-right"></i> Inscripción</a></li>
                     </ul>
                 </div>
             </div>
             
             <div class="footer-bottom">
-                <p>&copy; 2025 IAM - infancia y Adolescencia Misionera. Todos los derechos reservados.</p>
-                <p>Hecho con <i class="fas fa-heart" style="color: #ffffff;"></i> para todos los niños y adolescentes de todo el mundo</p>
+                <p>&copy; 2025 IAM - Infancia y Adolescencia Misionera. Todos los derechos reservados.</p>
+                <p>Hecho con <i class="fas fa-heart" style="color: #ffffff;"></i> para todos los niños y adolescentes misioneros</p>
             </div>
         </div>
     </footer>
 
-    <!-- Modal de Confirmación (mantenido por compatibilidad) -->
-    <div class="modal" id="confirmationModal">
-        <div class="modal-content confirmation-modal">
-            <div class="modal-icon success">
-                <i class="fas fa-check-circle"></i>
+    <!-- Modal de Galería -->
+    <div class="modal" id="galleryModal">
+        <div class="modal-content gallery-modal-content" style="max-width: 90%; max-height: 90vh;">
+            <button class="modal-close" onclick="closeGalleryModal()">&times;</button>
+            <div id="galleryModalContent">
+                <!-- Contenido dinámico -->
             </div>
-            <h3>¡Formulario Enviado!</h3>
-            <p id="confirmationMessage">Gracias por completar el formulario de inscripción.</p>
-            <div class="confirmation-details">
-                <p><i class="fas fa-check"></i> Tu solicitud ha sido recibida</p>
-                <p><i class="fas fa-envelope"></i> Pronto nos contactaremos contigo</p>
-                <p><i class="fas fa-info-circle"></i> Revisa tu correo para más información</p>
-            </div>
-            <button class="btn btn-primary" id="closeConfirmation">¡Entendido!</button>
         </div>
     </div>
 
@@ -655,20 +1072,21 @@
     <script>
         // Script simplificado para la landing page
         document.addEventListener('DOMContentLoaded', function() {
-            console.log("🚀 Página de información del campamento cargada");
+            console.log("🚀 Página del campamento cargada");
             
             // Inicializar navegación
             initNavigation();
             
-            // Inicializar componentes
-            initGallery();
-            initModals();
+            // Inicializar animaciones de scroll
             initScrollAnimations();
+            
+            // Inicializar galería simple
+            initGallery();
             
             // Configuración básica del sistema admin (sin conexión a backend)
             initAdminSystemSimple();
             
-            console.log("✅ Sistema de información listo");
+            console.log("✅ Sistema listo");
         });
         
         // ===== SISTEMA DE NAVEGACIÓN =====
@@ -758,80 +1176,116 @@
             updateMenuVisibility();
         }
         
-        // ===== GALERÍA =====
+        // ===== ANIMACIONES DE SCROLL =====
+        function initScrollAnimations() {
+            // Animación para las tarjetas de experiencia
+            const experienciaCards = document.querySelectorAll('.experiencia-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            experienciaCards.forEach(card => {
+                observer.observe(card);
+            });
+            
+            // Animación para otros elementos
+            const animatedElements = document.querySelectorAll('.incluye-item, .importante-item, .gallery-item');
+            
+            const observer2 = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animated');
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+            
+            animatedElements.forEach(element => {
+                observer2.observe(element);
+            });
+        }
+        
+        // ===== GALERÍA SIMPLE =====
         function initGallery() {
             const galleryItems = document.querySelectorAll('.gallery-item');
-            
-            if (galleryItems[0]) galleryItems[0].addEventListener('click', () => openGamesGallery());
-            if (galleryItems[1]) galleryItems[1].addEventListener('click', () => openFaithGallery());
-            if (galleryItems[2]) galleryItems[2].addEventListener('click', () => openWorkshopsGallery());
-            if (galleryItems[3]) galleryItems[3].addEventListener('click', () => openCommunityGallery());
-        }
-        
-        // Funciones de galería (simplificadas)
-        function openGamesGallery() {
-            showGalleryModal('Juegos y Actividades', 'fa-gamepad');
-        }
-        
-        function openFaithGallery() {
-            showGalleryModal('Vida Sacramental', 'fa-church');
-        }
-        
-        function openWorkshopsGallery() {
-            showGalleryModal('Formación', 'fa-comments');
-        }
-        
-        function openCommunityGallery() {
-            showGalleryModal('Convivencia Misionera', 'fa-users');
-        }
-        
-        function showGalleryModal(title, iconClass) {
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'flex';
-            modal.style.zIndex = '2000';
-            
-            modal.innerHTML = `
-                <div class="modal-content" style="max-width: 500px;">
-                    <button class="modal-close" onclick="this.closest('.modal').remove()">&times;</button>
-                    <div style="text-align: center; padding: 30px;">
-                        <i class="fas ${iconClass}" style="font-size: 3rem; color: var(--primary); margin-bottom: 20px;"></i>
-                        <h3>${title}</h3>
-                        <p style="margin: 20px 0; color: var(--text-light);">
-                            Para ver las fotos completas de ${title.toLowerCase()}, visita nuestra página principal.
-                        </p>
-                        <a href="index.html#gallery" class="btn btn-primary">
-                            <i class="fas fa-external-link-alt"></i> Ver Galería Completa
-                        </a>
-                    </div>
-                </div>
-            `;
-            
-            document.body.appendChild(modal);
-            
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) {
-                    modal.remove();
-                }
+            galleryItems.forEach(item => {
+                item.style.cursor = 'pointer';
             });
         }
         
-        // ===== MODALES =====
-        function initModals() {
-            const confirmationModal = document.getElementById('confirmationModal');
-            const closeConfirmation = document.getElementById('closeConfirmation');
+        function openGalleryModal(type) {
+            const modal = document.getElementById('galleryModal');
+            const content = document.getElementById('galleryModalContent');
             
-            if (closeConfirmation) {
-                closeConfirmation.addEventListener('click', function() {
-                    if (confirmationModal) confirmationModal.style.display = 'none';
-                });
+            let galleryContent = '';
+            let title = '';
+            
+            switch(type) {
+                case 'juegos':
+                    title = 'Juegos y Actividades';
+                    galleryContent = `
+                        <h3 style="color: var(--primary); margin-bottom: 30px; text-align: center;">
+                            <i class="fas fa-gamepad"></i> ${title}
+                        </h3>
+                        <div style="text-align: center; padding: 20px;">
+                            <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px;">
+                                Para ver la galería completa de fotos, visita nuestra página principal.
+                            </p>
+                            <a href="index.html#gallery" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Ver Galería Completa
+                            </a>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'fe':
+                    title = 'Vida Sacramental';
+                    galleryContent = `
+                        <h3 style="color: var(--primary); margin-bottom: 30px; text-align: center;">
+                            <i class="fas fa-church"></i> ${title}
+                        </h3>
+                        <div style="text-align: center; padding: 20px;">
+                            <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px;">
+                                Momentos de oración, misa y crecimiento espiritual en campamentos anteriores.
+                            </p>
+                            <a href="index.html#gallery" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Ver Galería Completa
+                            </a>
+                        </div>
+                    `;
+                    break;
+                    
+                default:
+                    galleryContent = `
+                        <h3 style="color: var(--primary); margin-bottom: 30px; text-align: center;">
+                            <i class="fas fa-images"></i> Galería de Fotos
+                        </h3>
+                        <div style="text-align: center; padding: 20px;">
+                            <p style="font-size: 1.2rem; color: var(--text-light); margin-bottom: 30px;">
+                                Visita nuestra página principal para ver todas las fotos de campamentos anteriores.
+                            </p>
+                            <a href="index.html#gallery" class="btn btn-primary">
+                                <i class="fas fa-external-link-alt"></i> Ver Galería Completa
+                            </a>
+                        </div>
+                    `;
             }
             
-            window.addEventListener('click', function(e) {
-                if (confirmationModal && e.target === confirmationModal) {
-                    confirmationModal.style.display = 'none';
-                }
-            });
+            content.innerHTML = galleryContent;
+            modal.style.display = 'flex';
+        }
+        
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').style.display = 'none';
         }
         
         // ===== SISTEMA ADMIN SIMPLIFICADO =====
@@ -845,12 +1299,10 @@
             
             if (!adminAccessBtn || !loginModal || !adminModal) return;
             
-            // Botón de acceso admin
             adminAccessBtn.onclick = function() {
                 loginModal.style.display = 'flex';
             };
             
-            // Formulario de login
             if (loginForm) {
                 loginForm.onsubmit = function(e) {
                     e.preventDefault();
@@ -861,26 +1313,23 @@
                     loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
                     loginBtn.disabled = true;
                     
-                    // Simular verificación
                     setTimeout(() => {
                         loginModal.style.display = 'none';
                         adminModal.style.display = 'flex';
                         
-                        // Mostrar datos de ejemplo
-                        document.getElementById('adminTotalCount').textContent = '45';
-                        document.getElementById('adminAvgAge').textContent = '12.5';
-                        document.getElementById('adminMedicalCount').textContent = '8';
+                        document.getElementById('adminTotalCount').textContent = '--';
+                        document.getElementById('adminAvgAge').textContent = '--';
+                        document.getElementById('adminMedicalCount').textContent = '--';
                         
-                        // Actualizar lista de recientes
                         const recentContainer = document.getElementById('recentApplicants');
                         if (recentContainer) {
                             recentContainer.innerHTML = `
-                                <div class="applicant-item">
-                                    <div class="applicant-info">
-                                        <h5>Ejemplo de Aventurero</h5>
-                                        <p>14 años • Parroquia Ejemplo</p>
-                                    </div>
-                                    <div class="applicant-date">Hoy</div>
+                                <div style="text-align: center; padding: 30px; color: var(--text-light);">
+                                    <i class="fas fa-info-circle" style="font-size: 2rem; margin-bottom: 15px;"></i>
+                                    <p>Los datos de inscripción están disponibles en la página principal</p>
+                                    <a href="index.html" class="btn" style="margin-top: 15px; padding: 8px 15px;">
+                                        Ir a la página principal
+                                    </a>
                                 </div>
                             `;
                         }
@@ -889,14 +1338,13 @@
                         loginBtn.disabled = false;
                         loginForm.reset();
                         
-                        showNotificationSimple('✅ Acceso concedido (modo demostración)', 'success');
+                        showNotificationSimple('🔐 Modo demostración - Los datos reales están en la página principal', 'info');
                     }, 1500);
                     
                     return false;
                 };
             }
             
-            // Botón cancelar login
             if (cancelLogin) {
                 cancelLogin.onclick = function(e) {
                     e.preventDefault();
@@ -905,7 +1353,6 @@
                 };
             }
             
-            // Botón cerrar panel admin
             if (closeAdmin) {
                 closeAdmin.onclick = function(e) {
                     e.preventDefault();
@@ -913,7 +1360,6 @@
                 };
             }
             
-            // Cerrar modales al hacer clic fuera
             loginModal.onclick = function(e) {
                 if (e.target === loginModal) {
                     loginModal.style.display = 'none';
@@ -927,77 +1373,21 @@
                 }
             };
             
-            // Inicializar botones admin
             initAdminButtonsSimple();
         }
         
         function initAdminButtonsSimple() {
-            // Botón: Gestionar Inscritos
-            const manageAllBtn = document.getElementById('manageAll');
-            if (manageAllBtn) {
-                manageAllBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
+            const buttons = [
+                'manageAll', 'viewAllData', 'exportPDF', 'exportExcel', 'cleanDuplicates', 'clearData'
+            ];
             
-            // Botón: Ver Todos
-            const viewAllDataBtn = document.getElementById('viewAllData');
-            if (viewAllDataBtn) {
-                viewAllDataBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
-            
-            // Botón: Exportar PDF
-            const exportPDFBtn = document.getElementById('exportPDF');
-            if (exportPDFBtn) {
-                exportPDFBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
-            
-            // Botón: Exportar Excel
-            const exportExcelBtn = document.getElementById('exportExcel');
-            if (exportExcelBtn) {
-                exportExcelBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
-            
-            // Botón: Reiniciar Misión
-            const clearDataBtn = document.getElementById('clearData');
-            if (clearDataBtn) {
-                clearDataBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
-            
-            // Botón: Limpiar Duplicados
-            const cleanDuplicatesBtn = document.getElementById('cleanDuplicates');
-            if (cleanDuplicatesBtn) {
-                cleanDuplicatesBtn.addEventListener('click', function() {
-                    showNotificationSimple('Esta función requiere conexión al servidor', 'info');
-                });
-            }
-        }
-        
-        // ===== FUNCIONES DE ANIMACIÓN =====
-        function initScrollAnimations() {
-            const animatedElements = document.querySelectorAll('.feature-card, .countdown-unit, .gallery-item, .requirement-card');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animated');
-                    }
-                });
-            }, {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            });
-            
-            animatedElements.forEach(element => {
-                observer.observe(element);
+            buttons.forEach(buttonId => {
+                const button = document.getElementById(buttonId);
+                if (button) {
+                    button.addEventListener('click', function() {
+                        showNotificationSimple('Esta función está disponible en la página principal con conexión al servidor', 'info');
+                    });
+                }
             });
         }
         
@@ -1059,10 +1449,8 @@
         }
         
         // ===== FUNCIONES GLOBALES =====
-        window.openGamesGallery = openGamesGallery;
-        window.openFaithGallery = openFaithGallery;
-        window.openWorkshopsGallery = openWorkshopsGallery;
-        window.openCommunityGallery = openCommunityGallery;
+        window.openGalleryModal = openGalleryModal;
+        window.closeGalleryModal = closeGalleryModal;
     </script>
 </body>
 </html>
