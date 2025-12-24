@@ -1126,51 +1126,86 @@ function initAdminSystem() {
     initAdminButtons();
 }
 
-function showAdminPanel() {
+async function showAdminPanel() {
     const adminModal = document.getElementById('adminModal');
     if (!adminModal) return;
     
-    // Cargar datos desde Render si está autenticado
-    if (isAdminAuthenticated) {
-        loadAdminDataFromBackend();
-    } else {
-        updateAdminStats();
-        updateRecentApplicants();
+    console.log("🔑 Mostrando panel admin...");
+    
+    // Verificar que haya token
+    const token = localStorage.getItem('iamAuthToken');
+    if (!token) {
+        console.error("❌ No hay token de autenticación");
+        showNotification('No estás autenticado. Haz login nuevamente.', 'error');
+        return;
     }
     
-    adminModal.style.display = 'flex';
+    // Mostrar loading
+    const loadingNotification = showNotification('🔄 Cargando datos del servidor...', 'info', 0);
+    
+    try {
+        // Cargar datos SOLO del backend
+        await loadAdminDataFromBackend();
+        
+        // Ocultar loading
+        if (loadingNotification) loadingNotification.remove();
+        
+        // Mostrar modal
+        adminModal.style.display = 'flex';
+        
+        // Forzar actualización de estadísticas
+        setTimeout(() => {
+            updateAdminStats();
+        }, 1000);
+        
+    } catch (error) {
+        console.error("❌ Error cargando panel:", error);
+        if (loadingNotification) loadingNotification.remove();
+        showNotification('Error cargando datos. Intenta nuevamente.', 'error');
+    }
 }
 
 // Cargar datos admin desde backend
 async function loadAdminDataFromBackend() {
     try {
         const token = localStorage.getItem('iamAuthToken');
+        if (!token) {
+            console.warn("⚠️ No hay token, no se puede cargar datos del backend");
+            return;
+        }
         
-        // Cargar dashboard
+        console.log("🔄 Cargando datos REALES del backend...");
+        
+        // 1. Cargar estadísticas
         const dashboardResponse = await fetch(`${RENDER_BACKEND_URL}/api/admin/dashboard`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
         
-        if (dashboardResponse.ok) {
-            const dashboardData = await dashboardResponse.json();
-            if (dashboardData.success) {
-                // Actualizar estadísticas del panel
-                const adminTotalCount = document.getElementById('adminTotalCount');
-                const adminAvgAge = document.getElementById('adminAvgAge');
-                const adminMedicalCount = document.getElementById('adminMedicalCount');
-                
-                if (adminTotalCount) adminTotalCount.textContent = dashboardData.stats.total;
-                if (adminAvgAge) adminAvgAge.textContent = dashboardData.stats.avgAge || '0';
-                if (adminMedicalCount) adminMedicalCount.textContent = dashboardData.stats.withMedical || 0;
-                
-                // Actualizar estadísticas públicas también
-                applicantCount = dashboardData.stats.total;
-                updateApplicantCounter();
-                updateAvailableSpots();
-            }
+        if (!dashboardResponse.ok) {
+            throw new Error(`Error HTTP: ${dashboardResponse.status}`);
         }
         
-        // Cargar inscritos recientes
+        const dashboardData = await dashboardResponse.json();
+        
+        if (dashboardData.success) {
+            console.log("✅ Datos del backend cargados:", dashboardData.stats.total, "inscritos");
+            
+            // Actualizar UI con datos REALES
+            const adminTotalCount = document.getElementById('adminTotalCount');
+            const adminAvgAge = document.getElementById('adminAvgAge');
+            const adminMedicalCount = document.getElementById('adminMedicalCount');
+            
+            if (adminTotalCount) adminTotalCount.textContent = dashboardData.stats.total;
+            if (adminAvgAge) adminAvgAge.textContent = dashboardData.stats.avgAge || '0';
+            if (adminMedicalCount) adminMedicalCount.textContent = dashboardData.stats.withMedical || 0;
+            
+            // Actualizar contadores públicos también
+            applicantCount = dashboardData.stats.total;
+            updateApplicantCounter();
+            updateAvailableSpots();
+        }
+        
+        // 2. Cargar inscritos recientes
         const applicantsResponse = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants?limit=5`, {
             headers: { 'Authorization': `Bearer ${token}` }
         });
@@ -1183,11 +1218,50 @@ async function loadAdminDataFromBackend() {
         }
         
     } catch (error) {
-        console.warn("⚠️ Error cargando datos admin, usando locales:", error);
-        updateAdminStats();
-        updateRecentApplicants();
+        console.error("❌ Error cargando datos del backend:", error);
+        // MOSTRAR ERROR AL USUARIO
+        showNotification('Error conectando al servidor. Revisa tu conexión.', 'error');
     }
 }
+
+async function testBackendConnection() {
+    console.log("🔍 Probando conexión con backend...");
+    
+    try {
+        // 1. Probar endpoint público
+        const publicResponse = await fetch(`${RENDER_BACKEND_URL}/health`);
+        console.log("✅ Health check:", publicResponse.status);
+        
+        // 2. Probar estadísticas públicas
+        const statsResponse = await fetch(`${RENDER_BACKEND_URL}/api/stats`);
+        const stats = await statsResponse.json();
+        console.log("📊 Estadísticas públicas:", stats);
+        
+        // 3. Probar login
+        const testLogin = await fetch(`${RENDER_BACKEND_URL}/api/admin/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: 'superadmin',
+                password: 'IAM2026super',
+                adminCode: 'IAM2026'
+            })
+        });
+        
+        console.log("🔐 Login test:", testLogin.status);
+        
+        if (testLogin.ok) {
+            const loginData = await testLogin.json();
+            console.log("✅ Login exitoso, token recibido:", loginData.token ? 'SÍ' : 'NO');
+        }
+        
+    } catch (error) {
+        console.error("❌ Error de conexión:", error);
+    }
+}
+
+// Ejecutar al cargar la página
+// document.addEventListener('DOMContentLoaded', testBackendConnection);
 
 async function updateAdminStats() {
     try {
