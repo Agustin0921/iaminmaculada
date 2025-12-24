@@ -45,7 +45,7 @@ async function updateStatsFromBackend() {
             if (spotsElement) spotsElement.textContent = data.availableSpots;
             
             if (progressBar) {
-                const percentage = (data.total / 100) * 100;
+                const percentage = (data.total / MAX_SPOTS) * 100;
                 progressBar.style.width = `${percentage}%`;
                 
                 // Cambiar color según disponibilidad
@@ -84,41 +84,149 @@ function checkAdminAuth() {
     }
 }
 
-// 3. Función de login actualizada para Render
+// 3. Función de login MEJORADA para Render
 async function loginToBackend(username, password, adminCode) {
     try {
+        console.log("🔐 LOGIN DEBUG - Iniciando...");
+        console.log("URL:", `${RENDER_BACKEND_URL}/api/admin/login`);
+        console.log("Usuario:", username);
+        console.log("Código admin:", adminCode ? "PROVIDED" : "MISSING");
+        
         const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password, adminCode })
+            headers: { 
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify({ 
+                username: username.trim(), 
+                password: password.trim(),
+                adminCode: adminCode.trim()
+            })
         });
         
-        if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || `Error HTTP: ${response.status}`);
+        console.log("📡 Response status:", response.status);
+        console.log("📡 Response OK?", response.ok);
+        
+        const responseText = await response.text();
+        console.log("📡 Raw response:", responseText);
+        
+        let data;
+        try {
+            data = JSON.parse(responseText);
+            console.log("📡 Parsed JSON:", data);
+        } catch (parseError) {
+            console.error("❌ Error parseando JSON:", parseError);
+            throw new Error(`Invalid JSON response: ${responseText.substring(0, 100)}`);
         }
         
-        const data = await response.json();
-        
         if (data.success) {
-            // Guardar token y datos
+            // VERIFICAR QUE EL TOKEN SEA VÁLIDO
+            console.log("✅ Login exitoso en backend");
+            console.log("Token recibido:", data.token ? data.token.substring(0, 20) + "..." : "NO TOKEN");
+            console.log("Longitud del token:", data.token?.length);
+            
+            if (!data.token || data.token.length < 50) {
+                console.error("❌ Token parece inválido (muy corto)");
+                return { success: false, error: 'Token inválido recibido del servidor' };
+            }
+            
+            // GUARDAR EN localStorage
             localStorage.setItem('iamAuthToken', data.token);
             localStorage.setItem('iamAdmin', JSON.stringify(data.admin));
             isAdminAuthenticated = true;
             
-            console.log("✅ Login exitoso:", data.admin.username);
-            return { success: true, admin: data.admin };
+            console.log("💾 Guardado en localStorage:");
+            console.log("- Token guardado:", localStorage.getItem('iamAuthToken')?.substring(0, 20) + "...");
+            console.log("- Admin guardado:", localStorage.getItem('iamAdmin'));
+            
+            // TEST INMEDIATO DEL TOKEN
+            console.log("🧪 Probando token inmediatamente...");
+            try {
+                const testResponse = await fetch(`${RENDER_BACKEND_URL}/api/admin/dashboard`, {
+                    headers: { 
+                        'Authorization': `Bearer ${data.token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log("🧪 Test response status:", testResponse.status);
+                
+                if (testResponse.ok) {
+                    const testData = await testResponse.json();
+                    console.log("🧪 Test dashboard success:", testData.success);
+                    console.log("🧪 Total inscritos:", testData.stats?.total);
+                } else {
+                    console.error("❌ Token test FAILED:", testResponse.status);
+                }
+            } catch (testError) {
+                console.error("❌ Error testing token:", testError);
+            }
+            
+            return { 
+                success: true, 
+                admin: data.admin,
+                token: data.token 
+            };
+            
         } else {
-            return { success: false, error: data.error };
+            console.error("❌ Login falló en backend:", data.error);
+            return { success: false, error: data.error || 'Error desconocido' };
         }
         
     } catch (error) {
         console.error('❌ Error en login:', error);
-        return { success: false, error: error.message || 'Error de conexión al servidor' };
+        return { 
+            success: false, 
+            error: error.message || 'Error de conexión al servidor' 
+        };
     }
 }
 
-// ===== FUNCIÓN AUXILIAR: Cargar todos los datos del backend =====
+// 4. Verificar y refrescar token
+async function verifyAndRefreshToken() {
+    const token = localStorage.getItem('iamAuthToken');
+    const adminData = localStorage.getItem('iamAdmin');
+    
+    if (!token || !adminData) {
+        console.log("❌ No hay token o admin data");
+        return false;
+    }
+    
+    try {
+        // Verificar si el token es válido
+        const response = await fetch(`${RENDER_BACKEND_URL}/api/admin/dashboard`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.status === 401) {
+            console.log("⚠️ Token expirado o inválido");
+            
+            // Mostrar login modal
+            const loginModal = document.getElementById('loginModal');
+            if (loginModal) {
+                loginModal.style.display = 'flex';
+                showNotification('Tu sesión ha expirado. Por favor, haz login nuevamente.', 'warning');
+            }
+            
+            // Limpiar localStorage
+            localStorage.removeItem('iamAuthToken');
+            localStorage.removeItem('iamAdmin');
+            isAdminAuthenticated = false;
+            
+            return false;
+        }
+        
+        return response.ok;
+        
+    } catch (error) {
+        console.error("Error verificando token:", error);
+        return false;
+    }
+}
+
+// 5. Cargar todos los datos del backend
 async function loadAllApplicantsFromBackend() {
     try {
         const token = localStorage.getItem('iamAuthToken');
@@ -142,68 +250,75 @@ async function loadAllApplicantsFromBackend() {
 // ===== INICIALIZACIÓN =====
 document.addEventListener('DOMContentLoaded', async function() {
     console.log("🚀 IAM Frontend cargado");
-    console.log("🔗 Conectando a:", RENDER_BACKEND_URL);
+    console.log("🔗 Backend URL:", RENDER_BACKEND_URL);
     
-    try {
-        // 1. Cargar estadísticas desde Render
-        await updateStatsFromBackend();
-        
-        // 2. Cargar datos locales como backup
-        await loadApplicantsFromStorage();
-        
-        // 3. Verificar si hay admin autenticado (token guardado)
-        checkAdminAuth();
-        
-    } catch (error) {
-        console.warn("⚠️ Error cargando datos iniciales:", error);
-        // Fallback a solo localStorage
-        await loadApplicantsFromStorage();
-    }
-    
-    // LIMPIAR DUPLICADOS AUTOMÁTICAMENTE
-    removeDuplicateApplicants();
-    
-    updateApplicantCounter();
-    updateAvailableSpots();
-    
-    // Inicializar otros componentes
+    // 1. INICIALIZAR NAVEGACIÓN INMEDIATAMENTE (sin esperar servidor)
     initNavigation();
+    
+    // 2. INICIALIZAR COMPONENTES QUE NO DEPENDEN DEL SERVIDOR
     initCountdown();
     initForm();
     initGallery();
     initModals();
+    initScrollAnimations();
+    
+    // 3. INICIALIZAR SISTEMA ADMIN (intenta pero no bloquea)
     initAdminSystem();
     
-    initScrollAnimations();
+    // 4. CARGAR DATOS (con fallback silencioso)
+    try {
+        // Intentar cargar estadísticas del backend
+        const stats = await updateStatsFromBackend();
+        if (stats) {
+            console.log("📊 Datos del servidor cargados");
+        } else {
+            // Fallback a datos locales
+            await loadApplicantsFromStorage();
+            updateApplicantCounter();
+            updateAvailableSpots();
+            console.log("📊 Usando datos locales (servidor no disponible)");
+        }
+    } catch (error) {
+        console.log("ℹ️ Servidor no disponible, usando modo local");
+        await loadApplicantsFromStorage();
+        updateApplicantCounter();
+        updateAvailableSpots();
+    }
+    
+    // 5. Limpiar duplicados (solo locales)
+    removeDuplicateApplicants();
+    
+    console.log("✅ Sistema listo para usar");
 });
 
-// ===== SISTEMA DE NAVEGACIÓN =====
+// ===== SISTEMA DE NAVEGACIÓN INDEPENDIENTE =====
 function initNavigation() {
     const mobileMenuBtn = document.getElementById('mobileMenuBtn');
     const mainNav = document.getElementById('mainNav');
     const navLinks = document.querySelectorAll('.nav-link');
     
-    if (!mobileMenuBtn || !mainNav) return;
+    if (!mobileMenuBtn || !mainNav) {
+        console.warn("⚠️ Elementos de navegación no encontrados");
+        return;
+    }
     
+    // 1. Mostrar/ocultar botón hamburguesa según tamaño
     function updateMenuVisibility() {
         if (window.innerWidth <= 768) {
             mobileMenuBtn.style.display = 'flex';
-            mainNav.classList.remove('active');
-            mobileMenuBtn.querySelector('i').classList.remove('fa-times');
-            mobileMenuBtn.querySelector('i').classList.add('fa-bars');
+            mobileMenuBtn.style.alignItems = 'center';
+            mobileMenuBtn.style.justifyContent = 'center';
         } else {
             mobileMenuBtn.style.display = 'none';
             mainNav.classList.remove('active');
-            mobileMenuBtn.querySelector('i').classList.remove('fa-times');
-            mobileMenuBtn.querySelector('i').classList.add('fa-bars');
             document.body.style.overflow = '';
         }
     }
     
-    updateMenuVisibility();
-    
+    // 2. Toggle del menú
     mobileMenuBtn.addEventListener('click', function(e) {
         e.stopPropagation();
+        e.preventDefault();
         
         mainNav.classList.toggle('active');
         const icon = mobileMenuBtn.querySelector('i');
@@ -219,20 +334,19 @@ function initNavigation() {
         }
     });
     
+    // 3. Cerrar menú al hacer clic en enlace
     navLinks.forEach(link => {
-        link.addEventListener('click', function() {
+        link.addEventListener('click', function(e) {
             if (window.innerWidth <= 768) {
                 mainNav.classList.remove('active');
                 mobileMenuBtn.querySelector('i').classList.remove('fa-times');
                 mobileMenuBtn.querySelector('i').classList.add('fa-bars');
                 document.body.style.overflow = '';
             }
-            
-            navLinks.forEach(navLink => navLink.classList.remove('active'));
-            this.classList.add('active');
         });
     });
     
+    // 4. Cerrar menú al hacer clic fuera
     document.addEventListener('click', function(e) {
         if (window.innerWidth <= 768 && 
             mainNav.classList.contains('active') &&
@@ -247,6 +361,7 @@ function initNavigation() {
         }
     });
     
+    // 5. Smooth scroll para enlaces internos
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
             const targetId = this.getAttribute('href');
@@ -259,12 +374,25 @@ function initNavigation() {
                     top: targetElement.offsetTop - 100,
                     behavior: 'smooth'
                 });
+                
+                // Cerrar menú móvil si está abierto
+                if (window.innerWidth <= 768 && mainNav.classList.contains('active')) {
+                    mainNav.classList.remove('active');
+                    mobileMenuBtn.querySelector('i').classList.remove('fa-times');
+                    mobileMenuBtn.querySelector('i').classList.add('fa-bars');
+                    document.body.style.overflow = '';
+                }
             }
         });
     });
     
+    // 6. Actualizar en resize
     window.addEventListener('resize', updateMenuVisibility);
-    window.addEventListener('load', updateMenuVisibility);
+    
+    // 7. Inicializar
+    updateMenuVisibility();
+    
+    console.log("✅ Navegación inicializada (independiente del servidor)");
 }
 
 // ===== CUENTA REGRESIVA =====
@@ -317,14 +445,46 @@ function updateCountdownMessage(message) {
     }
 }
 
-// ===== SISTEMA DE FORMULARIO =====
+// ===== SISTEMA DE FORMULARIO MEJORADO =====
 function initForm() {
     const form = document.getElementById('campForm');
     if (!form) return;
     
     form.addEventListener('submit', handleFormSubmit);
     
-    initFormValidation();
+    // Agregar validación en tiempo real
+    const requiredFields = form.querySelectorAll('input[required], textarea[required]');
+    
+    requiredFields.forEach(field => {
+        field.addEventListener('input', function() {
+            validateField({ target: this });
+            
+            // Mostrar ícono de validación
+            const isValid = this.value.trim().length > 0;
+            const parent = this.parentNode;
+            
+            let icon = parent.querySelector('.field-status');
+            if (!icon) {
+                icon = document.createElement('span');
+                icon.className = 'field-status';
+                icon.style.cssText = `
+                    position: absolute;
+                    right: 15px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: 1.2rem;
+                `;
+                parent.style.position = 'relative';
+                parent.appendChild(icon);
+            }
+            
+            if (isValid) {
+                icon.innerHTML = '<i class="fas fa-check-circle" style="color: #38B2AC;"></i>';
+            } else {
+                icon.innerHTML = '<i class="fas fa-exclamation-circle" style="color: #F56565;"></i>';
+            }
+        });
+    });
     
     // Lógica para checkbox de salud
     const healthCheckboxes = document.querySelectorAll('input[name="health"]');
@@ -375,18 +535,6 @@ function initForm() {
     }
 }
 
-function initFormValidation() {
-    const form = document.getElementById('campForm');
-    if (!form) return;
-    
-    const inputs = form.querySelectorAll('input[required], textarea[required]');
-    
-    inputs.forEach(input => {
-        input.addEventListener('blur', validateField);
-        input.addEventListener('input', clearError);
-    });
-}
-
 function validateField(e) {
     const field = e.target;
     const value = field.value.trim();
@@ -408,14 +556,6 @@ function validateField(e) {
             if (isNaN(age) || age < 8 || age > 17) {
                 isValid = false;
                 errorMessage = 'La edad debe ser entre 8 y 17 años para esta misión';
-            }
-            break;
-            
-        case 'email':
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(value)) {
-                isValid = false;
-                errorMessage = '¡Ups! Eso no parece un correo electrónico válido';
             }
             break;
             
@@ -474,18 +614,24 @@ function clearError(e) {
     }
 }
 
+// FUNCIÓN PRINCIPAL DE ENVÍO MEJORADA
 async function handleFormSubmit(e) {
     e.preventDefault();
     
     const form = e.target;
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalBtnText = submitBtn.innerHTML;
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
     
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
-    submitBtn.disabled = true;
+    // 1. Mostrar "enviando"
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        if (submitText) submitText.textContent = "Enviando...";
+        if (submitSpinner) submitSpinner.style.display = 'inline-block';
+    }
     
     try {
-        // Recoger datos del formulario
+        // Recoger datos
         const formData = new FormData(form);
         const applicant = {};
         
@@ -498,7 +644,7 @@ async function handleFormSubmit(e) {
             }
         }
         
-        // Enviar a Render
+        // Enviar al backend
         const response = await fetch(`${RENDER_BACKEND_URL}/api/applicants`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -508,46 +654,49 @@ async function handleFormSubmit(e) {
         const result = await response.json();
         
         if (result.success) {
-            // Actualizar contadores desde backend
-            await updateStatsFromBackend();
-            
-            // También guardar localmente como backup
-            applicants.push(result.data);
-            saveApplicantsToStorage();
-            
-            // Mostrar confirmación
+            // ÉXITO: mostrar confirmación
+            showNotification('✅ ¡Inscripción enviada!', 'success');
             showConfirmationModal(result.data);
             form.reset();
             
-            showNotification('✅ ¡Inscripción enviada al servidor!', 'success');
+            // Actualizar contadores
+            await updateStatsFromBackend();
             
         } else {
+            // ERROR del servidor
             showNotification(`⚠️ ${result.error}`, 'warning');
             
-            // Si es error de duplicado, guardar localmente de todas formas
-            if (result.error.includes('duplicado') || result.error.includes('ya existe')) {
+            // Guardar localmente como backup
+            if (confirm("¿Guardar localmente mientras?")) {
                 await saveLocally(applicant, form);
             }
         }
         
     } catch (error) {
-        console.error('❌ Error de conexión:', error);
-        showNotification('⚠️ Sin conexión - Guardando localmente', 'warning');
+        // ERROR de conexión
+        console.error('❌ Error:', error);
+        showNotification('🌐 Sin conexión. Guardando localmente...', 'warning');
         
-        // Guardar localmente como fallback
+        // Guardar localmente
         await saveLocally(applicant, form);
         
     } finally {
-        submitBtn.innerHTML = originalBtnText;
-        submitBtn.disabled = false;
+        // Restaurar botón
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            if (submitText) submitText.textContent = "¡Enviar Mi Solicitud de Aventura!";
+            if (submitSpinner) submitSpinner.style.display = 'none';
+        }
     }
 }
-
-// ===== FUNCIÓN saveLocally =====
+// ===== FUNCIÓN saveLocally MEJORADA =====
 async function saveLocally(applicantData, formElement) {
     try {
+        // Mostrar notificación
+        const localNotification = showNotification('💾 Guardando localmente...', 'info', 0);
+        
         const applicantId = Date.now();
-        const registrationNumber = `AVENT-${String(applicantId).slice(-6)}`;
+        const registrationNumber = `AVENT-LOCAL-${String(applicantId).slice(-6)}`;
         
         const applicantToSave = {
             ...applicantData,
@@ -572,6 +721,7 @@ async function saveLocally(applicantData, formElement) {
         );
         
         if (isDuplicate) {
+            if (localNotification) localNotification.remove();
             showNotification('⚠️ Ya existe una inscripción local con estos datos', 'warning');
             return false;
         }
@@ -584,6 +734,9 @@ async function saveLocally(applicantData, formElement) {
         updateApplicantCounter();
         updateAvailableSpots();
         
+        // Al finalizar
+        if (localNotification) localNotification.remove();
+        
         // Mostrar confirmación si no hay una activa
         setTimeout(() => {
             showConfirmationModal(applicantToSave);
@@ -592,7 +745,7 @@ async function saveLocally(applicantData, formElement) {
         // Resetear formulario
         if (formElement) formElement.reset();
         
-        showNotification('✅ Inscripción guardada localmente', 'success');
+        showNotification('✅ Guardado localmente correctamente', 'success');
         
         if (isAdminAuthenticated) {
             updateAdminStats();
@@ -603,7 +756,7 @@ async function saveLocally(applicantData, formElement) {
         
     } catch (error) {
         console.error('❌ Error guardando localmente:', error);
-        showNotification('Error al guardar localmente', 'error');
+        showNotification('❌ Error al guardar localmente', 'error');
         return false;
     }
 }
@@ -976,22 +1129,47 @@ function initModals() {
     });
 }
 
+// MODAL DE CONFIRMACIÓN MEJORADO
 function showConfirmationModal(applicant) {
     const modal = document.getElementById('confirmationModal');
     const message = document.getElementById('confirmationMessage');
     const confirmName = document.getElementById('confirmName');
     const confirmId = document.getElementById('confirmId');
     
-    if (message) message.textContent = `¡Felicidades ${applicant.fullName}! Tu misión de aventura IAM 2026 ha sido registrada.`;
-    if (confirmName) confirmName.textContent = applicant.fullName;
-    if (confirmId) confirmId.textContent = applicant.registrationNumber;
+    if (message) {
+        message.innerHTML = `
+            <strong>¡Felicidades ${applicant.fullName || applicant.full_name}!</strong><br>
+            Tu misión de aventura IAM 2026 ha sido registrada exitosamente.
+            <br><br>
+            <small style="color: #4A5568;">
+                <i class="fas fa-info-circle"></i> 
+                ${applicant.savedLocally ? 
+                    'Guardado localmente (servidor no disponible)' : 
+                    'Guardado en el servidor correctamente'
+                }
+            </small>
+        `;
+    }
     
-    if (modal) modal.style.display = 'flex';
+    if (confirmName) confirmName.textContent = applicant.fullName || applicant.full_name;
+    if (confirmId) confirmId.textContent = applicant.registrationNumber || applicant.registration_number;
     
+    if (modal) {
+        modal.style.display = 'flex';
+        
+        // Auto-cerrar después de 10 segundos
+        setTimeout(() => {
+            if (modal.style.display === 'flex') {
+                modal.style.display = 'none';
+            }
+        }, 10000);
+    }
+    
+    // Scroll suave al modal
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ===== SISTEMA DE ADMINISTRACIÓN - ACTUALIZADO PARA RENDER =====
+// ===== SISTEMA DE ADMINISTRACIÓN MEJORADO =====
 function initAdminSystem() {
     const adminAccessBtn = document.getElementById('adminAccessBtn');
     const loginModal = document.getElementById('loginModal');
@@ -1000,7 +1178,7 @@ function initAdminSystem() {
     const cancelLogin = document.getElementById('cancelLogin');
     const closeAdmin = document.getElementById('closeAdmin');
     
-    console.log("🔧 Inicializando sistema admin para Render...");
+    console.log("🔧 Inicializando sistema admin...");
     
     if (!adminAccessBtn || !loginModal || !adminModal) {
         console.error("❌ Elementos críticos no encontrados");
@@ -1008,15 +1186,21 @@ function initAdminSystem() {
     }
     
     // === 1. BOTÓN DE ACCESO ADMIN ===
-    adminAccessBtn.onclick = function() {
+    adminAccessBtn.onclick = async function() {
         if (isAdminAuthenticated) {
-            showAdminPanel();
+            // Verificar token antes de mostrar panel
+            const tokenValid = await verifyAndRefreshToken();
+            if (tokenValid) {
+                showAdminPanel();
+            } else {
+                loginModal.style.display = 'flex';
+            }
         } else {
             loginModal.style.display = 'flex';
         }
     };
     
-    // === 2. FORMULARIO DE LOGIN - PARA RENDER ===
+    // === 2. FORMULARIO DE LOGIN ===
     if (loginForm) {
         loginForm.onsubmit = async function(e) {
             e.preventDefault();
@@ -1026,7 +1210,7 @@ function initAdminSystem() {
             const password = document.getElementById('password').value;
             const adminCode = document.getElementById('adminCode').value;
             
-            console.log("🔐 Intentando login con Render...");
+            console.log("🔐 Intentando login...");
             
             const loginBtn = loginForm.querySelector('button[type="submit"]');
             const originalBtnText = loginBtn.innerHTML;
@@ -1040,7 +1224,13 @@ function initAdminSystem() {
                 if (result.success) {
                     isAdminAuthenticated = true;
                     loginModal.style.display = 'none';
+                    
+                    // Cargar datos reales del backend
+                    await loadAdminDataFromBackend();
+                    
+                    // Mostrar panel
                     showAdminPanel();
+                    
                     showNotification('✅ ¡Acceso concedido al Cuartel General!', 'success');
                     loginForm.reset();
                     console.log("✅ Admin autenticado:", username);
@@ -1068,13 +1258,6 @@ function initAdminSystem() {
             if (loginForm) loginForm.reset();
             return false;
         };
-        
-        cancelLogin.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            loginModal.style.display = 'none';
-            if (loginForm) loginForm.reset();
-        });
     }
     
     // === 4. BOTÓN CERRAR PANEL ADMIN ===
@@ -1085,12 +1268,6 @@ function initAdminSystem() {
             adminModal.style.display = 'none';
             return false;
         };
-        
-        closeAdmin.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            adminModal.style.display = 'none';
-        });
     }
     
     // === 5. CERRAR MODALES AL HACER CLIC FUERA ===
@@ -1126,13 +1303,14 @@ function initAdminSystem() {
     initAdminButtons();
 }
 
+// FUNCIÓN SHOW ADMIN PANEL MEJORADA
 async function showAdminPanel() {
     const adminModal = document.getElementById('adminModal');
     if (!adminModal) return;
     
     console.log("🔑 Mostrando panel admin...");
     
-    // Verificar que haya token
+    // Verificar token
     const token = localStorage.getItem('iamAuthToken');
     if (!token) {
         console.error("❌ No hay token de autenticación");
@@ -1153,11 +1331,6 @@ async function showAdminPanel() {
         // Mostrar modal
         adminModal.style.display = 'flex';
         
-        // Forzar actualización de estadísticas
-        setTimeout(() => {
-            updateAdminStats();
-        }, 1000);
-        
     } catch (error) {
         console.error("❌ Error cargando panel:", error);
         if (loadingNotification) loadingNotification.remove();
@@ -1169,99 +1342,97 @@ async function showAdminPanel() {
 async function loadAdminDataFromBackend() {
     try {
         const token = localStorage.getItem('iamAuthToken');
+        
         if (!token) {
-            console.warn("⚠️ No hay token, no se puede cargar datos del backend");
+            console.error("❌ No hay token de autenticación");
+            showNotification('No estás autenticado. Por favor, haz login nuevamente.', 'error');
             return;
         }
         
         console.log("🔄 Cargando datos REALES del backend...");
+        console.log("Token:", token.substring(0, 20) + "...");
         
-        // 1. Cargar estadísticas
+        // 1. Cargar dashboard
         const dashboardResponse = await fetch(`${RENDER_BACKEND_URL}/api/admin/dashboard`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
         
+        console.log("Dashboard response status:", dashboardResponse.status);
+        
         if (!dashboardResponse.ok) {
+            if (dashboardResponse.status === 401) {
+                // Token expirado o inválido
+                localStorage.removeItem('iamAuthToken');
+                localStorage.removeItem('iamAdmin');
+                isAdminAuthenticated = false;
+                showNotification('Tu sesión ha expirado. Por favor, haz login nuevamente.', 'error');
+                return;
+            }
             throw new Error(`Error HTTP: ${dashboardResponse.status}`);
         }
         
         const dashboardData = await dashboardResponse.json();
+        console.log("Dashboard data recibida:", dashboardData);
         
         if (dashboardData.success) {
             console.log("✅ Datos del backend cargados:", dashboardData.stats.total, "inscritos");
             
-            // Actualizar UI con datos REALES
+            // Actualizar UI del panel admin
             const adminTotalCount = document.getElementById('adminTotalCount');
             const adminAvgAge = document.getElementById('adminAvgAge');
             const adminMedicalCount = document.getElementById('adminMedicalCount');
             
-            if (adminTotalCount) adminTotalCount.textContent = dashboardData.stats.total;
-            if (adminAvgAge) adminAvgAge.textContent = dashboardData.stats.avgAge || '0';
-            if (adminMedicalCount) adminMedicalCount.textContent = dashboardData.stats.withMedical || 0;
+            if (adminTotalCount) {
+                adminTotalCount.textContent = dashboardData.stats.total;
+                console.log("Admin total count actualizado a:", dashboardData.stats.total);
+            }
+            if (adminAvgAge) {
+                adminAvgAge.textContent = dashboardData.stats.averageAge || dashboardData.stats.avgAge || '0';
+            }
+            if (adminMedicalCount) {
+                adminMedicalCount.textContent = dashboardData.stats.withMedical || 0;
+            }
             
             // Actualizar contadores públicos también
             applicantCount = dashboardData.stats.total;
             updateApplicantCounter();
             updateAvailableSpots();
+            
+            console.log("📊 Datos actualizados en UI:");
+            console.log("- Total inscritos:", dashboardData.stats.total);
+            console.log("- Plazas disponibles:", dashboardData.stats.availableSpots);
+            
+        } else {
+            console.error("❌ Dashboard no devolvió success:", dashboardData);
         }
         
         // 2. Cargar inscritos recientes
+        console.log("🔄 Cargando inscritos recientes...");
         const applicantsResponse = await fetch(`${RENDER_BACKEND_URL}/api/admin/applicants?limit=5`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         });
         
         if (applicantsResponse.ok) {
             const applicantsData = await applicantsResponse.json();
+            console.log("Applicants data:", applicantsData);
             if (applicantsData.success) {
                 updateRecentApplicantsFromBackend(applicantsData.data);
             }
+        } else {
+            console.warn("⚠️ No se pudieron cargar inscritos recientes:", applicantsResponse.status);
         }
         
     } catch (error) {
         console.error("❌ Error cargando datos del backend:", error);
-        // MOSTRAR ERROR AL USUARIO
-        showNotification('Error conectando al servidor. Revisa tu conexión.', 'error');
+        showNotification(`Error conectando al servidor: ${error.message}`, 'error');
     }
 }
-
-async function testBackendConnection() {
-    console.log("🔍 Probando conexión con backend...");
-    
-    try {
-        // 1. Probar endpoint público
-        const publicResponse = await fetch(`${RENDER_BACKEND_URL}/health`);
-        console.log("✅ Health check:", publicResponse.status);
-        
-        // 2. Probar estadísticas públicas
-        const statsResponse = await fetch(`${RENDER_BACKEND_URL}/api/stats`);
-        const stats = await statsResponse.json();
-        console.log("📊 Estadísticas públicas:", stats);
-        
-        // 3. Probar login
-        const testLogin = await fetch(`${RENDER_BACKEND_URL}/api/admin/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                username: 'superadmin',
-                password: 'IAM2026super',
-                adminCode: 'IAM2026'
-            })
-        });
-        
-        console.log("🔐 Login test:", testLogin.status);
-        
-        if (testLogin.ok) {
-            const loginData = await testLogin.json();
-            console.log("✅ Login exitoso, token recibido:", loginData.token ? 'SÍ' : 'NO');
-        }
-        
-    } catch (error) {
-        console.error("❌ Error de conexión:", error);
-    }
-}
-
-// Ejecutar al cargar la página
-// document.addEventListener('DOMContentLoaded', testBackendConnection);
 
 async function updateAdminStats() {
     try {
@@ -1289,7 +1460,7 @@ async function updateAdminStats() {
                     updateApplicantCounter();
                     updateAvailableSpots();
                     
-                    return; // Salir si se cargaron del backend
+                    return;
                 }
             }
         }
@@ -1322,7 +1493,6 @@ async function updateAdminStats() {
         
     } catch (error) {
         console.warn("Error obteniendo stats admin:", error);
-        // Mantener el fallback local
     }
 }
 
@@ -1396,7 +1566,7 @@ async function updateRecentApplicants() {
     }
 }
 
-// Función para mostrar diálogo de confirmación con validación
+// Función para mostrar diálogo de confirmación
 function showConfirmationDialog(title, message, requiredText) {
     return new Promise((resolve) => {
         const modal = document.createElement('div');
@@ -1479,7 +1649,7 @@ function showConfirmationDialog(title, message, requiredText) {
     });
 }
 
-// Función para mostrar notificación persistente
+// Función para mostrar notificación
 function showNotification(message, type = 'success', duration = 5000) {
     const notification = document.createElement('div');
     notification.className = 'notification';
@@ -1520,12 +1690,59 @@ function showNotification(message, type = 'success', duration = 5000) {
         font-family: 'Nunito', sans-serif;
     `;
     
+    if (!document.querySelector('#notification-styles')) {
+        const style = document.createElement('style');
+        style.id = 'notification-styles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+            .notification-content {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                flex: 1;
+            }
+            .notification-content i {
+                font-size: 1.2rem;
+            }
+            .notification-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+                margin-left: 15px;
+                opacity: 0.7;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .notification-close:hover {
+                opacity: 1;
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
     if (duration > 0) {
         const closeBtn = notification.querySelector('.notification-close');
-        closeBtn.addEventListener('click', () => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        });
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            });
+        }
         
         setTimeout(() => {
             if (notification.parentNode) {
@@ -1537,7 +1754,6 @@ function showNotification(message, type = 'success', duration = 5000) {
     
     document.body.appendChild(notification);
     
-    // Retornar referencia para poder eliminarla manualmente
     return notification;
 }
 
@@ -1590,7 +1806,7 @@ function initAdminButtons() {
         });
     }
     
-    // Botón: Reiniciar Misión (ELIMINA TODO - BACKEND + LOCAL)
+    // Botón: Reiniciar Misión
     const clearDataBtn = document.getElementById('clearData');
     if (clearDataBtn) {
         clearDataBtn.addEventListener('click', async function() {
@@ -1599,7 +1815,7 @@ function initAdminButtons() {
                 return;
             }
 
-            // Confirmación MÁS FUERTE
+            // Confirmación
             const confirmed = await showConfirmationDialog(
                 '⚠️ ¡ALERTA CRÍTICA! ⚠️',
                 `¿REINICIAR TODA LA MISIÓN?\n\n` +
@@ -1621,7 +1837,7 @@ function initAdminButtons() {
                 applicants = [];
                 applicantCount = 0;
                 localStorage.removeItem('iamApplicants');
-                localStorage.removeItem('iamSyncQueue'); // Si existe
+                localStorage.removeItem('iamSyncQueue');
 
                 // 2. Limpiar datos del BACKEND (Render)
                 const token = localStorage.getItem('iamAuthToken');
@@ -1638,8 +1854,6 @@ function initAdminButtons() {
                         if (response.ok) {
                             const result = await response.json();
                             console.log('✅ Backend limpiado:', result);
-                        } else {
-                            console.warn('⚠️ No se pudo limpiar backend completamente');
                         }
                     } catch (error) {
                         console.warn("⚠️ Error conectando al backend:", error);
@@ -1698,112 +1912,6 @@ function initAdminButtons() {
     }
 }
 
-// ===== NOTIFICACIONES =====
-function showNotification(message, type = 'success') {
-    const notification = document.createElement('div');
-    notification.className = 'notification';
-    
-    const icon = type === 'success' ? 'fa-check-circle' : 
-                 type === 'error' ? 'fa-exclamation-circle' : 
-                 type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info-circle';
-    
-    const backgroundColor = type === 'success' ? '#38B2AC' : 
-                          type === 'error' ? '#F56565' : 
-                          type === 'warning' ? '#ED8936' : '#2A6EBB';
-    
-    const borderColor = type === 'success' ? '#2C7A7B' : 
-                       type === 'error' ? '#C53030' : 
-                       type === 'warning' ? '#DD6B20' : '#2A6EBB';
-    
-    notification.innerHTML = `
-        <div class="notification-content">
-            <i class="fas ${icon}"></i>
-            <span>${message}</span>
-        </div>
-        <button class="notification-close">&times;</button>
-    `;
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: ${backgroundColor};
-        color: white;
-        padding: 16px 20px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        min-width: 300px;
-        max-width: 400px;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-        z-index: 9999;
-        animation: slideIn 0.3s ease;
-        border: 2px solid ${borderColor};
-        font-family: 'Nunito', sans-serif;
-    `;
-    
-    const closeBtn = notification.querySelector('.notification-close');
-    closeBtn.addEventListener('click', () => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => notification.remove(), 300);
-    });
-    
-    if (!document.querySelector('#notification-styles')) {
-        const style = document.createElement('style');
-        style.id = 'notification-styles';
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOut {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(100%); opacity: 0; }
-            }
-            .notification-content {
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                flex: 1;
-            }
-            .notification-content i {
-                font-size: 1.2rem;
-            }
-            .notification-close {
-                background: none;
-                border: none;
-                color: white;
-                font-size: 1.5rem;
-                cursor: pointer;
-                margin-left: 15px;
-                opacity: 0.7;
-                padding: 0;
-                width: 24px;
-                height: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            .notification-close:hover {
-                opacity: 1;
-                background: rgba(255,255,255,0.1);
-                border-radius: 4px;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        if (notification.parentNode) {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }
-    }, 5000);
-}
-
 // ===== FUNCIONES ACTUALIZADAS =====
 async function showAllApplicantsData() {
     const modal = document.createElement('div');
@@ -1848,13 +1956,13 @@ async function showAllApplicantsData() {
             <td>${app.phone || '-'}</td>
             <td>${app.parish || '-'}</td>
             <td>
-                ${app.health_conditions ? 
-                    (Array.isArray(app.health_conditions) ? 
-                        app.health_conditions.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' :
-                        JSON.parse(app.health_conditions || '[]').filter(h => h !== 'Ninguna').join(', ') || 'Ninguna'
-                    ) : 
-                    (app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-')
-                }
+                            ${app.health_conditions ? 
+                (Array.isArray(app.health_conditions) ? 
+                    app.health_conditions.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' :
+                    JSON.parse(app.health_conditions || '[]').filter(h => h !== 'Ninguna').join(', ') || 'Ninguna'
+                ) : 
+                (app.health ? app.health.filter(h => h !== 'Ninguna').join(', ') || 'Ninguna' : '-')
+            }
             </td>
             <td>
                 ${app.dietary_restrictions ? 
@@ -2146,7 +2254,7 @@ async function exportToExcel() {
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Aventureros IAM");
         
-                const maxWidths = {};
+        const maxWidths = {};
         data.forEach(row => {
             Object.keys(row).forEach(key => {
                 const length = String(row[key]).length;

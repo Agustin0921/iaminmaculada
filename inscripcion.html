@@ -433,8 +433,12 @@
                     </div>
                     
                     <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-lg">
-                            <i class="fas fa-paper-plane"></i> ¡Enviar Mi Solicitud de Aventura!
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
+                            <i class="fas fa-paper-plane"></i> 
+                            <span id="submitText">¡Enviar Mi Solicitud de Aventura!</span>
+                            <div id="submitSpinner" style="display: none; margin-left: 10px;">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </div>
                         </button>
                         <p class="form-note">
                             <i class="fas fa-info-circle"></i> Recibirás un rollo de papiro (correo) de confirmación en 24 horas.
